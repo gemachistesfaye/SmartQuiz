@@ -1,5 +1,13 @@
 # SmartQuiz-App: The Ultimate JS Mastery Platform 🚀🛡️
 
+![SmartQuiz Banner](./public/banner.png)
+
+<div align="center">
+  <a href="https://smartquiz-app.vercel.app">
+    <img src="https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo" />
+  </a>
+</div>
+
 SmartQuiz is a production-grade, educational SaaS ecosystem designed to transform students into JavaScript masters. It features a hardened security architecture, real-time data persistence and a pro-level AI tutor.
 
 ---
@@ -26,12 +34,20 @@ SmartQuiz is a production-grade, educational SaaS ecosystem designed to transfor
 
 ---
 
+## 📸 Screenshots
+
+Here is a preview of the SmartQuiz interface:
+
+![SmartQuiz UI Mockup](./public/screenshot.png)
+
+---
+
 ## 🛠️ Tech Stack
 
 *   **Frontend**: React 19, Vite, Tailwind CSS
 *   **Backend/Auth**: Firebase (Auth, Firestore)
 *   **Animations**: Framer Motion
-*   **AI Engine**: Google Generative AI (Gemini 1.5 Flash)
+*   **AI Engine**: OpenAI API (`gpt-4o-mini`) & Google Gemini
 *   **Icons**: Lucide React
 *   **Charts**: Recharts
 
@@ -68,14 +84,14 @@ SmartQuiz is a production-grade, educational SaaS ecosystem designed to transfor
 
 For a deep dive into the platform's architecture and systems, explore our official documentation:
 
-*   **[Project Overview](./docs/PROJECT_OVERVIEW.md)**: Mission and core philosophy.
-*   **[Features](./docs/FEATURES.md)**: Detailed breakdown of Student and Admin tools.
-*   **[Architecture](./docs/ARCHITECTURE.md)**: Tech stack and data flow diagrams.
-*   **[Authentication](./docs/AUTH_SYSTEM.md)**: Role management and security flow.
-*   **[Database Schema](./docs/FIREBASE_SCHEMA.md)**: Firestore collections and data model.
-*   **[Security](./docs/SECURITY.md)**: RBAC enforcement and safety guardrails.
-*   **[AI System](./docs/AI_SYSTEM.md)**: Gemini 1.5 integration and prompt engineering.
-*   **[Roadmap](./docs/ROADMAP.md)**: Future goals and development phases.
+*   **[Project Overview](./docs/project_overview.md)**: Mission and core philosophy.
+*   **[Features](./docs/features.md)**: Detailed breakdown of Student and Admin tools.
+*   **[Architecture](./docs/architecture.md)**: Tech stack and data flow diagrams.
+*   **[Authentication](./docs/auth_system.md)**: Role management and security flow.
+*   **[Database Schema](./docs/firebase_schema.md)**: Firestore collections and data model.
+*   **[Security](./docs/security.md)**: RBAC enforcement and safety guardrails.
+*   **[AI System](./docs/ai_system.md)**: Gemini 1.5 integration and prompt engineering.
+*   **[Roadmap](./docs/roadmap.md)**: Future goals and development phases.
 
 ---
 
