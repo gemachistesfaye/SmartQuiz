@@ -152,12 +152,22 @@ export function AuthProvider({ children }) {
   }
 
   function setupRecaptcha(containerId) {
+    if (window.recaptchaVerifier) {
+      try {
+        window.recaptchaVerifier.clear();
+      } catch (e) {
+        console.warn("Error clearing recaptcha:", e);
+      }
+    }
+    
     const recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
       'size': 'invisible',
       'callback': (response) => {
         // reCAPTCHA solved, allow signInWithPhoneNumber.
       }
     });
+    
+    window.recaptchaVerifier = recaptchaVerifier;
     return recaptchaVerifier;
   }
 
