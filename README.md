@@ -3,7 +3,7 @@
 ![SmartQuiz Banner](./public/banner.png)
 
 <div align="center">
-  <a href="https://smartquiz-app.vercel.app">
+  <a href="https://smart-quiz-ai-platform.vercel.app">
     <img src="https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo" />
   </a>
 </div>
@@ -38,7 +38,13 @@ SmartQuiz is a production-grade, educational SaaS ecosystem designed to transfor
 
 Here is a preview of the SmartQuiz interface:
 
-![SmartQuiz UI Mockup](./public/screenshot.png)
+| Dashboard | Quiz Arena |
+| :---: | :---: |
+| ![Dashboard](./public/screenshot1.png) | ![Quiz Arena](./public/screenshot2.png) |
+| **AI Assistant** | **Code Lab** |
+| ![AI Assistant](./public/screenshot3.png) | ![Code Lab](./public/screenshot4.png) |
+| **Theory Vault** | **Leaderboard** |
+| ![Theory Vault](./public/screenshot5.png) | ![Leaderboard](./public/screenshot6.png) |
 
 ---
 
