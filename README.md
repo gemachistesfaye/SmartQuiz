@@ -4,8 +4,13 @@
 
 <div align="center">
   <a href="https://smart-quiz-ai-platform.vercel.app">
-    <img src="https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo" />
+    <img src="https://img.shields.io/badge/LIVE_APP-VERCEL-000000?style=for-the-badge&logo=vercel" alt="Live App" />
   </a>
+  <img src="https://img.shields.io/badge/STACK-REACT_%2B_VITE-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="Stack" />
+  <img src="https://img.shields.io/badge/DATABASE-FIRESTORE-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Database" />
+  <img src="https://img.shields.io/badge/AI_ENGINE-OPENAI_%2B_GEMINI-743481?style=for-the-badge&logo=openai" alt="AI Engine" />
+  <img src="https://img.shields.io/badge/STYLING-TAILWIND_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Styling" />
+  <img src="https://img.shields.io/badge/STATUS-PRODUCTION_READY-4CAF50?style=for-the-badge" alt="Status" />
 </div>
 
 SmartQuiz is a production-grade, educational SaaS ecosystem designed to transform students into JavaScript masters. It features a hardened security architecture, real-time data persistence and a pro-level AI tutor.
@@ -50,12 +55,14 @@ Here is a preview of the SmartQuiz interface:
 
 ## 🛠️ Tech Stack
 
-*   **Frontend**: React 19, Vite, Tailwind CSS
-*   **Backend/Auth**: Firebase (Auth, Firestore)
-*   **Animations**: Framer Motion
-*   **AI Engine**: OpenAI API (`gpt-4o-mini`) & Google Gemini
-*   **Icons**: Lucide React
-*   **Charts**: Recharts
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 19, Vite, Tailwind CSS |
+| **Backend/Auth** | Firebase (Auth, Firestore) |
+| **Animations** | Framer Motion |
+| **AI Engine** | OpenAI API (`gpt-4o-mini`) & Google Gemini |
+| **Icons** | Lucide React |
+| **Charts** | Recharts |
 
 ---
 
@@ -115,8 +122,7 @@ To access the **SuperAdmin Dashboard**, use the following master credentials:
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing & License
 This project is open for enhancements! Feel free to fork and submit PRs for new features or learning modules.
 
-## 📄 License
 MIT License - Created with ❤️ by Gemachis.
