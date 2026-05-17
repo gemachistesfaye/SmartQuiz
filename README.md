@@ -1,6 +1,6 @@
 # SmartQuiz-App: The Ultimate JS Mastery Platform 🚀🛡️
 
-<img src="./public/banner.png" height="200" alt="SmartQuiz Banner" />
+<img src="./public/banner.png" width="100%" height="360" alt="SmartQuiz Banner" style="object-fit: cover;" />
 
 <div align="center">
   <a href="https://smart-quiz-ai-platform.vercel.app">
@@ -109,7 +109,6 @@ To access the **SuperAdmin Dashboard**, use the following master credentials:
 
 ### 📱 Mobile Login (Testing)
 *   **OTP Code**: `000000`
-*   **Note**: If you see a console warning stating `reCAPTCHA has already been rendered in this element`, it is a known Firebase behavior when re-rendering components and can be safely ignored during testing.
 
 ---
 
