@@ -8,7 +8,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { User, Mail, Shield, Camera, Zap, Trophy, Save } from 'lucide-react';
 
 export default function Profile() {
-  const { userData, currentUser, makeAdmin, isAdmin } = useAuth();
+  const { userData, currentUser, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: userData?.fullName || '',
@@ -156,42 +156,18 @@ export default function Profile() {
                 <Shield className="text-red-400" size={24} />
                 <h3 className="text-xl font-bold text-white">Security & Admin</h3>
               </div>
-              <p className="text-gray-400 text-sm mb-6">You can reset your password or activate Admin privileges using a secret code.</p>
+              <p className="text-gray-400 text-sm mb-6">You can reset your password from the login page. Admin privileges are assigned by an existing administrator.</p>
               
               <div className="space-y-4">
                 <div className="flex flex-wrap gap-4">
                   <button className="bg-white/5 hover:bg-white/10 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all">
                     Reset Password
                   </button>
-                  {!isAdmin ? (
-                    <div className="flex gap-2 flex-1 max-w-xs">
-                      <input 
-                        type="password" 
-                        id="adminCode"
-                        placeholder="Admin Code"
-                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-primary/50 flex-1"
-                      />
-                      <button 
-                        onClick={async () => {
-                          const code = document.getElementById('adminCode').value;
-                          const success = await makeAdmin(code);
-                          if (success) {
-                            toast.success("You are now an Admin!");
-                            window.location.reload();
-                          } else {
-                            toast.error("Invalid Code");
-                          }
-                        }}
-                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                      >
-                        Activate
-                      </button>
-                    </div>
-                  ) : (
+                  {isAdmin ? (
                     <div className="bg-red-500/10 text-red-500 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
                       <Shield size={16} /> Admin Mode Active
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </motion.div>

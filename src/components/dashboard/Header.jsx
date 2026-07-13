@@ -1,10 +1,11 @@
 import React from 'react';
 import { Search, Bell, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const { userData, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="flex items-center justify-between p-6 mb-2">
@@ -61,7 +62,7 @@ export default function Header() {
               <button 
                 onClick={async () => {
                   await logout();
-                  window.location.reload();
+                  navigate('/');
                 }}
                 className="w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-red-400 hover:bg-red-400/10 transition-all"
               >

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../hooks/useQuiz';
 import QuestionCard from '../components/quiz/QuestionCard';
 import ExplanationModal from '../components/quiz/ExplanationModal';
-import { Brain, Timer, Zap, Trophy, RefreshCcw, Home, ArrowLeft } from 'lucide-react';
+import { Brain, Timer, Zap, Trophy, RefreshCcw, Hop as Home, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function QuizPage() {
@@ -208,7 +208,7 @@ export default function QuizPage() {
           isOpen={showExplanation}
           onClose={() => setShowExplanation(false)}
           explanation={currentQuestion?.explanation}
-          isCorrect={lastSelected === currentQuestion?.answer}
+          isCorrect={lastSelected === currentQuestion?.correct}
           nextQuestion={handleNext}
         />
       </div>
