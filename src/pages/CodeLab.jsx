@@ -350,7 +350,6 @@ export default function CodeLab() {
   const [sandboxOutput, setSandboxOutput] = useState([]);
   const [sandboxResult, setSandboxResult] = useState(null);
   const [sandboxCopied, setSandboxCopied] = useState(false);
-  const [sandboxSelectedSnippet, setSandboxSelectedSnippet] = useState(SNIPPETS[0].name);
   const [sandboxCategory, setSandboxCategory] = useState('All');
   const [sandboxHistory, setSandboxHistory] = useState([]);
 
@@ -467,7 +466,6 @@ export default function CodeLab() {
           <>
             <div className="flex items-center gap-3 mb-4">
               <DarkSelect value={sandboxCategory} onChange={setSandboxCategory} options={CATEGORIES.map(c => ({ value: c, label: c === 'All' ? `All (${SNIPPETS.length})` : `${c} (${snippetCounts[c] || 0})` }))} />
-              <DarkSelect value={sandboxSelectedSnippet} onChange={(name) => { const s = filteredSnippets.find(sn => sn.name === name); if (s) { setSandboxCode(s.code); setSandboxOutput([]); setSandboxResult(null); setSandboxSelectedSnippet(s.name); } }} options={filteredSnippets.map(s => ({ value: s.name, label: s.name }))} />
               <button onClick={sandboxRun} className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
                 <Play size={16} className="fill-current" /> Run
               </button>
@@ -477,7 +475,7 @@ export default function CodeLab() {
               <div className="xl:col-span-1 space-y-2 max-h-[calc(100vh-220px)] overflow-y-auto pr-2 custom-scrollbar">
                 <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2 mb-3 sticky top-0 bg-[#0a0a0a] py-2 z-10">Snippets ({filteredSnippets.length})</h3>
                 {filteredSnippets.map((s, i) => (
-                  <button key={i} onClick={() => { setSandboxCode(s.code); setSandboxOutput([]); setSandboxResult(null); setSandboxSelectedSnippet(s.name); }} className={`w-full p-3 rounded-xl border text-left transition-all ${sandboxCode === s.code ? 'bg-primary/10 border-primary/50 shadow-lg shadow-primary/5' : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/5'}`}>
+                  <button key={i} onClick={() => { setSandboxCode(s.code); setSandboxOutput([]); setSandboxResult(null); }} className={`w-full p-3 rounded-xl border text-left transition-all ${sandboxCode === s.code ? 'bg-primary/10 border-primary/50 shadow-lg shadow-primary/5' : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/5'}`}>
                     <div className="flex items-center justify-between mb-1.5">
                       <span className={`text-xs font-bold ${sandboxCode === s.code ? 'text-primary' : 'text-gray-300'}`}>{s.name}</span>
                     </div>
