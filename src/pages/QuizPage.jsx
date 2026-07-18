@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../hooks/useQuiz';
 import QuestionCard from '../components/quiz/QuestionCard';
@@ -208,7 +208,7 @@ export default function QuizPage() {
           isOpen={showExplanation}
           onClose={() => setShowExplanation(false)}
           explanation={currentQuestion?.explanation}
-          isCorrect={lastSelected === currentQuestion?.answer}
+          isCorrect={lastSelected === currentQuestion?.correct}
           nextQuestion={handleNext}
         />
       </div>

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { db } from '../../services/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { Users, Search, Filter, MoreHorizontal, Shield, User } from 'lucide-react';
+import { Users, Search, MoreHorizontal, Shield, User } from 'lucide-react';
 
 export default function UserManagement() {
   const [userList, setUserList] = useState([]);

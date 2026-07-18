@@ -1,8 +1,7 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, X, ChevronRight } from 'lucide-react';
+import { Info, ChevronRight } from 'lucide-react';
 
-export default function ExplanationModal({ isOpen, onClose, explanation, isCorrect, nextQuestion }) {
+export default function ExplanationModal({ isOpen, explanation, isCorrect, nextQuestion }) {
   return (
     <AnimatePresence>
       {isOpen && (

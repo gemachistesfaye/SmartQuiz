@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { db } from '../services/firebase';
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
@@ -20,14 +20,15 @@ export default function AdminPanel() {
   const fetchQuestions = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "questions"));
-      const qList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const qList = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setQuestions(qList);
-    } catch (error) {
-      console.error("Error fetching questions:", error);
+    } catch (err) {
+      console.error("Error fetching questions:", err);
     }
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchQuestions();
   }, []);
 
@@ -45,7 +46,7 @@ export default function AdminPanel() {
         explanation: ''
       });
       fetchQuestions();
-    } catch (error) {
+    } catch {
       toast.error("Failed to add question");
     } finally {
       setLoading(false);

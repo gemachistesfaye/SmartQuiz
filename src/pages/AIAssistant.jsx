@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Send, Sparkles, Brain, Code, Lightbulb, User, Bot, Loader2, Zap, Settings } from 'lucide-react';
@@ -281,18 +281,18 @@ export default function AIAssistant() {
                         ) : (
                           <ReactMarkdown
                             components={{
-                              h1: ({node, ...props}) => <h1 className="text-xl font-bold text-white mb-2" {...props} />,
-                              h2: ({node, ...props}) => <h2 className="text-lg font-bold text-white mb-2" {...props} />,
-                              h3: ({node, ...props}) => <h3 className="text-md font-bold text-white mb-2 underline" {...props} />,
-                              code: ({node, inline, ...props}) => 
+                              h1: ({...props}) => <h1 className="text-xl font-bold text-white mb-2" {...props} />,
+                              h2: ({...props}) => <h2 className="text-lg font-bold text-white mb-2" {...props} />,
+                              h3: ({...props}) => <h3 className="text-md font-bold text-white mb-2 underline" {...props} />,
+                              code: ({inline, ...props}) => 
                                 inline 
                                   ? <code className="bg-white/10 px-1 rounded text-primary" {...props} />
                                   : <pre className="bg-black/40 p-4 rounded-xl border border-white/10 overflow-x-auto my-2">
                                       <code className="text-primary-200" {...props} />
                                     </pre>,
-                              p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
-                              ul: ({node, ...props}) => <ul className="list-disc pl-4 mb-2" {...props} />,
-                              li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                              p: ({...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                              ul: ({...props}) => <ul className="list-disc pl-4 mb-2" {...props} />,
+                              li: ({...props}) => <li className="mb-1" {...props} />,
                             }}
                           >
                             {msg.content}

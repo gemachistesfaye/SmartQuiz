@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Code2, Brain, Trophy, Terminal, Users, Cpu } from 'lucide-react';
 

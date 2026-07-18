@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Play, RotateCcw, Code, Terminal, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Play, Code, Terminal, Sparkles } from 'lucide-react';
 
 const SNIPPETS = [
   { name: "Standard Greeting", code: `const greeting = "Hello, SmartQuiz Master!";\nconst scores = [85, 92, 78, 95];\nconst average = scores.reduce((a, b) => a + b) / scores.length;\nconsole.log(greeting);\nconsole.log("Your average score is:", average);\nreturn "Ready to master JS?";` },
@@ -50,7 +50,6 @@ export default function CodeLab() {
     };
 
     try {
-      // eslint-disable-next-line no-new-func
       const executeCode = new Function('console', code);
       const res = executeCode(customConsole);
       setOutput(logs);

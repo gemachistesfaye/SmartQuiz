@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -29,9 +29,8 @@ export default function PhoneLogin({ onBack }) {
       setConfirmationResult(result);
       setStep('otp');
       toast.success("OTP sent to your phone!");
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message || "Failed to send OTP");
+    } catch {
+      toast.error("Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -44,7 +43,7 @@ export default function PhoneLogin({ onBack }) {
       await confirmationResult.confirm(otp);
       toast.success("Login successful!");
       navigate('/dashboard');
-    } catch (error) {
+    } catch {
       toast.error("Invalid OTP code");
     } finally {
       setLoading(false);

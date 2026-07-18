@@ -1,11 +1,10 @@
-import React from 'react';
 import StudentSidebar from '../components/dashboard/StudentSidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import Header from '../components/dashboard/Header';
 import { useAuth } from '../context/AuthContext';
 
 export default function DashboardLayout({ children }) {
-  const { userData, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   return (
     <div className={`min-h-screen flex p-4 gap-4 overflow-hidden font-sans transition-colors duration-500 ${

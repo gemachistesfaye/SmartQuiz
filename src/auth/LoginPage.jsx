@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Mail, Lock, Eye, EyeOff, Brain, LogIn, Phone } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
 import PhoneLogin from './PhoneLogin';
 
 export default function LoginPage() {
@@ -20,7 +18,6 @@ export default function LoginPage() {
   
   const { login, loginWithGoogle, userData } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   // If already logged in and we have user data, redirect immediately
   useEffect(() => {
@@ -39,8 +36,7 @@ export default function LoginPage() {
       
       const dest = userDoc.role === 'admin' ? "/admin/dashboard" : "/dashboard";
       navigate(dest, { replace: true });
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Invalid email or password");
       setLoading(false);
     }
@@ -53,7 +49,7 @@ export default function LoginPage() {
       
       const dest = userDoc.role === 'admin' ? "/admin/dashboard" : "/dashboard";
       navigate(dest, { replace: true });
-    } catch (error) {
+    } catch {
       toast.error("Google login failed");
     }
   };

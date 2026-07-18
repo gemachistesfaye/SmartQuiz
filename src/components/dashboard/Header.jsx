@@ -1,10 +1,10 @@
-import React from 'react';
 import { Search, Bell, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const { userData, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="flex items-center justify-between p-6 mb-2">
@@ -20,7 +20,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition-colors relative">
+        <button type="button" className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition-colors relative">
           <Bell size={20} />
           <span className={`absolute top-2 right-2 w-2 h-2 rounded-full border-2 border-[#0a0a0a] ${
             isAdmin ? 'bg-red-500' : 'bg-primary'
@@ -61,7 +61,7 @@ export default function Header() {
               <button 
                 onClick={async () => {
                   await logout();
-                  window.location.reload();
+                  navigate('/login');
                 }}
                 className="w-full text-left flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-red-400 hover:bg-red-400/10 transition-all"
               >

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -16,7 +16,7 @@ export default function ForgotPassword() {
       setLoading(true);
       await resetPassword(email);
       toast.success("Password reset email sent! Check your inbox.");
-    } catch (error) {
+    } catch {
       toast.error("Failed to send reset email");
     } finally {
       setLoading(false);

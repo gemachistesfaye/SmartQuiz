@@ -7,7 +7,7 @@ const XP_PER_CORRECT = 50;
 const STREAK_BONUS = 10;
 
 export const useQuiz = (settings) => {
-  const { currentUser, userData } = useAuth();
+  const { currentUser } = useAuth();
   const [quizState, setQuizState] = useState({
     currentQuestionIndex: 0,
     score: 0,
@@ -53,37 +53,8 @@ export const useQuiz = (settings) => {
     }
   }, [settings]);
 
-  // Handle Answer
-  const submitAnswer = (answerIndex) => {
-    if (!currentQuestions.length) return;
-    
-    const currentQuestion = currentQuestions[quizState.currentQuestionIndex];
-    const isCorrect = answerIndex === currentQuestion.correct; // Note: using .correct from Firestore
-    
-    const newStreak = isCorrect ? quizState.streak + 1 : 0;
-    const gainedXP = isCorrect ? XP_PER_CORRECT + (newStreak * STREAK_BONUS) : 0;
-
-    const newResults = [
-      ...quizState.results,
-      { questionId: currentQuestion.id, isCorrect, answerIndex }
-    ];
-
-    if (quizState.currentQuestionIndex + 1 < currentQuestions.length) {
-      setQuizState(prev => ({
-        ...prev,
-        score: isCorrect ? prev.score + 1 : prev.score,
-        xp: prev.xp + gainedXP,
-        streak: newStreak,
-        currentQuestionIndex: prev.currentQuestionIndex + 1,
-        results: newResults,
-        timeLeft: settings.timerMode ? 30 : null,
-      }));
-    } else {
-      finishQuiz(isCorrect, gainedXP, newStreak, newResults);
-    }
-  };
-
-  const finishQuiz = async (lastCorrect, lastXP, finalStreak, finalResults) => {
+  // Finish Quiz
+  const finishQuiz = useCallback(async (lastCorrect, lastXP, finalStreak, finalResults) => {
     const finalScore = lastCorrect ? quizState.score + 1 : quizState.score;
     const totalGainedXP = quizState.xp + lastXP;
 
@@ -119,7 +90,37 @@ export const useQuiz = (settings) => {
         console.error("Error updating user stats:", error);
       }
     }
-  };
+  }, [currentUser, quizState.score, quizState.xp]);
+
+  // Handle Answer
+  const submitAnswer = useCallback((answerIndex) => {
+    if (!currentQuestions.length) return;
+    
+    const currentQuestion = currentQuestions[quizState.currentQuestionIndex];
+    const isCorrect = answerIndex === currentQuestion.correct;
+    
+    const newStreak = isCorrect ? quizState.streak + 1 : 0;
+    const gainedXP = isCorrect ? XP_PER_CORRECT + (newStreak * STREAK_BONUS) : 0;
+
+    const newResults = [
+      ...quizState.results,
+      { questionId: currentQuestion.id, isCorrect, answerIndex }
+    ];
+
+    if (quizState.currentQuestionIndex + 1 < currentQuestions.length) {
+      setQuizState(prev => ({
+        ...prev,
+        score: isCorrect ? prev.score + 1 : prev.score,
+        xp: prev.xp + gainedXP,
+        streak: newStreak,
+        currentQuestionIndex: prev.currentQuestionIndex + 1,
+        results: newResults,
+        timeLeft: settings.timerMode ? 30 : null,
+      }));
+    } else {
+      finishQuiz(isCorrect, gainedXP, newStreak, newResults);
+    }
+  }, [currentQuestions, quizState, settings.timerMode, finishQuiz]);
 
   // Timer Effect
   useEffect(() => {
@@ -129,10 +130,11 @@ export const useQuiz = (settings) => {
         setQuizState(prev => ({ ...prev, timeLeft: prev.timeLeft - 1 }));
       }, 1000);
     } else if (quizState.timeLeft === 0 && quizState.isActive) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       submitAnswer(-1);
     }
     return () => clearInterval(timer);
-  }, [quizState.isActive, quizState.timeLeft]);
+  }, [quizState.isActive, quizState.timeLeft, submitAnswer]);
 
   return {
     ...quizState,

@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Menu, X, LayoutDashboard } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +46,7 @@ export default function Navbar() {
               <button 
                 onClick={async () => {
                   await logout();
-                  window.location.reload();
+                  navigate('/login');
                 }}
                 className="text-gray-400 hover:text-red-400 text-sm font-bold transition-colors"
               >

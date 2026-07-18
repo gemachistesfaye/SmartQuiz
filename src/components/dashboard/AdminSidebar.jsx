@@ -1,11 +1,8 @@
-import React from 'react';
-import { 
+import {
   BarChart3, 
   Users, 
   Database, 
   ClipboardList, 
-  FileText, 
-  Megaphone, 
   Settings, 
   LogOut,
   Brain,
@@ -38,7 +35,7 @@ export default function AdminSidebar() {
       await logout();
       toast.success("Logged out successfully");
       navigate('/login');
-    } catch (error) {
+    } catch {
       toast.error("Failed to log out");
     }
   };

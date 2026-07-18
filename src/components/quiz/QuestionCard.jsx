@@ -1,5 +1,4 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function QuestionCard({ question, onSelect, selectedIndex, isAnswered }) {
   if (!question) return null;
@@ -17,7 +16,7 @@ export default function QuestionCard({ question, onSelect, selectedIndex, isAnsw
 
       <div className="space-y-4">
         {question.options.map((option, index) => {
-          const isCorrect = index === question.answer;
+          const isCorrect = index === question.correct;
           const isSelected = selectedIndex === index;
           
           let buttonClass = "w-full text-left p-5 rounded-2xl glass transition-all duration-300 border border-white/5 ";

@@ -30,7 +30,7 @@ export default function BadgeSystem() {
           >
             <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-3 transition-all relative ${
               badge.unlocked 
-                ? `bg-white/5 border border-white/10 ${badge.color} shadow-lg shadow-${badge.color.split('-')[1]}/10` 
+                ? `bg-white/5 border border-white/10 ${badge.color}` 
                 : 'bg-white/[0.02] border border-white/5 text-gray-700 grayscale'
             }`}>
               {React.cloneElement(badge.icon, { size: 28 })}

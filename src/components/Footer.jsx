@@ -1,4 +1,3 @@
-import React from 'react';
 import { Brain, Globe, MessageCircle, Mail, MapPin } from 'lucide-react';
 
 export default function Footer() {

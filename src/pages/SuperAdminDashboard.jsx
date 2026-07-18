@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { db } from '../services/firebase';
@@ -6,16 +6,12 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { 
   Users, 
   Database, 
-  BarChart3, 
   Activity, 
   ShieldCheck, 
   TrendingUp, 
-  AlertCircle,
-  ArrowUpRight,
-  UserPlus,
   BookOpen
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function SuperAdminDashboard() {
   const [stats, setStats] = useState({

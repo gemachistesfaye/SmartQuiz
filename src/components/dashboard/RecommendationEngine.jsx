@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, BookOpen, Zap, Target, Brain } from 'lucide-react';
+import { Sparkles, ArrowRight, Zap, Target, Brain } from 'lucide-react';
 
 export default function RecommendationEngine() {
   const recommendations = [

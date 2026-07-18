@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../services/firebase';
@@ -8,7 +8,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { User, Mail, Shield, Camera, Zap, Trophy, Save } from 'lucide-react';
 
 export default function Profile() {
-  const { userData, currentUser, makeAdmin, isAdmin } = useAuth();
+  const { userData, currentUser, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: userData?.fullName || '',
@@ -25,7 +25,7 @@ export default function Profile() {
         username: formData.username,
       });
       toast.success("Profile updated successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update profile");
     } finally {
       setLoading(false);
@@ -50,7 +50,7 @@ export default function Profile() {
                   alt="Profile" 
                   className="w-32 h-32 rounded-3xl border-4 border-white/5"
                 />
-                <button className={`absolute -bottom-2 -right-2 p-2.5 rounded-xl shadow-lg transition-all ${isAdmin ? 'bg-red-500' : 'bg-primary'}`}>
+                <button type="button" className={`absolute -bottom-2 -right-2 p-2.5 rounded-xl shadow-lg transition-all ${isAdmin ? 'bg-red-500' : 'bg-primary'}`}>
                   <Camera size={20} className="text-white" />
                 </button>
               </div>
@@ -150,49 +150,23 @@ export default function Profile() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass-card p-8 border-red-500/10"
+              className="glass-card p-8"
             >
               <div className="flex items-center gap-3 mb-6">
-                <Shield className="text-red-400" size={24} />
-                <h3 className="text-xl font-bold text-white">Security & Admin</h3>
+                <Shield className={isAdmin ? 'text-red-400' : 'text-gray-400'} size={24} />
+                <h3 className="text-xl font-bold text-white">Security</h3>
               </div>
-              <p className="text-gray-400 text-sm mb-6">You can reset your password or activate Admin privileges using a secret code.</p>
+              <p className="text-gray-400 text-sm mb-6">Manage your account security settings.</p>
               
               <div className="space-y-4">
-                <div className="flex flex-wrap gap-4">
-                  <button className="bg-white/5 hover:bg-white/10 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all">
-                    Reset Password
-                  </button>
-                  {!isAdmin ? (
-                    <div className="flex gap-2 flex-1 max-w-xs">
-                      <input 
-                        type="password" 
-                        id="adminCode"
-                        placeholder="Admin Code"
-                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-primary/50 flex-1"
-                      />
-                      <button 
-                        onClick={async () => {
-                          const code = document.getElementById('adminCode').value;
-                          const success = await makeAdmin(code);
-                          if (success) {
-                            toast.success("You are now an Admin!");
-                            window.location.reload();
-                          } else {
-                            toast.error("Invalid Code");
-                          }
-                        }}
-                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                      >
-                        Activate
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="bg-red-500/10 text-red-500 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2">
-                      <Shield size={16} /> Admin Mode Active
-                    </div>
-                  )}
-                </div>
+                <button type="button" className="bg-white/5 hover:bg-white/10 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all">
+                  Reset Password
+                </button>
+                {isAdmin && (
+                  <div className="bg-red-500/10 text-red-500 px-4 py-2 rounded-xl text-sm font-bold inline-flex items-center gap-2">
+                    <Shield size={16} /> Admin Mode Active
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

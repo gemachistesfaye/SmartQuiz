@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import StatCards from '../components/dashboard/StatCards';
@@ -9,7 +8,7 @@ import LeaderboardPreview from '../components/dashboard/LeaderboardPreview';
 import RecommendationEngine from '../components/dashboard/RecommendationEngine';
 import BadgeSystem from '../components/dashboard/BadgeSystem';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Brain, Trophy, Zap, Target, BookOpen } from 'lucide-react';
+import { Sparkles, Brain, Trophy, Target } from 'lucide-react';
 
 export default function Dashboard() {
   const { userData } = useAuth();

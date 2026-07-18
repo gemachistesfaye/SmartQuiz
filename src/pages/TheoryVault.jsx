@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Search, BookOpen, ChevronRight, X, Sparkles, Filter, Code, Terminal } from 'lucide-react';
+import { Search, BookOpen, ChevronRight, X, Sparkles, Code, Terminal } from 'lucide-react';
 
 const concepts = [
   {

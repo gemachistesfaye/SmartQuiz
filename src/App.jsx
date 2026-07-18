@@ -17,7 +17,7 @@ import LoginPage from './auth/LoginPage';
 import RegisterPage from './auth/RegisterPage';
 import ForgotPassword from './auth/ForgotPassword';
 import ProtectedRoute from './auth/ProtectedRoute';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { db } from './services/firebase';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { ToastContainer } from 'react-toastify';
@@ -28,11 +28,6 @@ const INITIAL_QUESTIONS = [
   { question: "Which keyword is used to define a constant in ES6?", options: ["var", "let", "const", "def"], correct: 2, difficulty: "easy", explanation: "The 'const' keyword is used to declare variables that cannot be reassigned." },
   { question: "What is hoisting in JavaScript?", options: ["Moving declarations to top", "Lifting errors", "A way to loop", "Memory cleanup"], correct: 0, difficulty: "hard", explanation: "Hoisting is the default behavior of moving all declarations to the top of the current scope." }
 ];
-
-function DashboardSwitch() {
-  const { isAdmin } = useAuth();
-  return isAdmin ? <SuperAdminDashboard /> : <Dashboard />;
-}
 
 function App() {
   React.useEffect(() => {

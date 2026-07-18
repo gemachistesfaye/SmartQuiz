@@ -1,11 +1,9 @@
-import React from 'react';
-import { 
+import {
   LayoutDashboard, 
   Brain, 
   Code, 
   Trophy, 
   BookOpen, 
-  MessageSquare, 
   Settings, 
   LogOut,
   Sparkles,
@@ -31,14 +29,14 @@ const studentItems = [
 export default function StudentSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, userData } = useAuth();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     try {
       await logout();
       toast.success("Logged out successfully");
       navigate('/login');
-    } catch (error) {
+    } catch {
       toast.error("Failed to log out");
     }
   };

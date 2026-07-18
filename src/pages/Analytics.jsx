@@ -1,9 +1,8 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line
 } from 'recharts';
 import { Target, TrendingUp, Award, Brain, Zap, Clock } from 'lucide-react';
 
