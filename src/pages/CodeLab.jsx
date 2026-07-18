@@ -86,10 +86,43 @@ function ChallengeSettings({ settings, setSettings, onStart, isLaunching }) {
         </div>
         <h1 className="text-4xl font-bold text-white mb-4">Code Challenge</h1>
         <p className="text-gray-400 mb-10 leading-relaxed">Work through code snippets one by one. Run each snippet to complete it and track your progress.</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-left">
-          <DarkSelect label="Category" value={settings.category} onChange={(v) => setSettings({...settings, category: v})} options={CATEGORIES.map(c => ({ value: c, label: c }))} />
-          <DarkSelect label="Difficulty" value={settings.difficulty} onChange={(v) => setSettings({...settings, difficulty: v})} options={[{ value: 'all', label: 'All Levels' }, { value: 'easy', label: 'Easy' }, { value: 'medium', label: 'Medium' }, { value: 'hard', label: 'Hard' }]} />
-          <DarkSelect label="Count" value={settings.count} onChange={(v) => setSettings({...settings, count: v})} options={[{ value: '5', label: '5 Snippets' }, { value: '10', label: '10 Snippets' }, { value: 'all', label: 'All Snippets' }]} />
+
+        <div className="space-y-6 mb-10 text-left">
+          <div>
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Category</p>
+            <div className="flex flex-wrap gap-2">
+              {[{ value: 'all', label: 'All' }, ...CATEGORIES.map(c => ({ value: c, label: c }))].map(opt => (
+                <button key={opt.value} onClick={() => setSettings({...settings, category: opt.value})}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${settings.category === opt.value ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Difficulty</p>
+            <div className="flex flex-wrap gap-2">
+              {[{ value: 'all', label: 'All Levels' }, { value: 'easy', label: 'Easy' }, { value: 'medium', label: 'Medium' }, { value: 'hard', label: 'Hard' }].map(opt => (
+                <button key={opt.value} onClick={() => setSettings({...settings, difficulty: opt.value})}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${settings.difficulty === opt.value ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Count</p>
+            <div className="flex flex-wrap gap-2">
+              {[{ value: '5', label: '5 Snippets' }, { value: '10', label: '10 Snippets' }, { value: 'all', label: 'All Snippets' }].map(opt => (
+                <button key={opt.value} onClick={() => setSettings({...settings, count: opt.value})}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${settings.count === opt.value ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
         <button onClick={onStart} disabled={isLaunching} className="w-full bg-primary text-white py-5 rounded-2xl font-bold text-xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
           {isLaunching ? (<><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Loading...</>) : ('Start Challenge')}
