@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../hooks/useQuiz';
-import DarkSelect from '../components/ui/DarkSelect';
 import { Brain, Timer, Zap, Trophy, ArrowLeft, Check, X, ChevronRight, RotateCcw, BarChart3, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
@@ -39,72 +38,145 @@ function ExitConfirm({ isOpen, onStay, onExit }) {
   );
 }
 
+const CATEGORY_META = [
+  { value: 'all', label: 'All Categories', icon: '🎯', count: 255, color: 'from-primary/20 to-primary/5 border-primary/30' },
+  { value: 'JavaScript', label: 'JavaScript', icon: '⚡', count: 50, color: 'from-yellow-500/20 to-yellow-500/5 border-yellow-500/30' },
+  { value: 'HTML', label: 'HTML', icon: '🌐', count: 42, color: 'from-orange-500/20 to-orange-500/5 border-orange-500/30' },
+  { value: 'CSS', label: 'CSS', icon: '🎨', count: 56, color: 'from-blue-500/20 to-blue-500/5 border-blue-500/30' },
+  { value: 'React', label: 'React', icon: '⚛️', count: 48, color: 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/30' },
+  { value: 'Cybersecurity', label: 'Cybersecurity', icon: '🔒', count: 59, color: 'from-red-500/20 to-red-500/5 border-red-500/30' },
+];
+
+const DIFF_META = [
+  { value: 'all', label: 'All Levels', color: 'bg-white/10 text-white border-white/20' },
+  { value: 'easy', label: 'Easy', color: 'bg-green-500/10 text-green-400 border-green-500/30' },
+  { value: 'medium', label: 'Medium', color: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' },
+  { value: 'hard', label: 'Hard', color: 'bg-red-500/10 text-red-400 border-red-500/30' },
+];
+
+const MODE_META = [
+  { value: 'daily', label: 'Daily Challenge', desc: '5 questions, timed', icon: '⏱️' },
+  { value: 'free', label: 'Free Practice', desc: 'Choose your count, no timer', icon: '🔓' },
+];
+
 function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
-      <div className="glass-card max-w-2xl w-full p-10 text-center">
-        <div className="bg-primary/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8">
-          <Brain className="text-primary" size={40} />
+    <div className="max-w-4xl mx-auto px-6 py-10">
+      {/* Hero */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
+        <div className="relative inline-block mb-6">
+          <div className="absolute inset-0 bg-primary/30 rounded-3xl blur-2xl animate-pulse" />
+          <div className="relative bg-gradient-to-br from-primary/30 to-primary/10 w-24 h-24 rounded-3xl flex items-center justify-center border border-primary/30">
+            <Brain className="text-primary" size={44} />
+          </div>
         </div>
-        <h1 className="text-4xl font-bold text-white mb-4">
-          {settings.category !== 'all' ? settings.category : 'JS'} Mastery Quiz
+        <h1 className="text-4xl font-bold text-white mb-3">
+          {settings.category !== 'all' ? `${settings.category} Quiz` : 'JS Mastery Quiz'}
         </h1>
-        <p className="text-gray-400 mb-10 leading-relaxed">
-          Test your {settings.category !== 'all' ? settings.category : 'JavaScript'} knowledge.
-          Choose your settings and aim for a perfect streak!
+        <p className="text-gray-400 text-lg">
+          Test your knowledge. Choose your settings and aim for a perfect streak!
         </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-left">
-          <DarkSelect
-            label="Category"
-            value={settings.category}
-            onChange={(val) => setSettings({...settings, category: val})}
-            options={[
-              { value: 'all', label: 'All Categories' },
-              { value: 'JavaScript', label: 'JavaScript' },
-              { value: 'HTML', label: 'HTML' },
-              { value: 'CSS', label: 'CSS' },
-              { value: 'React', label: 'React' },
-              { value: 'Cybersecurity', label: 'Cybersecurity' },
-            ]}
-          />
-          <DarkSelect
-            label="Difficulty"
-            value={settings.difficulty}
-            onChange={(val) => setSettings({...settings, difficulty: val})}
-            options={[
-              { value: 'all', label: 'All Levels' },
-              { value: 'easy', label: 'Easy' },
-              { value: 'medium', label: 'Medium' },
-              { value: 'hard', label: 'Hard' },
-            ]}
-          />
-          <DarkSelect
-            label="Mode"
-            value={settings.mode}
-            onChange={(val) => setSettings({...settings, mode: val})}
-            options={[
-              { value: 'daily', label: 'Daily Challenge (5 Qs)' },
-              { value: 'marathon', label: 'Marathon (All Qs)' },
-            ]}
-          />
+        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
+          <span>📝 255 questions</span>
+          <span>•</span>
+          <span>📂 5 categories</span>
+          <span>•</span>
+          <span>⚡ 3 difficulty levels</span>
         </div>
+      </motion.div>
 
-        <button
-          onClick={startQuiz}
-          disabled={isLaunching}
-          className="w-full bg-primary text-white py-5 rounded-2xl font-bold text-xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-        >
+      {/* Category Tiles */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-8">
+        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Category</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {CATEGORY_META.map(cat => (
+            <button
+              key={cat.value}
+              onClick={() => setSettings({...settings, category: cat.value})}
+              className={`relative p-4 rounded-2xl border text-left transition-all bg-gradient-to-br ${cat.color} ${
+                settings.category === cat.value
+                  ? 'ring-2 ring-primary shadow-lg shadow-primary/10 scale-[1.02]'
+                  : 'hover:scale-[1.01] opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="text-2xl mb-2">{cat.icon}</div>
+              <p className="text-sm font-bold text-white">{cat.label}</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">{cat.count} questions</p>
+              {settings.category === cat.value && (
+                <div className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-primary" />
+              )}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Difficulty Pills */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-8">
+        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Difficulty</p>
+        <div className="flex flex-wrap gap-2">
+          {DIFF_META.map(d => (
+            <button
+              key={d.value}
+              onClick={() => setSettings({...settings, difficulty: d.value})}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                settings.difficulty === d.value
+                  ? `${d.color} shadow-lg`
+                  : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Mode Cards */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-10">
+        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Mode</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {MODE_META.map(m => (
+            <button
+              key={m.value}
+              onClick={() => setSettings({...settings, mode: m.value})}
+              className={`p-5 rounded-2xl border text-left transition-all ${
+                settings.mode === m.value
+                  ? 'bg-primary/10 border-primary/30 ring-2 ring-primary shadow-lg shadow-primary/10'
+                  : 'bg-white/5 border-white/10 hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-1">
+                <span className="text-xl">{m.icon}</span>
+                <span className="text-sm font-bold text-white">{m.label}</span>
+              </div>
+              <p className="text-[11px] text-gray-400 ml-9">{m.desc}</p>
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Launch Button */}
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        onClick={startQuiz}
+        disabled={isLaunching}
+        className="w-full relative group bg-gradient-to-r from-primary to-primary/80 text-white py-5 rounded-2xl font-bold text-xl hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+        <span className="relative flex items-center gap-3">
           {isLaunching ? (
             <>
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               Loading Questions...
             </>
           ) : (
-            'Launch Quiz'
+            <>
+              🚀 Launch Quiz
+            </>
           )}
-        </button>
-      </div>
+        </span>
+      </motion.button>
     </div>
   );
 }

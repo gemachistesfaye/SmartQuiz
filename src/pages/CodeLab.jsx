@@ -76,58 +76,139 @@ function ExitConfirm({ isOpen, onStay, onExit }) {
   );
 }
 
+const CODE_CAT_META = [
+  { value: 'all', label: 'All Categories', icon: '💻', count: 40, color: 'from-primary/20 to-primary/5 border-primary/30' },
+  { value: 'JavaScript', label: 'JavaScript', icon: '⚡', count: 21, color: 'from-yellow-500/20 to-yellow-500/5 border-yellow-500/30' },
+  { value: 'HTML', label: 'HTML', icon: '🌐', count: 5, color: 'from-orange-500/20 to-orange-500/5 border-orange-500/30' },
+  { value: 'CSS', label: 'CSS', icon: '🎨', count: 6, color: 'from-blue-500/20 to-blue-500/5 border-blue-500/30' },
+  { value: 'React', label: 'React', icon: '⚛️', count: 4, color: 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/30' },
+  { value: 'Cybersecurity', label: 'Cybersecurity', icon: '🔒', count: 4, color: 'from-red-500/20 to-red-500/5 border-red-500/30' },
+];
+
+const CODE_DIFF_META = [
+  { value: 'all', label: 'All Levels', color: 'bg-white/10 text-white border-white/20' },
+  { value: 'easy', label: 'Easy', color: 'bg-green-500/10 text-green-400 border-green-500/30' },
+  { value: 'medium', label: 'Medium', color: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' },
+  { value: 'hard', label: 'Hard', color: 'bg-red-500/10 text-red-400 border-red-500/30' },
+];
+
+const CODE_COUNT_META = [
+  { value: '5', label: '5 Snippets', icon: '5️⃣' },
+  { value: '10', label: '10 Snippets', icon: '🔟' },
+  { value: 'all', label: 'All Snippets', icon: '📦' },
+];
+
 function ChallengeSettings({ settings, setSettings, onStart, isLaunching }) {
-  const CATEGORIES = ['All', ...new Set(SNIPPETS.map(s => s.category))];
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
-      <div className="glass-card max-w-2xl w-full p-10 text-center">
-        <div className="bg-primary/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8">
-          <Code className="text-primary" size={40} />
-        </div>
-        <h1 className="text-4xl font-bold text-white mb-4">Code Challenge</h1>
-        <p className="text-gray-400 mb-10 leading-relaxed">Work through code snippets one by one. Run each snippet to complete it and track your progress.</p>
-
-        <div className="space-y-6 mb-10 text-left">
-          <div>
-            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Category</p>
-            <div className="flex flex-wrap gap-2">
-              {[{ value: 'all', label: 'All' }, ...CATEGORIES.map(c => ({ value: c, label: c }))].map(opt => (
-                <button key={opt.value} onClick={() => setSettings({...settings, category: opt.value})}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${settings.category === opt.value ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Difficulty</p>
-            <div className="flex flex-wrap gap-2">
-              {[{ value: 'all', label: 'All Levels' }, { value: 'easy', label: 'Easy' }, { value: 'medium', label: 'Medium' }, { value: 'hard', label: 'Hard' }].map(opt => (
-                <button key={opt.value} onClick={() => setSettings({...settings, difficulty: opt.value})}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${settings.difficulty === opt.value ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Count</p>
-            <div className="flex flex-wrap gap-2">
-              {[{ value: '5', label: '5 Snippets' }, { value: '10', label: '10 Snippets' }, { value: 'all', label: 'All Snippets' }].map(opt => (
-                <button key={opt.value} onClick={() => setSettings({...settings, count: opt.value})}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${settings.count === opt.value ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+    <div className="max-w-4xl mx-auto px-6 py-10">
+      {/* Hero */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
+        <div className="relative inline-block mb-6">
+          <div className="absolute inset-0 bg-primary/30 rounded-3xl blur-2xl animate-pulse" />
+          <div className="relative bg-gradient-to-br from-primary/30 to-primary/10 w-24 h-24 rounded-3xl flex items-center justify-center border border-primary/30">
+            <Code className="text-primary" size={44} />
           </div>
         </div>
-        <button onClick={onStart} disabled={isLaunching} className="w-full bg-primary text-white py-5 rounded-2xl font-bold text-xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
-          {isLaunching ? (<><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Loading...</>) : ('Start Challenge')}
-        </button>
-      </div>
+        <h1 className="text-4xl font-bold text-white mb-3">Code Challenge</h1>
+        <p className="text-gray-400 text-lg">Work through code snippets one by one. Run each to complete and track your progress.</p>
+        <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
+          <span>💻 40 snippets</span>
+          <span>•</span>
+          <span>📂 5 categories</span>
+          <span>•</span>
+          <span>⚡ 3 difficulty levels</span>
+        </div>
+      </motion.div>
+
+      {/* Category Tiles */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-8">
+        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Category</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {CODE_CAT_META.map(cat => (
+            <button
+              key={cat.value}
+              onClick={() => setSettings({...settings, category: cat.value})}
+              className={`relative p-4 rounded-2xl border text-left transition-all bg-gradient-to-br ${cat.color} ${
+                settings.category === cat.value
+                  ? 'ring-2 ring-primary shadow-lg shadow-primary/10 scale-[1.02]'
+                  : 'hover:scale-[1.01] opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="text-2xl mb-2">{cat.icon}</div>
+              <p className="text-sm font-bold text-white">{cat.label}</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">{cat.count} snippets</p>
+              {settings.category === cat.value && (
+                <div className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-primary" />
+              )}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Difficulty Pills */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-8">
+        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Difficulty</p>
+        <div className="flex flex-wrap gap-2">
+          {CODE_DIFF_META.map(d => (
+            <button
+              key={d.value}
+              onClick={() => setSettings({...settings, difficulty: d.value})}
+              className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
+                settings.difficulty === d.value
+                  ? `${d.color} shadow-lg`
+                  : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Count Cards */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-10">
+        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Count</p>
+        <div className="grid grid-cols-3 gap-3">
+          {CODE_COUNT_META.map(c => (
+            <button
+              key={c.value}
+              onClick={() => setSettings({...settings, count: c.value})}
+              className={`p-5 rounded-2xl border text-center transition-all ${
+                settings.count === c.value
+                  ? 'bg-primary/10 border-primary/30 ring-2 ring-primary shadow-lg shadow-primary/10'
+                  : 'bg-white/5 border-white/10 hover:bg-white/10'
+              }`}
+            >
+              <span className="text-xl">{c.icon}</span>
+              <p className="text-sm font-bold text-white mt-1">{c.label}</p>
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Launch Button */}
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        onClick={onStart}
+        disabled={isLaunching}
+        className="w-full relative group bg-gradient-to-r from-primary to-primary/80 text-white py-5 rounded-2xl font-bold text-xl hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+        <span className="relative flex items-center gap-3">
+          {isLaunching ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Loading...
+            </>
+          ) : (
+            <>
+              🚀 Start Challenge
+            </>
+          )}
+        </span>
+      </motion.button>
     </div>
   );
 }
