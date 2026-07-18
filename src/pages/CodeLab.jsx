@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Play, Code, Terminal, Sparkles } from 'lucide-react';
+import { Play, Code, Terminal, Sparkles, Copy, Check, Wand2 } from 'lucide-react';
+import DarkSelect from '../components/ui/DarkSelect';
 
 const SNIPPETS = [
   { name: "Standard Greeting", code: `const greeting = "Hello, SmartQuiz Master!";\nconst scores = [85, 92, 78, 95];\nconst average = scores.reduce((a, b) => a + b) / scores.length;\nconsole.log(greeting);\nconsole.log("Your average score is:", average);\nreturn "Ready to master JS?";` },
@@ -40,6 +41,30 @@ export default function CodeLab() {
   const [code, setCode] = useState(SNIPPETS[0].code);
   const [output, setOutput] = useState([]);
   const [result, setResult] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [selectedSnippet, setSelectedSnippet] = useState(SNIPPETS[0].name);
+
+  const lineCount = useMemo(() => code.split('\n').length, [code]);
+
+  const copyOutput = () => {
+    const text = [...output, result !== null ? `Return: ${String(result)}` : ''].filter(Boolean).join('\n');
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const formatCode = () => {
+    const lines = code.split('\n');
+    let indent = 0;
+    const formatted = lines.map(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('}') || trimmed.startsWith(']') || trimmed.startsWith(')')) indent = Math.max(0, indent - 1);
+      const result = '  '.repeat(indent) + trimmed;
+      if (trimmed.endsWith('{') || trimmed.endsWith('[') || trimmed.endsWith('(')) indent++;
+      return result;
+    });
+    setCode(formatted.join('\n'));
+  };
 
   const runCode = useCallback(() => {
     const logs = [];
@@ -75,27 +100,38 @@ export default function CodeLab() {
     setCode(s.code);
     setOutput([]);
     setResult(null);
+    setSelectedSnippet(s.name);
   };
 
   return (
     <DashboardLayout>
       <div className="h-full flex flex-col px-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Code className="text-primary" size={32} /> Code Lab
-            </h1>
-            <p className="text-gray-400 mt-1">Real-time JavaScript experimental sandbox.</p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                <Code className="text-primary" size={32} /> Code Lab
+              </h1>
+              <p className="text-gray-400 mt-1">Real-time JavaScript experimental sandbox.</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="w-56">
+                <DarkSelect
+                  value={selectedSnippet}
+                  onChange={(name) => {
+                    const s = SNIPPETS.find(sn => sn.name === name);
+                    if (s) loadSnippet(s);
+                  }}
+                  options={SNIPPETS.map(s => ({ value: s.name, label: s.name }))}
+                />
+              </div>
+              <button 
+                onClick={runCode}
+                className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-2xl font-bold transition-all shadow-xl shadow-primary/30 flex items-center gap-2 group"
+              >
+                <Play size={18} className="fill-current group-hover:scale-110 transition-transform" /> Run
+              </button>
+            </div>
           </div>
-          <div className="flex gap-4">
-            <button 
-              onClick={runCode}
-              className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-2xl font-bold transition-all shadow-xl shadow-primary/30 flex items-center gap-2 group"
-            >
-              <Play size={18} className="fill-current group-hover:scale-110 transition-transform" /> Run Code
-            </button>
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 flex-1 min-h-0 pb-10">
           {/* Snippet Library */}
@@ -127,15 +163,27 @@ export default function CodeLab() {
               className="glass-card flex flex-col overflow-hidden"
             >
               <div className="p-4 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                <span><Code size={12} className="inline mr-2" /> script.js</span>
-                <span className="text-primary">Editable Mode</span>
+                <span className="flex items-center gap-2"><Code size={12} /> script.js</span>
+                <div className="flex items-center gap-3">
+                  <button onClick={formatCode} className="flex items-center gap-1 text-gray-500 hover:text-white transition-colors" title="Format code">
+                    <Wand2 size={12} /> Format
+                  </button>
+                  <span className="text-primary">Editable Mode</span>
+                </div>
               </div>
-              <textarea 
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                spellCheck="false"
-                className="flex-1 w-full bg-transparent p-6 text-primary-200 font-mono text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed"
-              />
+              <div className="flex-1 flex overflow-hidden">
+                <div className="w-12 bg-black/30 border-r border-white/5 py-6 px-2 text-right text-[11px] text-gray-600 font-mono select-none overflow-hidden">
+                  {Array.from({ length: lineCount }, (_, i) => (
+                    <div key={i} className="leading-[1.625rem]">{i + 1}</div>
+                  ))}
+                </div>
+                <textarea 
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  spellCheck="false"
+                  className="flex-1 w-full bg-transparent p-6 text-primary-200 font-mono text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed"
+                />
+              </div>
             </motion.div>
 
             <motion.div 
@@ -144,8 +192,14 @@ export default function CodeLab() {
               className="flex flex-col gap-6 h-full"
             >
               <div className="glass-card flex-1 flex flex-col overflow-hidden">
-                <div className="p-4 bg-black/40 border-b border-white/10 flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                  <Terminal size={12} /> Console Output
+                <div className="p-4 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  <span className="flex items-center gap-2"><Terminal size={12} /> Console Output</span>
+                  {(output.length > 0 || result !== null) && (
+                    <button onClick={copyOutput} className="flex items-center gap-1 text-gray-500 hover:text-white transition-colors">
+                      {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  )}
                 </div>
                 <div className="flex-1 p-6 font-mono text-sm overflow-y-auto custom-scrollbar space-y-2 bg-black/20">
                   {output.length === 0 && !result && (

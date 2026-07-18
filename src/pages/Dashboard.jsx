@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import StatCards from '../components/dashboard/StatCards';
 import ProgressChart from '../components/dashboard/ProgressChart';
@@ -70,9 +71,9 @@ export default function Dashboard() {
               <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden mb-4">
                 <div className="bg-primary w-2/3 h-full" />
               </div>
-              <button className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/20">
+              <Link to="/quiz" className="block w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/20 text-center">
                 Continue Mission
-              </button>
+              </Link>
             </motion.div>
             
             {/* Streak Card */}

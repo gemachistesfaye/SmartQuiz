@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Search, BookOpen, ChevronRight, X, Sparkles, Code, Terminal } from 'lucide-react';
 
@@ -73,10 +75,60 @@ const concepts = [
     description: 'Transforming a function that takes multiple arguments into a sequence of functions that each take a single argument.',
     content: 'Currying is helpful in functional programming for partial application of functions and creating specialized versions of generic functions.',
     example: 'const multiply = a => b => a * b;\nconst double = multiply(2);\nconsole.log(double(5)); // 10'
+  },
+  {
+    title: 'Promises',
+    category: 'Async',
+    description: 'An object representing the eventual completion or failure of an asynchronous operation.',
+    content: 'A Promise is in one of three states: pending, fulfilled, or rejected. Promises provide .then(), .catch(), and .finally() handlers. Promise.all() and Promise.race() handle multiple promises.',
+    example: 'const fetchUser = () => {\n  return new Promise((resolve) => {\n    setTimeout(() => resolve({ name: "Alice" }), 1000);\n  });\n};\nfetchUser().then(user => console.log(user.name));'
+  },
+  {
+    title: 'Prototypal Inheritance',
+    category: 'Advanced',
+    description: 'Objects can directly inherit from other objects via the prototype chain.',
+    content: 'Unlike class-based inheritance, prototypal inheritance allows objects to be created from other objects. Object.create() sets the prototype explicitly. The __proto__ chain is traversed when accessing properties.',
+    example: 'const parent = { greet() { return `Hi, I am ${this.name}`; } };\nconst child = Object.create(parent);\nchild.name = "Bob";\nconsole.log(child.greet()); // Hi, I am Bob'
+  },
+  {
+    title: 'Iterators & Generators',
+    category: 'ES6+',
+    description: 'Custom iteration protocols and lazy sequence generation.',
+    content: 'An iterator implements { next() } returning { value, done }. Generators (function*) use yield to produce values lazily. They power for...of loops and async iteration.',
+    example: 'function* range(start, end) {\n  for (let i = start; i <= end; i++) yield i;\n}\nconst nums = range(1, 5);\nconsole.log([...nums]); // [1, 2, 3, 4, 5]'
+  },
+  {
+    title: 'Debounce & Throttle',
+    category: 'Patterns',
+    description: 'Rate-limiting techniques for event handlers and function calls.',
+    content: 'Debounce delays execution until a pause in calls (e.g., search input). Throttle limits execution to once per interval (e.g., scroll events). Both prevent performance bottlenecks.',
+    example: 'function debounce(fn, delay) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}'
+  },
+  {
+    title: 'Memoization',
+    category: 'Functional',
+    description: 'Optimization technique that caches function results for previously computed inputs.',
+    content: 'Memoization stores the return value of a function based on its arguments. Ideal for expensive pure functions like recursive calculations or API data transformations.',
+    example: 'function memoize(fn) {\n  const cache = new Map();\n  return (...args) => {\n    const key = JSON.stringify(args);\n    if (!cache.has(key)) cache.set(key, fn(...args));\n    return cache.get(key);\n  };\n}'
+  },
+  {
+    title: 'Proxy & Reflect',
+    category: 'Advanced',
+    description: 'Intercept and customize fundamental operations on objects.',
+    content: 'A Proxy wraps an object and intercepts operations like get, set, and deleteProperty via traps. Reflect provides default behavior for these operations. Used in validation, logging, and reactive systems.',
+    example: 'const handler = {\n  get(target, prop) {\n    return prop in target ? target[prop] : `Property ${prop} does not exist`;\n  }\n};\nconst obj = new Proxy({ a: 1 }, handler);\nconsole.log(obj.b); // "Property b does not exist"'
+  },
+  {
+    title: 'WeakMap & WeakRef',
+    category: 'Advanced',
+    description: 'Memory-efficient collections that allow garbage collection of keys.',
+    content: 'WeakMap keys must be objects and are weakly held (no strong reference). WeakRef provides a weaker reference to an object, allowing it to be garbage collected. Both prevent memory leaks in caching patterns.',
+    example: 'let obj = { data: "important" };\nconst weakMap = new WeakMap();\nweakMap.set(obj, "metadata");\nobj = null; // The entry is now eligible for GC'
   }
 ];
 
 export default function TheoryVault() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedConcept, setSelectedConcept] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
@@ -213,10 +265,16 @@ export default function TheoryVault() {
                   </section>
 
                   <div className="flex gap-4 pt-4">
-                    <button className="flex-1 bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                    <button 
+                      onClick={() => { setSelectedConcept(null); navigate('/quiz'); }}
+                      className="flex-1 bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                    >
                       Take {selectedConcept.title} Quiz
                     </button>
-                    <button className="px-6 border border-white/10 text-white rounded-xl hover:bg-white/5 transition-all">
+                    <button 
+                      onClick={() => { toast.success(`${selectedConcept.title} saved to bookmarks!`); }}
+                      className="px-6 border border-white/10 text-white rounded-xl hover:bg-white/5 transition-all"
+                    >
                       Save to Bookmarks
                     </button>
                   </div>

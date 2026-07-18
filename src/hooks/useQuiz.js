@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, increment, getDoc, addDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 
 const XP_PER_CORRECT = 50;
@@ -86,6 +86,16 @@ export const useQuiz = (settings) => {
         }
 
         await updateDoc(userRef, updates);
+
+        // Save quiz history
+        await addDoc(collection(db, "users", currentUser.uid, "quizHistory"), {
+          score: finalScore,
+          total: currentQuestions.length,
+          xp: totalGainedXP,
+          streak: finalStreak,
+          percentage: Math.round((finalScore / currentQuestions.length) * 100),
+          createdAt: new Date().toISOString(),
+        });
       } catch (error) {
         console.error("Error updating user stats:", error);
       }

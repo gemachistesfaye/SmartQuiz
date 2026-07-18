@@ -1,24 +1,41 @@
+import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-const data = [
-  { name: 'Mon', score: 65 },
-  { name: 'Tue', score: 78 },
-  { name: 'Wed', score: 72 },
-  { name: 'Thu', score: 85 },
-  { name: 'Fri', score: 92 },
-  { name: 'Sat', score: 88 },
-  { name: 'Sun', score: 95 },
-];
+import { useAuth } from '../../context/AuthContext';
+import { db } from '../../services/firebase';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
 export default function ProgressChart() {
+  const { currentUser } = useAuth();
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const q = query(
+      collection(db, "users", currentUser.uid, "quizHistory"),
+      orderBy("createdAt", "desc"),
+      limit(7)
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const history = snapshot.docs.map(d => d.data()).reverse();
+      if (history.length === 0) {
+        // Show placeholder when no data
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        setData(days.map(name => ({ name, score: 0 })));
+        return;
+      }
+      setData(history.map((h) => ({
+        name: new Date(h.createdAt).toLocaleDateString('en', { weekday: 'short' }),
+        score: h.percentage || 0,
+      })));
+    });
+    return () => unsubscribe();
+  }, [currentUser]);
+
   return (
     <div className="glass-card p-6 h-[400px]">
       <div className="flex items-center justify-between mb-8">
         <h3 className="text-xl font-bold text-white">Performance Overview</h3>
-        <select className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-400 focus:outline-none">
-          <option>Last 7 Days</option>
-          <option>Last 30 Days</option>
-        </select>
+        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Last 7 Quizzes</span>
       </div>
       
       <div className="w-full h-full pb-10 min-h-[300px]">
@@ -42,6 +59,7 @@ export default function ProgressChart() {
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: '#9ca3af', fontSize: 12 }} 
+              domain={[0, 100]}
             />
             <Tooltip 
               contentStyle={{ 
@@ -51,6 +69,7 @@ export default function ProgressChart() {
                 color: '#fff'
               }}
               itemStyle={{ color: '#3b82f6' }}
+              formatter={(value) => [`${value}%`, 'Score']}
             />
             <Area 
               type="monotone" 
@@ -59,6 +78,7 @@ export default function ProgressChart() {
               strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorScore)" 
+              dot={{ r: 4, fill: '#3b82f6', stroke: '#0a0a0a', strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>

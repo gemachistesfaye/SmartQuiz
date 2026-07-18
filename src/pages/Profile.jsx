@@ -8,7 +8,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { User, Mail, Shield, Camera, Zap, Trophy, Save } from 'lucide-react';
 
 export default function Profile() {
-  const { userData, currentUser, isAdmin } = useAuth();
+  const { userData, currentUser, isAdmin, resetPassword } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: userData?.fullName || '',
@@ -159,7 +159,18 @@ export default function Profile() {
               <p className="text-gray-400 text-sm mb-6">Manage your account security settings.</p>
               
               <div className="space-y-4">
-                <button type="button" className="bg-white/5 hover:bg-white/10 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all">
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await resetPassword(currentUser.email);
+                      toast.success("Password reset email sent! Check your inbox.");
+                    } catch {
+                      toast.error("Failed to send reset email. Try again later.");
+                    }
+                  }}
+                  className="bg-white/5 hover:bg-white/10 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all"
+                >
                   Reset Password
                 </button>
                 {isAdmin && (

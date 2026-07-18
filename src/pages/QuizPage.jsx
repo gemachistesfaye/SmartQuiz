@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../hooks/useQuiz';
 import QuestionCard from '../components/quiz/QuestionCard';
 import ExplanationModal from '../components/quiz/ExplanationModal';
+import DarkSelect from '../components/ui/DarkSelect';
 import { Brain, Timer, Zap, Trophy, RefreshCcw, Hop as Home, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -65,28 +66,26 @@ export default function QuizPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-left">
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Difficulty</label>
-              <select 
-                onChange={(e) => setSettings({...settings, difficulty: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none"
-              >
-                <option value="all">All Levels</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </div>
-            <div className="space-y-3">
-              <label className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Mode</label>
-              <select 
-                onChange={(e) => setSettings({...settings, mode: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none"
-              >
-                <option value="daily">Daily Challenge (5 Qs)</option>
-                <option value="marathon">Marathon (All Qs)</option>
-              </select>
-            </div>
+            <DarkSelect
+              label="Difficulty"
+              value={settings.difficulty}
+              onChange={(val) => setSettings({...settings, difficulty: val})}
+              options={[
+                { value: 'all', label: 'All Levels' },
+                { value: 'easy', label: 'Easy' },
+                { value: 'medium', label: 'Medium' },
+                { value: 'hard', label: 'Hard' },
+              ]}
+            />
+            <DarkSelect
+              label="Mode"
+              value={settings.mode}
+              onChange={(val) => setSettings({...settings, mode: val})}
+              options={[
+                { value: 'daily', label: 'Daily Challenge (5 Qs)' },
+                { value: 'marathon', label: 'Marathon (All Qs)' },
+              ]}
+            />
           </div>
 
           <button 

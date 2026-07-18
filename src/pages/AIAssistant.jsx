@@ -88,7 +88,19 @@ export default function AIAssistant() {
         setMessages(prev => [...prev, { role: 'bot', content: text }]);
       } catch (error) {
         console.error("OpenAI API Error:", error);
-        setMessages(prev => [...prev, { role: 'bot', content: "⚠️ **API Error:** " + error.message + ". Please check your API key in settings." }]);
+        const msg = error.message || '';
+        let friendlyMsg;
+        if (msg.includes('quota') || msg.includes('exceeded')) {
+          friendlyMsg = "My AI brain is resting — the API quota has been exceeded. You can update the API key in settings, or I can still help in **Simulation Mode** (no key needed).";
+        } else if (msg.includes('invalid') || msg.includes('Unauthorized')) {
+          friendlyMsg = "That API key doesn't look right. Please check your key in **Settings** (gear icon above), or clear it to use Simulation Mode.";
+        } else {
+          friendlyMsg = "Something went wrong connecting to the AI. I'll keep helping in **Simulation Mode** for now.";
+        }
+        setMessages(prev => [...prev, { role: 'bot', content: friendlyMsg }]);
+        // Fallback: clear the bad key so simulation mode kicks in
+        setApiKey('');
+        localStorage.removeItem('openai_api_key');
       } finally {
         setIsTyping(false);
       }
