@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Send, Sparkles, Brain, Lightbulb, User, Bot, Loader2, Zap, Settings, Target, Trophy } from 'lucide-react';
+import { Send, Sparkles, Brain, Lightbulb, User, Bot, Loader2, Settings, Target, Trophy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../services/firebase';
@@ -485,30 +485,6 @@ export default function AIAssistant() {
                   </div>
                 )}
               </div>
-            </div>
-
-            <div className="glass-card p-6 bg-primary/5 border-primary/20">
-              <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                <Zap size={16} className="text-primary" /> Study Plan
-              </h3>
-              <p className="text-xs text-gray-400 leading-relaxed mb-4">
-                {quizHistory.length > 0
-                  ? `Based on your ${quizHistory.length} quizzes, here's a recommended session.`
-                  : 'Complete a quiz to get a personalized study plan.'}
-              </p>
-              <ul className="space-y-2 mb-6">
-                {(quizHistory.length > 0
-                  ? ['Review weak areas', 'Try a harder difficulty', 'Practice code snippets']
-                  : ['Take a Quiz', 'Read Theory Vault', 'Try Code Lab']
-                ).map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-[10px] text-gray-300">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" /> {item}
-                  </li>
-                ))}
-              </ul>
-              <button className="w-full bg-primary/10 border border-primary/20 text-primary py-2.5 rounded-xl font-bold text-xs hover:bg-primary hover:text-white transition-all">
-                {quizHistory.length > 0 ? 'Start Plan' : 'Take First Quiz'}
-              </button>
             </div>
           </div>
         </div>
