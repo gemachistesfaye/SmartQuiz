@@ -27,8 +27,15 @@ export default function LoginPage() {
     }
   }, [userData, navigate]);
 
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateEmail(formData.email)) {
+      toast.error("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const { userDoc } = await login(formData.email, formData.password);
@@ -91,7 +98,8 @@ export default function LoginPage() {
                     type="email" 
                     placeholder="Email Address" 
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
+                    autoFocus
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                   />
                 </div>
@@ -102,7 +110,7 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"} 
                     placeholder="Password" 
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white focus:outline-none focus:border-primary/50 transition-colors"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
                   />
                   <button 
@@ -119,7 +127,7 @@ export default function LoginPage() {
                     <input type="checkbox" className="rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20" />
                     Remember me
                   </label>
-                  <Link to="/forgot-password" size={20} className="text-primary hover:underline font-medium">
+                  <Link to="/forgot-password" className="text-primary hover:underline font-medium">
                     Forgot password?
                   </Link>
                 </div>

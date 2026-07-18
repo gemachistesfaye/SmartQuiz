@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Play, Code, Terminal, Sparkles } from 'lucide-react';
@@ -41,7 +41,7 @@ export default function CodeLab() {
   const [output, setOutput] = useState([]);
   const [result, setResult] = useState(null);
 
-  const runCode = () => {
+  const runCode = useCallback(() => {
     const logs = [];
     const customConsole = {
       log: (...args) => logs.push(args.map(arg => 
@@ -58,7 +58,18 @@ export default function CodeLab() {
       setOutput([...logs, `Error: ${error.message}`]);
       setResult(null);
     }
-  };
+  }, [code]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runCode();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [runCode]);
 
   const loadSnippet = (s) => {
     setCode(s.code);

@@ -16,9 +16,23 @@ export default function RegisterPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: '' });
   
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  const checkPasswordStrength = (password) => {
+    let score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 10) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    if (score <= 1) return { score, label: 'Weak', color: 'bg-red-500' };
+    if (score <= 3) return { score, label: 'Medium', color: 'bg-yellow-500' };
+    return { score, label: 'Strong', color: 'bg-green-500' };
+  };
 
   const validate = () => {
     if (formData.password !== formData.confirmPassword) {
@@ -27,6 +41,10 @@ export default function RegisterPage() {
     }
     if (formData.password.length < 6) {
       toast.error("Password must be at least 6 characters");
+      return false;
+    }
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(formData.username)) {
+      toast.error("Username must be 3-20 characters, letters/numbers/underscores only");
       return false;
     }
     if (!formData.agree) {
@@ -78,7 +96,7 @@ export default function RegisterPage() {
               type="text" 
               placeholder="Full Name" 
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
             />
           </div>
@@ -89,7 +107,7 @@ export default function RegisterPage() {
               type="text" 
               placeholder="Username" 
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               onChange={(e) => setFormData({...formData, username: e.target.value})}
             />
           </div>
@@ -100,7 +118,8 @@ export default function RegisterPage() {
               type="email" 
               placeholder="Email Address" 
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
+              autoFocus
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               onChange={(e) => setFormData({...formData, email: e.target.value})}
             />
           </div>
@@ -111,8 +130,11 @@ export default function RegisterPage() {
               type={showPassword ? "text" : "password"} 
               placeholder="Password" 
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white focus:outline-none focus:border-primary/50 transition-colors"
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+              onChange={(e) => {
+                setFormData({...formData, password: e.target.value});
+                setPasswordStrength(checkPasswordStrength(e.target.value));
+              }}
             />
             <button 
               type="button"
@@ -123,13 +145,31 @@ export default function RegisterPage() {
             </button>
           </div>
 
+          {formData.password && (
+            <div className="space-y-1">
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className={`h-1 flex-1 rounded-full transition-all ${
+                    i <= passwordStrength.score ? passwordStrength.color : 'bg-white/10'
+                  }`} />
+                ))}
+              </div>
+              <p className={`text-xs font-medium ${
+                passwordStrength.score <= 1 ? 'text-red-400' : 
+                passwordStrength.score <= 3 ? 'text-yellow-400' : 'text-green-400'
+              }`}>
+                {passwordStrength.label}
+              </p>
+            </div>
+          )}
+
           <div className="relative">
             <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
             <input 
               type="password" 
               placeholder="Confirm Password" 
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
             />
           </div>

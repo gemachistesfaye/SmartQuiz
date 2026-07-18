@@ -1,4 +1,5 @@
 import { CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const activities = [
   { 
@@ -56,9 +57,9 @@ export default function RecentActivity() {
         ))}
       </div>
       
-      <button className="w-full mt-6 text-sm text-gray-500 hover:text-white transition-colors">
+      <Link to="/quiz" className="block w-full mt-6 text-sm text-gray-500 hover:text-white transition-colors text-center">
         View All Activity
-      </button>
+      </Link>
     </div>
   );
 }

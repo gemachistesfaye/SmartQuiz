@@ -67,7 +67,8 @@ export function AuthProvider({ children }) {
       userDoc = docSnap.data();
       setUserData(userDoc);
     } else {
-      userDoc = {
+      // Create new user doc if it doesn't exist (Google first time)
+      const userDoc = {
         uid: res.user.uid,
         fullName: res.user.displayName,
         username: res.user.email.split('@')[0],

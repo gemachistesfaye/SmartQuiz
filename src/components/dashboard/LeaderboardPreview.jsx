@@ -1,4 +1,5 @@
 import { Trophy } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const users = [
   { rank: 1, name: 'Sarah Miller', xp: '15,420', img: 'https://i.pravatar.cc/150?img=1' },
@@ -38,9 +39,9 @@ export default function LeaderboardPreview() {
         ))}
       </div>
       
-      <button className="w-full mt-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-medium hover:bg-white/10 transition-all">
+      <Link to="/leaderboard" className="block w-full mt-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-medium hover:bg-white/10 transition-all text-center">
         Full Leaderboard
-      </button>
+      </Link>
     </div>
   );
 }

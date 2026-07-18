@@ -1,4 +1,5 @@
 import { AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const topics = [
   { name: 'Async/Await', percentage: 45, color: 'bg-red-500' },
@@ -31,9 +32,9 @@ export default function WeakTopics() {
         ))}
       </div>
       
-      <button className="w-full mt-8 py-3 rounded-xl border border-primary/20 text-primary font-semibold hover:bg-primary/10 transition-colors text-sm">
+      <Link to="/quiz" className="block w-full mt-8 py-3 rounded-xl border border-primary/20 text-primary font-semibold hover:bg-primary/10 transition-colors text-sm text-center">
         Start Practice Session
-      </button>
+      </Link>
     </div>
   );
 }
