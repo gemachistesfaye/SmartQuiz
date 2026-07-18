@@ -1,131 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { concepts } from '../data/theoryVault';
 import { Search, BookOpen, ChevronRight, X, Sparkles, Code, Terminal } from 'lucide-react';
-
-const concepts = [
-  {
-    title: 'Hoisting',
-    category: 'Fundamentals',
-    description: 'JavaScript mechanism where variables and function declarations are moved to the top of their scope during compilation.',
-    content: 'Hoisting allows you to use functions and variables before they are declared. However, only declarations are hoisted, not initializations. Variables declared with "var" are hoisted and initialized as "undefined", while "let" and "const" are hoisted but in a "temporal dead zone".',
-    example: 'console.log(x); // undefined\nvar x = 5;\n\nfoo(); // "Hello"\nfunction foo() { console.log("Hello"); }'
-  },
-  {
-    title: 'Closures',
-    category: 'Advanced',
-    description: 'A function bundled together with references to its surrounding state (the lexical environment).',
-    content: 'Closures allow an inner function to access the scope of an outer function even after the outer function has finished executing. This is essential for data privacy and functional programming patterns.',
-    example: 'function outer() {\n  let count = 0;\n  return function() {\n    count++;\n    return count;\n  };\n}\nconst counter = outer();\nconsole.log(counter()); // 1'
-  },
-  {
-    title: 'Event Loop',
-    category: 'Architecture',
-    description: 'The mechanism that allows JavaScript to perform non-blocking I/O operations despite being single-threaded.',
-    content: 'The Event Loop constantly monitors the Callback Queue and the Call Stack. If the Call Stack is empty, it pushes the first task from the queue onto the stack. This handles asynchronous callbacks (setTimeout, Promises, etc.).',
-    example: 'console.log("Start");\nsetTimeout(() => console.log("Timeout"), 0);\nPromise.resolve().then(() => console.log("Promise"));\nconsole.log("End");\n// Output: Start, End, Promise, Timeout'
-  },
-  {
-    title: 'Prototypes',
-    category: 'Advanced',
-    description: 'The mechanism by which JavaScript objects inherit features from one another.',
-    content: 'Every JavaScript object has a private property which holds a link to another object called its prototype. That prototype object has a prototype of its own, and so on until an object is reached with null as its prototype.',
-    example: 'const animal = { eats: true };\nconst rabbit = { jumps: true };\nrabbit.__proto__ = animal;\nconsole.log(rabbit.eats); // true'
-  },
-  {
-    title: 'This Keyword',
-    category: 'Fundamentals',
-    description: 'Refers to the object that is executing the current piece of code.',
-    content: 'The value of "this" depends on in which context it is used: Global, Function, Method, or Event handler. Arrow functions do not have their own "this".',
-    example: 'const person = {\n  name: "Alice",\n  greet() {\n    console.log("Hi, " + this.name);\n  }\n};\nperson.greet(); // Hi, Alice'
-  },
-  {
-    title: 'Async/Await',
-    category: 'Async',
-    description: 'Syntactic sugar for working with Promises in a synchronous-looking way.',
-    content: 'The async keyword makes a function return a Promise, and await makes JS wait until the promise settles and returns its result.',
-    example: 'async function getJSON() {\n  let response = await fetch(url);\n  let data = await response.json();\n  return data;\n}'
-  },
-  {
-    title: 'Strict Mode',
-    category: 'Fundamentals',
-    description: 'A way to opt in to a restricted variant of JavaScript.',
-    content: 'Strict mode makes it easier to write "secure" JavaScript. It changes previously accepted "silent errors" into real errors and fixes mistakes that make it difficult for JavaScript engines to perform optimizations.',
-    example: '"use strict";\nx = 3.14; // Throws ReferenceError'
-  },
-  {
-    title: 'Destructuring',
-    category: 'ES6+',
-    description: 'A syntax that allows you to unpack values from arrays, or properties from objects, into distinct variables.',
-    content: 'Destructuring makes code cleaner by extracting only the needed properties from objects or items from arrays without multiple lines of assignment.',
-    example: 'const user = { id: 1, name: "Joe" };\nconst { name } = user;\nconsole.log(name); // Joe'
-  },
-  {
-    title: 'Spread & Rest',
-    category: 'ES6+',
-    description: 'Operators used for array/object manipulation and handling multiple arguments.',
-    content: 'Spread (...) expands an iterable into its elements. Rest (...) collects multiple elements into a single array.',
-    example: 'const arr = [1, 2, 3];\nconst newArr = [...arr, 4];\nfunction sum(...args) { return args.reduce((a, b) => a + b); }'
-  },
-  {
-    title: 'Currying',
-    category: 'Functional',
-    description: 'Transforming a function that takes multiple arguments into a sequence of functions that each take a single argument.',
-    content: 'Currying is helpful in functional programming for partial application of functions and creating specialized versions of generic functions.',
-    example: 'const multiply = a => b => a * b;\nconst double = multiply(2);\nconsole.log(double(5)); // 10'
-  },
-  {
-    title: 'Promises',
-    category: 'Async',
-    description: 'An object representing the eventual completion or failure of an asynchronous operation.',
-    content: 'A Promise is in one of three states: pending, fulfilled, or rejected. Promises provide .then(), .catch(), and .finally() handlers. Promise.all() and Promise.race() handle multiple promises.',
-    example: 'const fetchUser = () => {\n  return new Promise((resolve) => {\n    setTimeout(() => resolve({ name: "Alice" }), 1000);\n  });\n};\nfetchUser().then(user => console.log(user.name));'
-  },
-  {
-    title: 'Prototypal Inheritance',
-    category: 'Advanced',
-    description: 'Objects can directly inherit from other objects via the prototype chain.',
-    content: 'Unlike class-based inheritance, prototypal inheritance allows objects to be created from other objects. Object.create() sets the prototype explicitly. The __proto__ chain is traversed when accessing properties.',
-    example: 'const parent = { greet() { return `Hi, I am ${this.name}`; } };\nconst child = Object.create(parent);\nchild.name = "Bob";\nconsole.log(child.greet()); // Hi, I am Bob'
-  },
-  {
-    title: 'Iterators & Generators',
-    category: 'ES6+',
-    description: 'Custom iteration protocols and lazy sequence generation.',
-    content: 'An iterator implements { next() } returning { value, done }. Generators (function*) use yield to produce values lazily. They power for...of loops and async iteration.',
-    example: 'function* range(start, end) {\n  for (let i = start; i <= end; i++) yield i;\n}\nconst nums = range(1, 5);\nconsole.log([...nums]); // [1, 2, 3, 4, 5]'
-  },
-  {
-    title: 'Debounce & Throttle',
-    category: 'Patterns',
-    description: 'Rate-limiting techniques for event handlers and function calls.',
-    content: 'Debounce delays execution until a pause in calls (e.g., search input). Throttle limits execution to once per interval (e.g., scroll events). Both prevent performance bottlenecks.',
-    example: 'function debounce(fn, delay) {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}'
-  },
-  {
-    title: 'Memoization',
-    category: 'Functional',
-    description: 'Optimization technique that caches function results for previously computed inputs.',
-    content: 'Memoization stores the return value of a function based on its arguments. Ideal for expensive pure functions like recursive calculations or API data transformations.',
-    example: 'function memoize(fn) {\n  const cache = new Map();\n  return (...args) => {\n    const key = JSON.stringify(args);\n    if (!cache.has(key)) cache.set(key, fn(...args));\n    return cache.get(key);\n  };\n}'
-  },
-  {
-    title: 'Proxy & Reflect',
-    category: 'Advanced',
-    description: 'Intercept and customize fundamental operations on objects.',
-    content: 'A Proxy wraps an object and intercepts operations like get, set, and deleteProperty via traps. Reflect provides default behavior for these operations. Used in validation, logging, and reactive systems.',
-    example: 'const handler = {\n  get(target, prop) {\n    return prop in target ? target[prop] : `Property ${prop} does not exist`;\n  }\n};\nconst obj = new Proxy({ a: 1 }, handler);\nconsole.log(obj.b); // "Property b does not exist"'
-  },
-  {
-    title: 'WeakMap & WeakRef',
-    category: 'Advanced',
-    description: 'Memory-efficient collections that allow garbage collection of keys.',
-    content: 'WeakMap keys must be objects and are weakly held (no strong reference). WeakRef provides a weaker reference to an object, allowing it to be garbage collected. Both prevent memory leaks in caching patterns.',
-    example: 'let obj = { data: "important" };\nconst weakMap = new WeakMap();\nweakMap.set(obj, "metadata");\nobj = null; // The entry is now eligible for GC'
-  }
-];
 
 export default function TheoryVault() {
   const navigate = useNavigate();
@@ -133,13 +12,23 @@ export default function TheoryVault() {
   const [selectedConcept, setSelectedConcept] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const categories = ['All', ...new Set(concepts.map(c => c.category))];
+  const categories = useMemo(() => ['All', ...new Set(concepts.map(c => c.category))], []);
 
-  const filteredConcepts = concepts.filter(c => 
-    (activeCategory === 'All' || c.category === activeCategory) &&
-    (c.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-     c.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredConcepts = useMemo(() =>
+    concepts.filter(c =>
+      (activeCategory === 'All' || c.category === activeCategory) &&
+      (c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       c.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       c.subcategory.toLowerCase().includes(searchTerm.toLowerCase()))
+    ), [activeCategory, searchTerm]);
+
+  const categoryColors = {
+    JavaScript: 'text-yellow-400',
+    HTML: 'text-orange-400',
+    CSS: 'text-blue-400',
+    Cybersecurity: 'text-red-400',
+    React: 'text-cyan-400',
+  };
 
   return (
     <DashboardLayout>
@@ -150,14 +39,14 @@ export default function TheoryVault() {
             <h1 className="text-3xl font-bold text-white flex items-center gap-3">
               <BookOpen className="text-primary" size={32} /> Theory Vault
             </h1>
-            <p className="text-gray-400 mt-1">Master JavaScript architecture and core concepts.</p>
+            <p className="text-gray-400 mt-1">{concepts.length} concepts across {categories.length - 1} categories</p>
           </div>
-          
+
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search concepts (e.g. Hoisting)..."
+            <input
+              type="text"
+              placeholder="Search concepts, categories..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
@@ -172,79 +61,83 @@ export default function TheoryVault() {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`px-6 py-2 rounded-xl text-xs font-bold transition-all border ${
-                activeCategory === cat 
-                  ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' 
+                activeCategory === cat
+                  ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
                   : 'bg-white/5 border-white/5 text-gray-500 hover:text-white hover:border-white/10'
               }`}
             >
-              {cat}
+              {cat} {cat !== 'All' && <span className="ml-1 opacity-60">({concepts.filter(c => cat === 'All' || c.category === cat).length})</span>}
             </button>
           ))}
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>
-            {filteredConcepts.map((concept, i) => (
-              <motion.div
-                key={concept.title}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => setSelectedConcept(concept)}
-                className="glass-card p-6 cursor-pointer group hover:border-primary/30 transition-all"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded">
-                    {concept.category}
-                  </span>
-                  <div className="text-gray-600 group-hover:text-primary transition-colors">
-                    <ChevronRight size={20} />
-                  </div>
+        {/* Subcategory groups */}
+        {activeCategory !== 'All' ? (
+          (() => {
+            const grouped = {};
+            filteredConcepts.forEach(c => {
+              if (!grouped[c.subcategory]) grouped[c.subcategory] = [];
+              grouped[c.subcategory].push(c);
+            });
+            return Object.entries(grouped).map(([sub, items]) => (
+              <div key={sub} className="mb-10">
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${categoryColors[activeCategory] || 'bg-primary'}`} />
+                  {sub}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {items.map((concept, i) => (
+                    <ConceptCard key={concept.title} concept={concept} index={i} onClick={() => setSelectedConcept(concept)} />
+                  ))}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{concept.title}</h3>
-                <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed">
-                  {concept.description}
-                </p>
-                <div className="mt-6 flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Sparkles size={12} className="text-yellow-400" /> Read Concept
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+              </div>
+            ));
+          })()
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredConcepts.map((concept, i) => (
+                <ConceptCard key={concept.title} concept={concept} index={i} onClick={() => setSelectedConcept(concept)} />
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
 
         {/* Modal */}
         <AnimatePresence>
           {selectedConcept && (
             <>
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedConcept(null)}
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
               />
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#0d0d0d] border border-white/10 rounded-[2rem] p-8 md:p-12 z-[70] max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl"
               >
-                <button 
+                <button
                   onClick={() => setSelectedConcept(null)}
                   className="absolute top-8 right-8 text-gray-500 hover:text-white transition-colors"
                 >
                   <X size={24} />
                 </button>
 
-                <span className="text-xs font-bold text-primary uppercase tracking-widest mb-4 inline-block">
-                  {selectedConcept.category}
-                </span>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded ${categoryColors[selectedConcept.category] || 'text-primary'} bg-white/5`}>
+                    {selectedConcept.category}
+                  </span>
+                  <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">
+                    {selectedConcept.subcategory}
+                  </span>
+                </div>
+
                 <h2 className="text-4xl font-bold text-white mb-6">{selectedConcept.title}</h2>
-                
+
                 <div className="space-y-8">
                   <section>
                     <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -259,23 +152,23 @@ export default function TheoryVault() {
                     <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-4 flex items-center gap-2">
                       <Code size={16} className="text-primary" /> Practical Example
                     </h4>
-                    <pre className="bg-black/50 border border-white/5 rounded-2xl p-6 text-sm font-mono text-primary-200 overflow-x-auto">
+                    <pre className="bg-black/50 border border-white/5 rounded-2xl p-6 text-sm font-mono text-primary-200 overflow-x-auto whitespace-pre-wrap">
                       {selectedConcept.example}
                     </pre>
                   </section>
 
                   <div className="flex gap-4 pt-4">
-                    <button 
+                    <button
                       onClick={() => { setSelectedConcept(null); navigate('/quiz'); }}
                       className="flex-1 bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
                     >
                       Take {selectedConcept.title} Quiz
                     </button>
-                    <button 
+                    <button
                       onClick={() => { toast.success(`${selectedConcept.title} saved to bookmarks!`); }}
                       className="px-6 border border-white/10 text-white rounded-xl hover:bg-white/5 transition-all"
                     >
-                      Save to Bookmarks
+                      Bookmark
                     </button>
                   </div>
                 </div>
@@ -285,5 +178,43 @@ export default function TheoryVault() {
         </AnimatePresence>
       </div>
     </DashboardLayout>
+  );
+}
+
+function ConceptCard({ concept, index, onClick }) {
+  const categoryColors = {
+    JavaScript: 'bg-yellow-400/20 text-yellow-400',
+    HTML: 'bg-orange-400/20 text-orange-400',
+    CSS: 'bg-blue-400/20 text-blue-400',
+    Cybersecurity: 'bg-red-400/20 text-red-400',
+    React: 'bg-cyan-400/20 text-cyan-400',
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ delay: index * 0.03 }}
+      onClick={onClick}
+      className="glass-card p-6 cursor-pointer group hover:border-primary/30 transition-all"
+    >
+      <div className="flex justify-between items-start mb-4">
+        <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded ${categoryColors[concept.category] || 'bg-primary/10 text-primary'}`}>
+          {concept.subcategory}
+        </span>
+        <div className="text-gray-600 group-hover:text-primary transition-colors">
+          <ChevronRight size={20} />
+        </div>
+      </div>
+      <h3 className="text-xl font-bold text-white mb-2">{concept.title}</h3>
+      <p className="text-sm text-gray-400 line-clamp-3 leading-relaxed">
+        {concept.description}
+      </p>
+      <div className="mt-6 flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+        <Sparkles size={12} className="text-yellow-400" /> Read Concept
+      </div>
+    </motion.div>
   );
 }
