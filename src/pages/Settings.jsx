@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../services/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Settings as SettingsIcon, Bell, Moon, Shield, Save, RotateCcw } from 'lucide-react';
+
+const DEFAULT_SETTINGS = {
+  notifications: true,
+  emailUpdates: false,
+  darkMode: true,
+  soundEffects: true,
+  difficulty: 'all',
+};
 
 function Toggle({ label, description, value, onChange }) {
   return (
@@ -25,22 +33,40 @@ function Toggle({ label, description, value, onChange }) {
 }
 
 export default function Settings() {
-  const { userData, currentUser, resetPassword } = useAuth();
+  const { currentUser, resetPassword } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [settings, setSettings] = useState({
-    notifications: userData?.settings?.notifications ?? true,
-    emailUpdates: userData?.settings?.emailUpdates ?? false,
-    darkMode: userData?.settings?.darkMode ?? true,
-    soundEffects: userData?.settings?.soundEffects ?? true,
-    difficulty: userData?.settings?.difficulty ?? 'all',
-  });
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const fetchSettings = async () => {
+      try {
+        const docSnap = await getDoc(doc(db, "users", currentUser.uid));
+        if (docSnap.exists() && docSnap.data().settings) {
+          const s = docSnap.data().settings;
+          setSettings({
+            notifications: s.notifications ?? DEFAULT_SETTINGS.notifications,
+            emailUpdates: s.emailUpdates ?? DEFAULT_SETTINGS.emailUpdates,
+            darkMode: s.darkMode ?? DEFAULT_SETTINGS.darkMode,
+            soundEffects: s.soundEffects ?? DEFAULT_SETTINGS.soundEffects,
+            difficulty: s.difficulty ?? DEFAULT_SETTINGS.difficulty,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+      }
+    };
+    fetchSettings();
+  }, [currentUser]);
 
   const handleSave = async () => {
+    if (!currentUser) return;
     try {
       setLoading(true);
       await updateDoc(doc(db, "users", currentUser.uid), { settings });
       toast.success("Settings saved!");
-    } catch {
+    } catch (err) {
+      console.error("Save error:", err);
       toast.error("Failed to save settings");
     } finally {
       setLoading(false);
@@ -48,10 +74,12 @@ export default function Settings() {
   };
 
   const handleResetPassword = async () => {
+    if (!currentUser?.email) return;
     try {
       await resetPassword(currentUser.email);
       toast.success("Password reset email sent!");
-    } catch {
+    } catch (err) {
+      console.error("Reset error:", err);
       toast.error("Failed to send reset email");
     }
   };
@@ -94,23 +122,21 @@ export default function Settings() {
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-widest">
               <RotateCcw size={16} className="text-primary" /> Quiz Defaults
             </h3>
-            <div className="space-y-3">
-              <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                <p className="text-sm font-bold text-white mb-1">Default Difficulty</p>
-                <p className="text-[10px] text-gray-500 mb-3">Applied when starting a new quiz</p>
-                <div className="flex gap-2">
-                  {['all', 'easy', 'medium', 'hard'].map(d => (
-                    <button
-                      key={d}
-                      onClick={() => setSettings({...settings, difficulty: d})}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                        settings.difficulty === d ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                      }`}
-                    >
-                      {d === 'all' ? 'All' : d.charAt(0).toUpperCase() + d.slice(1)}
-                    </button>
-                  ))}
-                </div>
+            <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+              <p className="text-sm font-bold text-white mb-1">Default Difficulty</p>
+              <p className="text-[10px] text-gray-500 mb-3">Applied when starting a new quiz</p>
+              <div className="flex gap-2">
+                {['all', 'easy', 'medium', 'hard'].map(d => (
+                  <button
+                    key={d}
+                    onClick={() => setSettings({...settings, difficulty: d})}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                      settings.difficulty === d ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    }`}
+                  >
+                    {d === 'all' ? 'All' : d.charAt(0).toUpperCase() + d.slice(1)}
+                  </button>
+                ))}
               </div>
             </div>
           </motion.div>

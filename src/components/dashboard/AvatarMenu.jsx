@@ -29,7 +29,7 @@ function HelpModal({ isOpen, onClose }) {
           </div>
           <div className="p-4 rounded-xl bg-white/5 border border-white/5">
             <h4 className="font-bold text-white mb-1">Need more help?</h4>
-            <p className="text-xs text-gray-400">Visit our <a href="https://github.com/gemachistesfaye/SmartQuiz-AI-Platform" target="_blank" rel="noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">GitHub <ExternalLink size={10} /></a> to report issues or request features.</p>
+            <p className="text-xs text-gray-400">Visit our <a href="https://github.com/gemachistesfaye/SmartQuiz-AI-Platform/issues" target="_blank" rel="noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">GitHub Issues <ExternalLink size={10} /></a> to report bugs or request features.</p>
           </div>
         </div>
       </motion.div>
