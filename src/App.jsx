@@ -12,6 +12,7 @@ import AIAssistant from './pages/AIAssistant';
 import TheoryVault from './pages/TheoryVault';
 import Cybersecurity from './pages/Cybersecurity';
 import Analytics from './pages/Analytics';
+import Settings from './pages/Settings';
 import UserManagement from './pages/admin/UserManagement';
 import LoginPage from './auth/LoginPage';
 import RegisterPage from './auth/RegisterPage';
@@ -362,6 +363,10 @@ function App() {
         <Route 
           path="/analytics" 
           element={<ProtectedRoute><Analytics /></ProtectedRoute>} 
+        />
+        <Route 
+          path="/settings" 
+          element={<ProtectedRoute><Settings /></ProtectedRoute>} 
         />
 
         {/* Admin Routes (Strictly Protected) */}

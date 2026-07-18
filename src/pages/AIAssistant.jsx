@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Send, Sparkles, Brain, Code, Lightbulb, User, Bot, Loader2, Zap, Settings } from 'lucide-react';
+import { Send, Sparkles, Brain, Lightbulb, User, Bot, Loader2, Zap, Settings, Target, Trophy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../context/AuthContext';
+import { db } from '../services/firebase';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
 
 export default function AIAssistant() {
+  const { currentUser } = useAuth();
+  const [quizHistory, setQuizHistory] = useState([]);
   const [messages, setMessages] = useState([
     { role: 'bot', content: "Hello! I'm your SmartQuiz AI Tutor. I can help you understand JavaScript concepts, debug code, or suggest topics to study. What's on your mind today?" }
   ]);
@@ -34,6 +39,19 @@ export default function AIAssistant() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const q = query(
+      collection(db, "users", currentUser.uid, "quizHistory"),
+      orderBy("createdAt", "desc"),
+      limit(10)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setQuizHistory(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+    return () => unsub();
+  }, [currentUser]);
 
   const saveApiKey = (key) => {
     setApiKey(key);
@@ -392,16 +410,61 @@ export default function AIAssistant() {
                   </p>
                 </div>
                 
-                <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Code size={14} className="text-blue-400" />
-                    <span className="text-xs font-bold text-gray-300">Weakness Detected</span>
+                {quizHistory.length > 0 && (() => {
+                  const recent = quizHistory.slice(0, 5);
+                  const weakCategory = recent.reduce((acc, h) => {
+                    const cat = h.category || 'General';
+                    if (!acc[cat]) acc[cat] = { correct: 0, total: 0 };
+                    acc[cat].total += h.total || 0;
+                    acc[cat].correct += h.score || 0;
+                    return acc;
+                  }, {});
+                  const worst = Object.entries(weakCategory).sort((a, b) => (a[1].correct / a[1].total) - (b[1].correct / b[1].total))[0];
+                  
+                  return worst ? (
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Target size={14} className="text-red-400" />
+                        <span className="text-xs font-bold text-gray-300">Weakness Detected</span>
+                      </div>
+                      <p className="text-[10px] text-gray-500 leading-relaxed">
+                        You've scored {Math.round((worst[1].correct / worst[1].total) * 100)}% in <strong className="text-white">{worst[0]}</strong>. Should we review those?
+                      </p>
+                      <button className="text-[10px] font-bold text-primary mt-2 hover:underline">Start Revision</button>
+                    </div>
+                  ) : null;
+                })()}
+
+                {quizHistory.length > 0 && (
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Trophy size={14} className="text-green-400" />
+                      <span className="text-xs font-bold text-gray-300">Your Stats</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <p className="text-lg font-bold text-white">{quizHistory.length}</p>
+                        <p className="text-[9px] text-gray-500">Quizzes</p>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-white/5">
+                        <p className="text-lg font-bold text-primary">{Math.round(quizHistory.reduce((s, h) => s + (h.percentage || 0), 0) / quizHistory.length)}%</p>
+                        <p className="text-[9px] text-gray-500">Avg Score</p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-[10px] text-gray-500 leading-relaxed">
-                    You've struggled with **Event Loop** questions. Should we review those?
-                  </p>
-                  <button className="text-[10px] font-bold text-primary mt-2 hover:underline">Start Revision</button>
-                </div>
+                )}
+
+                {quizHistory.length === 0 && (
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Target size={14} className="text-blue-400" />
+                      <span className="text-xs font-bold text-gray-300">Getting Started</span>
+                    </div>
+                    <p className="text-[10px] text-gray-500 leading-relaxed">
+                      Take your first quiz to unlock personalized learning insights and weakness detection.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -410,17 +473,22 @@ export default function AIAssistant() {
                 <Zap size={16} className="text-primary" /> Study Plan
               </h3>
               <p className="text-xs text-gray-400 leading-relaxed mb-4">
-                Based on your goals, I've curated a 15-minute session for you.
+                {quizHistory.length > 0
+                  ? `Based on your ${quizHistory.length} quizzes, here's a recommended session.`
+                  : 'Complete a quiz to get a personalized study plan.'}
               </p>
               <ul className="space-y-2 mb-6">
-                {['Hoisting Basics', 'Closure Practical', 'Async Quiz'].map((item, i) => (
+                {(quizHistory.length > 0
+                  ? ['Review weak areas', 'Try a harder difficulty', 'Practice code snippets']
+                  : ['Take a Quiz', 'Read Theory Vault', 'Try Code Lab']
+                ).map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-[10px] text-gray-300">
                     <div className="w-1.5 h-1.5 rounded-full bg-primary" /> {item}
                   </li>
                 ))}
               </ul>
               <button className="w-full bg-primary/10 border border-primary/20 text-primary py-2.5 rounded-xl font-bold text-xs hover:bg-primary hover:text-white transition-all">
-                Start Plan
+                {quizHistory.length > 0 ? 'Start Plan' : 'Take First Quiz'}
               </button>
             </div>
           </div>
