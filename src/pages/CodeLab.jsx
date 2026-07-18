@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Play, Code, Terminal, Sparkles, Copy, Check, Wand2, Trophy, Zap, ArrowLeft, ChevronRight, AlertTriangle, X, RotateCcw } from 'lucide-react';
-import DarkSelect from '../components/ui/DarkSelect';
+
 
 const SNIPPETS = [
   { name: "Standard Greeting", category: "JavaScript", difficulty: "easy", code: `const greeting = "Hello, SmartQuiz Master!";\nconst scores = [85, 92, 78, 95];\nconst average = scores.reduce((a, b) => a + b) / scores.length;\nconsole.log(greeting);\nconsole.log("Your average score is:", average);\nreturn "Ready to master JS?";` },
@@ -498,7 +498,17 @@ export default function CodeLab() {
         {mode === 'sandbox' && (
           <>
             <div className="flex items-center gap-3 mb-4">
-              <DarkSelect value={sandboxCategory} onChange={setSandboxCategory} options={CATEGORIES.map(c => ({ value: c, label: c === 'All' ? `All (${SNIPPETS.length})` : `${c} (${snippetCounts[c] || 0})` }))} />
+              <div className="flex flex-wrap gap-2">
+                {CATEGORIES.map(c => {
+                  const count = c === 'All' ? SNIPPETS.length : (snippetCounts[c] || 0);
+                  return (
+                    <button key={c} onClick={() => setSandboxCategory(c)}
+                      className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${sandboxCategory === c ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
+                      {c} ({count})
+                    </button>
+                  );
+                })}
+              </div>
               <button onClick={sandboxRun} className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
                 <Play size={16} className="fill-current" /> Run
               </button>
