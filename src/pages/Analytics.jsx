@@ -1,137 +1,184 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { 
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line
-} from 'recharts';
-import { Target, TrendingUp, Award, Brain, Zap, Clock } from 'lucide-react';
-
-const masteryData = [
-  { subject: 'Functions', A: 120, B: 110, fullMark: 150 },
-  { subject: 'Async JS', A: 98, B: 130, fullMark: 150 },
-  { subject: 'DOM', A: 86, B: 130, fullMark: 150 },
-  { subject: 'ES6+', A: 99, B: 100, fullMark: 150 },
-  { subject: 'Security', A: 85, B: 90, fullMark: 150 },
-  { subject: 'APIs', A: 65, B: 85, fullMark: 150 },
-];
-
-const xpHistory = [
-  { day: 'Mon', xp: 450 },
-  { day: 'Tue', xp: 520 },
-  { day: 'Wed', xp: 1400 },
-  { day: 'Thu', xp: 600 },
-  { day: 'Fri', xp: 800 },
-  { day: 'Sat', xp: 1200 },
-  { day: 'Sun', xp: 1500 },
-];
+import { useAuth } from '../context/AuthContext';
+import { db } from '../services/firebase';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Target, TrendingUp, Award, Zap, Clock, Brain } from 'lucide-react';
 
 export default function Analytics() {
+  const { userData, currentUser } = useAuth();
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const q = query(
+      collection(db, "users", currentUser.uid, "quizHistory"),
+      orderBy("createdAt", "desc"),
+      limit(50)
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(d => d.data());
+      setHistory(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  const totalQuizzes = history.length;
+  const avgScore = totalQuizzes > 0
+    ? Math.round(history.reduce((s, h) => s + (h.percentage || 0), 0) / totalQuizzes)
+    : 0;
+  const bestStreak = userData?.streak || 0;
+  const totalXP = userData?.xp || 0;
+
+  const chartData = [...history].reverse().slice(-14).map((h, i) => ({
+    name: `Quiz ${i + 1}`,
+    score: h.percentage || 0,
+    xp: h.xp || 0,
+  }));
+
+  const categoryBreakdown = history.reduce((acc, h) => {
+    const cat = h.category || 'General';
+    if (!acc[cat]) acc[cat] = { total: 0, correct: 0 };
+    acc[cat].total += h.total || 0;
+    acc[cat].correct += h.score || 0;
+    return acc;
+  }, {});
+
   return (
     <DashboardLayout>
       <div className="px-6 pb-20 space-y-8">
-        {/* Analytics Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Target className="text-primary" size={32} /> Performance Analytics
+              <Target className="text-primary" size={32} /> Analytics
             </h1>
-            <p className="text-gray-400 mt-1">Deep dive into your JavaScript mastery levels.</p>
-          </div>
-          <div className="flex gap-3">
-            <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-3">
-              <Clock className="text-gray-500" size={18} />
-              <span className="text-sm font-bold text-white">45.2 Hours Studied</span>
-            </div>
+            <p className="text-gray-400 mt-1">Your learning journey at a glance.</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Radar Chart - Topic Mastery */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="glass-card p-8"
-          >
-            <h3 className="text-lg font-bold text-white mb-8 flex items-center gap-2">
-              <Brain size={20} className="text-primary" /> Topic Mastery Radar
-            </h3>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={masteryData}>
-                  <PolarGrid stroke="#ffffff10" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#9ca3af', fontSize: 12 }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 150]} tick={false} axisLine={false} />
-                  <Radar
-                    name="Student"
-                    dataKey="A"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
-                    fillOpacity={0.6}
-                  />
-                  <Radar
-                    name="Global Avg"
-                    dataKey="B"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
-                    fillOpacity={0.3}
-                  />
-                  <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #ffffff10', borderRadius: '12px' }} />
-                  <Legend />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          {/* XP Progression Chart */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="glass-card p-8"
-          >
-            <h3 className="text-lg font-bold text-white mb-8 flex items-center gap-2">
-              <TrendingUp size={20} className="text-green-400" /> Weekly XP Progression
-            </h3>
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={xpHistory}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                  <XAxis dataKey="day" stroke="#6b7280" fontSize={12} axisLine={false} tickLine={false} />
-                  <YAxis stroke="#6b7280" fontSize={12} axisLine={false} tickLine={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#111', border: '1px solid #ffffff10', borderRadius: '12px' }}
-                    itemStyle={{ color: '#10b981' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="xp" 
-                    stroke="#10b981" 
-                    strokeWidth={4} 
-                    dot={{ r: 6, fill: '#10b981', strokeWidth: 0 }} 
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Detailed Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Stat cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Avg. Accuracy', value: '78.5%', sub: '+2.1% from last week', icon: <Target className="text-blue-400" /> },
-            { label: 'Top Category', value: 'ES6+', sub: '92% Proficiency', icon: <Award className="text-yellow-400" /> },
-            { label: 'Questions Solved', value: '1,240', sub: '240 in last 7 days', icon: <Zap className="text-purple-400" /> },
+            { label: 'Total XP', value: totalXP.toLocaleString(), icon: <Zap className="text-yellow-400" />, bg: 'bg-yellow-400/10' },
+            { label: 'Avg. Score', value: totalQuizzes > 0 ? `${avgScore}%` : '—', icon: <Target className="text-blue-400" />, bg: 'bg-blue-400/10' },
+            { label: 'Quizzes Taken', value: totalQuizzes, icon: <Award className="text-purple-400" />, bg: 'bg-purple-400/10' },
+            { label: 'Best Streak', value: `${bestStreak} days`, icon: <TrendingUp className="text-green-400" />, bg: 'bg-green-400/10' },
           ].map((stat, i) => (
-            <div key={i} className="glass-card p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-white/5 rounded-2xl">{stat.icon}</div>
-                <h4 className="text-sm font-bold text-gray-500 uppercase tracking-widest">{stat.label}</h4>
-              </div>
-              <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-              <p className="text-[10px] text-gray-500 font-bold uppercase">{stat.sub}</p>
-            </div>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-card p-5"
+            >
+              <div className={`p-2 rounded-lg inline-block mb-3 ${stat.bg}`}>{stat.icon}</div>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{stat.label}</p>
+              <p className="text-2xl font-bold text-white">{stat.value}</p>
+            </motion.div>
           ))}
         </div>
+
+        {/* Score history chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-8"
+        >
+          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <TrendingUp size={20} className="text-primary" /> Score History
+          </h3>
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            </div>
+          ) : chartData.length === 0 ? (
+            <p className="text-gray-500 text-center py-12">No quiz history yet. Take a quiz to see your progress!</p>
+          ) : (
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorScore2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 11 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 11 }} domain={[0, 100]} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#111', border: '1px solid #ffffff10', borderRadius: '12px', color: '#fff' }}
+                    formatter={(v) => [`${v}%`, 'Score']}
+                  />
+                  <Area type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorScore2)" dot={{ r: 4, fill: '#3b82f6', stroke: '#0a0a0a', strokeWidth: 2 }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Category breakdown */}
+        {Object.keys(categoryBreakdown).length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card p-8"
+          >
+            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <Brain size={20} className="text-primary" /> Category Breakdown
+            </h3>
+            <div className="space-y-4">
+              {Object.entries(categoryBreakdown).map(([cat, data]) => {
+                const pct = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+                return (
+                  <div key={cat}>
+                    <div className="flex justify-between mb-2 text-sm">
+                      <span className="text-gray-300 font-medium">{cat}</span>
+                      <span className="text-gray-500">{pct}% accuracy ({data.correct}/{data.total})</span>
+                    </div>
+                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-1000 ${pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Recent quiz history */}
+        {history.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card p-8"
+          >
+            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <Clock size={20} className="text-primary" /> Recent Quizzes
+            </h3>
+            <div className="space-y-3">
+              {history.slice(0, 10).map((h, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${(h.percentage || 0) >= 80 ? 'bg-green-400' : (h.percentage || 0) >= 50 ? 'bg-yellow-400' : 'bg-red-400'}`} />
+                    <span className="text-sm text-gray-300">{h.score}/{h.total} correct</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-bold text-primary">{h.percentage || 0}%</span>
+                    <span className="text-[10px] text-gray-500">{new Date(h.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </DashboardLayout>
   );

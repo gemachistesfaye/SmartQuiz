@@ -1,13 +1,14 @@
-import { LayoutDashboard, Zap, Code, Sparkles, Trophy } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Zap, Code, Sparkles, BarChart3 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Home', path: '/dashboard' },
+  { icon: BookOpen, label: 'Learn', path: '/theory' },
   { icon: Zap, label: 'Quiz', path: '/quiz' },
   { icon: Code, label: 'Code', path: '/codelab' },
   { icon: Sparkles, label: 'AI', path: '/ai-assistant' },
-  { icon: Trophy, label: 'Ranks', path: '/leaderboard' },
+  { icon: BarChart3, label: 'Stats', path: '/analytics' },
 ];
 
 export default function MobileNav() {
@@ -26,14 +27,14 @@ export default function MobileNav() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all min-w-[56px] ${
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all min-w-[48px] ${
                 isActive
                   ? 'text-primary bg-primary/10'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
             >
               <Icon size={20} />
-              <span className="text-[9px] font-bold uppercase tracking-wider">{item.label}</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider">{item.label}</span>
             </Link>
           );
         })}
