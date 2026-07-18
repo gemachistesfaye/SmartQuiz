@@ -106,19 +106,20 @@ export default function TheoryVault() {
         {/* Modal */}
         <AnimatePresence>
           {selectedConcept && (
-            <>
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedConcept(null)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               />
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#0d0d0d] border border-white/10 rounded-[2rem] p-8 md:p-12 z-[70] max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="relative w-full max-w-2xl bg-[#0d0d0d] border border-white/10 rounded-[2rem] p-8 md:p-12 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl"
               >
                 <button
                   onClick={() => setSelectedConcept(null)}
@@ -173,7 +174,7 @@ export default function TheoryVault() {
                   </div>
                 </div>
               </motion.div>
-            </>
+            </div>
           )}
         </AnimatePresence>
       </div>
