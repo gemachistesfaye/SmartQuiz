@@ -1,266 +1,560 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Play, Code, Terminal, Sparkles, Copy, Check, Wand2 } from 'lucide-react';
+import { Play, Code, Terminal, Sparkles, Copy, Check, Wand2, Trophy, Zap, ArrowLeft, ChevronRight, AlertTriangle, X, RotateCcw } from 'lucide-react';
 import DarkSelect from '../components/ui/DarkSelect';
 
 const SNIPPETS = [
-  // JavaScript — Fundamentals
-  { name: "Standard Greeting", category: "JavaScript", code: `const greeting = "Hello, SmartQuiz Master!";\nconst scores = [85, 92, 78, 95];\nconst average = scores.reduce((a, b) => a + b) / scores.length;\nconsole.log(greeting);\nconsole.log("Your average score is:", average);\nreturn "Ready to master JS?";` },
-  { name: "Destructuring", category: "JavaScript", code: `const user = { id: 1, info: { email: "test@sq.com" } };\nconst { info: { email } } = user;\nconsole.log("Email:", email);\nreturn "Clean extraction.";` },
-  { name: "Template Literals", category: "JavaScript", code: `const u = "Dev", x = 5000;\nconsole.log(\`User \${u} has \${x} XP\`);\nreturn "Template Literals.";` },
-  { name: "Default Parameters", category: "JavaScript", code: `const greet = (n = "Guest") => "Welcome, " + n;\nconsole.log(greet());\nconsole.log(greet("Admin"));\nreturn "Clean defaults.";` },
-  { name: "Nullish Coalescing", category: "JavaScript", code: `const x = 0 ?? 10;\nconst y = null ?? 10;\nconsole.log(x, y);\nreturn "Better than || operator.";` },
-  { name: "Optional Chaining", category: "JavaScript", code: `const u = { profile: { bio: "Hi" } };\nconsole.log(u?.meta?.tags?.[0]);\nreturn "Safe property access.";` },
-  { name: "Map vs Set", category: "JavaScript", code: `const s = new Set([1, 2, 2, 3]);\nconst m = new Map([["a", 1]]);\nconsole.log("Set (Unique):", [...s]);\nconsole.log("Map Value:", m.get("a"));\nreturn "New ES6 collections.";` },
-  { name: "Symbol Key", category: "JavaScript", code: `const id = Symbol('id');\nconst u = { [id]: 123, name: "A" };\nconsole.log(u[id]);\nreturn "Hidden unique keys.";` },
-
-  // JavaScript — Advanced
-  { name: "Closure Bank", category: "JavaScript", code: `function createBank(name) {\n  let balance = 1000;\n  return {\n    deposit: (amt) => { balance += amt; return balance; },\n    check: () => name + "'s Balance: $" + balance\n  };\n}\nconst myAcc = createBank("Alice");\nmyAcc.deposit(500);\nconsole.log(myAcc.check());\nreturn "Private data secured.";` },
-  { name: "Proxy Validation", category: "JavaScript", code: `const user = { age: 25 };\nconst proxy = new Proxy(user, {\n  set(target, prop, val) {\n    if (prop === 'age' && val < 0) throw Error("Invalid age");\n    target[prop] = val;\n    return true;\n  }\n});\nproxy.age = 30;\nconsole.log(proxy.age);\nreturn "Advanced Meta-programming.";` },
-  { name: "Generator Function", category: "JavaScript", code: `function* gen() { yield 1; yield 2; yield 3; }\nconst it = gen();\nconsole.log(it.next().value);\nconsole.log(it.next().value);\nreturn "Generators are cool.";` },
-  { name: "Class Inheritance", category: "JavaScript", code: `class Animal { constructor(n) { this.n = n; } speak() { return this.n + " makes a sound."; } }\nclass Dog extends Animal { speak() { return this.n + " barks!"; } }\nconst d = new Dog("Rex");\nconsole.log(d.speak());\nreturn "Modern Classes.";` },
-  { name: "Promise Chain", category: "JavaScript", code: `Promise.resolve("Step 1")\n  .then(v => v + " -> Step 2")\n  .then(v => { console.log(v); return "Done"; });\nreturn "Promises are cleaner.";` },
-  { name: "Try/Catch Async", category: "JavaScript", code: `async function test() {\n  try {\n    throw "Boom!";\n  } catch (e) { console.log("Caught:", e); }\n}\ntest();\nreturn "Error handling.";` },
-  { name: "Recursion (Factorial)", category: "JavaScript", code: `const fact = (n) => n <= 1 ? 1 : n * fact(n-1);\nconsole.log("Factorial of 5:", fact(5));\nreturn "Recursive logic.";` },
-  { name: "Fibonacci Iterative", category: "JavaScript", code: `function fib(n) {\n  let [a, b] = [0, 1];\n  while (n-- > 0) [a, b] = [b, a + b];\n  return a;\n}\nconsole.log("Fib 10:", fib(10));\nreturn "Efficient iteration.";` },
-
-  // JavaScript — Functional
-  { name: "Currying Sum", category: "JavaScript", code: `const sum = a => b => c => a + b + c;\nconsole.log("Sum(1)(2)(3):", sum(1)(2)(3));\nreturn "Currying pattern.";` },
-  { name: "Debounce Simulation", category: "JavaScript", code: `const debounce = (fn, delay) => {\n  let t;\n  return () => { clearTimeout(t); t = setTimeout(fn, delay); };\n};\nconst act = debounce(() => console.log('Action!'), 500);\nact(); act();\nreturn "Performance tip.";` },
-  { name: "Memoize Function", category: "JavaScript", code: `const memo = (fn) => {\n  const cache = {};\n  return (n) => cache[n] || (cache[n] = fn(n));\n};\nconst fastFact = memo(n => n <= 1 ? 1 : n * fastFact(n-1));\nconsole.log(fastFact(5));\nreturn "Caching results.";` },
-  { name: "Pipe Implementation", category: "JavaScript", code: `const pipe = (...fns) => (v) => fns.reduce((a, f) => f(a), v);\nconst add1 = x => x + 1;\nconst sq = x => x * x;\nconsole.log(pipe(add1, sq)(2));\nreturn "Functional pipes.";` },
-  { name: "Module Pattern", category: "JavaScript", code: `const Counter = (() => {\n  let count = 0;\n  return {\n    inc: () => ++count,\n    val: () => count\n  };\n})();\nCounter.inc();\nconsole.log(Counter.val());\nreturn "Classic IIFE Module.";` },
-
-  // HTML
-  { name: "Semantic Structure", category: "HTML", code: `const html = \`\n  <header><nav>Menu</nav></header>\n  <main>\n    <article>\n      <h1>Title</h1>\n      <section>Content</section>\n    </article>\n    <aside>Sidebar</aside>\n  </main>\n  <footer>Copyright</footer>\n\`;\nconsole.log("Semantic HTML structure created");\nreturn html;` },
-  { name: "Form Validation", category: "HTML", code: `const form = {\n  email: "test@example.com",\n  validateEmail(e) { return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(e); },\n  password: "Secret123",\n  validatePassword(p) { return p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p); }\n};\nconsole.log("Email valid:", form.validateEmail(form.email));\nconsole.log("Password valid:", form.validatePassword(form.password));\nreturn "HTML5 validation patterns.";` },
-  { name: "Accessibility Check", category: "HTML", code: `const a11y = {\n  roles: ["banner", "navigation", "main", "contentinfo"],\n  check(img) { return img.alt ? "Pass" : "Fail: missing alt"; },\n  checkLabel(input) { return input.id ? "Pass" : "Fail: missing label"; }\n};\nconsole.log("Roles:", a11y.roles.join(", "));\nconsole.log("Image:", a11y.check({ alt: "logo" }));\nreturn "a11y best practices.";` },
-  { name: "Meta Tags Builder", category: "HTML", code: `const meta = {\n  title: "SmartQuiz - Master JS",\n  description: "Interactive JavaScript learning platform",\n  ogImage: "https://smartquiz.com/og.png",\n  render() {\n    return \`<title>\${this.title}</title>\\n<meta name="description" content="\${this.description}">\\n<meta property="og:image" content="\${this.ogImage}">\`;\n  }\n};\nconsole.log(meta.render());\nreturn "SEO meta tags.";` },
-  { name: "Canvas Drawing", category: "HTML", code: `const canvas = { width: 400, height: 300 };\nconst ctx = {\n  fillStyle: "#3b82f6",\n  fillRect(x, y, w, h) { console.log(\`Drawing rect at (\${x},\${y}) \${w}x\${h}\`); },\n  arc(x, y, r) { console.log(\`Drawing circle at (\${x},\${y}) r=\${r}\`); }\n};\nctx.fillRect(10, 10, 100, 50);\nctx.arc(200, 150, 40);\nreturn "Canvas 2D API basics.";` },
-
-  // CSS
-  { name: "Flexbox Centering", category: "CSS", code: `const styles = {\n  container: { display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" },\n  card: { padding: "2rem", borderRadius: "12px", background: "#1a1a2e" }\n};\nconsole.log("Flex center:", JSON.stringify(styles.container));\nreturn "Perfect centering.";` },
-  { name: "Grid Layout", category: "CSS", code: `const grid = {\n  display: "grid",\n  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",\n  gap: "16px"\n};\nconsole.log("Responsive grid:", JSON.stringify(grid));\nreturn "CSS Grid magic.";` },
-  { name: "Custom Properties", category: "CSS", code: `const css = {\n  ":root": { "--primary": "#3b82f6", "--radius": "12px", "--spacing": "16px" },\n  ".card": { "background": "var(--primary)", "border-radius": "var(--radius)", "padding": "var(--spacing)" }\n};\nconsole.log("CSS Variables:", JSON.stringify(css));\nreturn "Theme system.";` },
-  { name: "Responsive Breakpoints", category: "CSS", code: `const breakpoints = {\n  sm: "640px", md: "768px", lg: "1024px", xl: "1280px"\n};\nconst mediaQuery = (bp, styles) => \`@media (min-width: \${bp}) { \${styles} }\`;\nconsole.log(mediaQuery(breakpoints.md, ".container { padding: 24px; }"));\nreturn "Mobile-first CSS.";` },
-  { name: "Animation Keyframes", category: "CSS", code: `const animations = {\n  pulse: "0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); }",\n  slideUp: "from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; }",\n  fadeIn: "from { opacity: 0; } to { opacity: 1; }"\n};\nObject.keys(animations).forEach(name => console.log(\`@keyframes \${name} defined\`));\nreturn "CSS animations.";` },
-  { name: "Gradient Builder", category: "CSS", code: `const gradients = {\n  primary: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",\n  dark: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",\n  glass: "linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))"\n};\nObject.entries(gradients).forEach(([name, val]) => console.log(\`\${name}: \${val.substring(0, 40)}...\`));\nreturn "Modern gradients.";` },
-
-  // React
-  { name: "useState Hook", category: "React", code: `// React component pattern\nconst Counter = () => {\n  let count = 0;\n  const increment = () => { count++; console.log("Count:", count); };\n  return { count, increment };\n};\nconst c = Counter();\nc.increment();\nc.increment();\nconsole.log("Final:", c.count);\nreturn "React state pattern.";` },
-  { name: "useEffect Pattern", category: "React", code: `const useEffect = (fn, deps) => {\n  console.log("Effect running, deps:", deps);\n  const cleanup = fn();\n  return () => { console.log("Cleanup:", deps); };\n};\nuseEffect(() => { console.log("Mounted!"); return () => console.log("Unmounted!"); }, []);\nreturn "React lifecycle.";` },
-  { name: "Custom Hook", category: "React", code: `const useLocalStorage = (key, initial) => {\n  let value = initial;\n  const get = () => { console.log(\`Reading \${key}\`); return value; };\n  const set = (v) => { value = v; console.log(\`Setting \${key} = \${v}\`); };\n  return [get, set];\n};\nconst [getTheme, setTheme] = useLocalStorage("theme", "dark");\nconsole.log("Theme:", getTheme());\nsetTheme("light");\nreturn "Custom hook pattern.";` },
-  { name: "Component Composition", category: "React", code: `const Card = ({ title, children }) => ({ title, children, render: () => \`<div class="card"><h2>\${title}</h2>\${children}</div>\` });\nconst card = Card({ title: "Hello", children: "World" });\nconsole.log(card.render());\nreturn "Composition pattern.";` },
-
-  // Cybersecurity
-  { name: "XSS Prevention", category: "Cybersecurity", code: `const sanitize = (input) => input.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");\nconst malicious = '<script>alert("XSS")</script>';\nconsole.log("Raw:", malicious);\nconsole.log("Clean:", sanitize(malicious));\nreturn "XSS prevention.";` },
-  { name: "Password Hashing", category: "Cybersecurity", code: `const hash = (password) => {\n  let h = 0;\n  for (let i = 0; i < password.length; i++) {\n    h = ((h << 5) - h + password.charCodeAt(i)) | 0;\n  }\n  return h.toString(16);\n};\nconsole.log("Hash:", hash("SecurePass123"));\nconsole.log("Same hash:", hash("SecurePass123") === hash("SecurePass123"));\nreturn "Basic hashing demo.";` },
-  { name: "CSRF Token", category: "Cybersecurity", code: `const generateToken = () => {\n  const arr = new Uint8Array(32);\n  crypto.getRandomValues(arr);\n  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');\n};\nconst token = generateToken();\nconsole.log("CSRF Token:", token.substring(0, 16) + "...");\nconsole.log("Token length:", token.length);\nreturn "CSRF protection.";` },
-  { name: "Input Validation", category: "Cybersecurity", code: `const validate = {\n  email: (e) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(e),\n  phone: (p) => /^\\+?[1-9]\\d{1,14}$/.test(p),\n  username: (u) => /^[a-zA-Z0-9_]{3,20}$/.test(u)\n};\nconsole.log("Email:", validate.email("test@example.com"));\nconsole.log("Phone:", validate.phone("+1234567890"));\nconsole.log("Username:", validate.username("dev_user"));\nreturn "Input validation.";` },
+  { name: "Standard Greeting", category: "JavaScript", difficulty: "easy", code: `const greeting = "Hello, SmartQuiz Master!";\nconst scores = [85, 92, 78, 95];\nconst average = scores.reduce((a, b) => a + b) / scores.length;\nconsole.log(greeting);\nconsole.log("Your average score is:", average);\nreturn "Ready to master JS?";` },
+  { name: "Destructuring", category: "JavaScript", difficulty: "easy", code: `const user = { id: 1, info: { email: "test@sq.com" } };\nconst { info: { email } } = user;\nconsole.log("Email:", email);\nreturn "Clean extraction.";` },
+  { name: "Template Literals", category: "JavaScript", difficulty: "easy", code: `const u = "Dev", x = 5000;\nconsole.log(\`User \${u} has \${x} XP\`);\nreturn "Template Literals.";` },
+  { name: "Default Parameters", category: "JavaScript", difficulty: "easy", code: `const greet = (n = "Guest") => "Welcome, " + n;\nconsole.log(greet());\nconsole.log(greet("Admin"));\nreturn "Clean defaults.";` },
+  { name: "Nullish Coalescing", category: "JavaScript", difficulty: "easy", code: `const x = 0 ?? 10;\nconst y = null ?? 10;\nconsole.log(x, y);\nreturn "Better than || operator.";` },
+  { name: "Optional Chaining", category: "JavaScript", difficulty: "easy", code: `const u = { profile: { bio: "Hi" } };\nconsole.log(u?.meta?.tags?.[0]);\nreturn "Safe property access.";` },
+  { name: "Map vs Set", category: "JavaScript", difficulty: "easy", code: `const s = new Set([1, 2, 2, 3]);\nconst m = new Map([["a", 1]]);\nconsole.log("Set (Unique):", [...s]);\nconsole.log("Map Value:", m.get("a"));\nreturn "New ES6 collections.";` },
+  { name: "Symbol Key", category: "JavaScript", difficulty: "medium", code: `const id = Symbol('id');\nconst u = { [id]: 123, name: "A" };\nconsole.log(u[id]);\nreturn "Hidden unique keys.";` },
+  { name: "Closure Bank", category: "JavaScript", difficulty: "medium", code: `function createBank(name) {\n  let balance = 1000;\n  return {\n    deposit: (amt) => { balance += amt; return balance; },\n    check: () => name + "'s Balance: $" + balance\n  };\n}\nconst myAcc = createBank("Alice");\nmyAcc.deposit(500);\nconsole.log(myAcc.check());\nreturn "Private data secured.";` },
+  { name: "Proxy Validation", category: "JavaScript", difficulty: "hard", code: `const user = { age: 25 };\nconst proxy = new Proxy(user, {\n  set(target, prop, val) {\n    if (prop === 'age' && val < 0) throw Error("Invalid age");\n    target[prop] = val;\n    return true;\n  }\n});\nproxy.age = 30;\nconsole.log(proxy.age);\nreturn "Advanced Meta-programming.";` },
+  { name: "Generator Function", category: "JavaScript", difficulty: "hard", code: `function* gen() { yield 1; yield 2; yield 3; }\nconst it = gen();\nconsole.log(it.next().value);\nconsole.log(it.next().value);\nreturn "Generators are cool.";` },
+  { name: "Class Inheritance", category: "JavaScript", difficulty: "medium", code: `class Animal { constructor(n) { this.n = n; } speak() { return this.n + " makes a sound."; } }\nclass Dog extends Animal { speak() { return this.n + " barks!"; } }\nconst d = new Dog("Rex");\nconsole.log(d.speak());\nreturn "Modern Classes.";` },
+  { name: "Promise Chain", category: "JavaScript", difficulty: "medium", code: `Promise.resolve("Step 1")\n  .then(v => v + " -> Step 2")\n  .then(v => { console.log(v); return "Done"; });\nreturn "Promises are cleaner.";` },
+  { name: "Try/Catch Async", category: "JavaScript", difficulty: "medium", code: `async function test() {\n  try {\n    throw "Boom!";\n  } catch (e) { console.log("Caught:", e); }\n}\ntest();\nreturn "Error handling.";` },
+  { name: "Recursion (Factorial)", category: "JavaScript", difficulty: "medium", code: `const fact = (n) => n <= 1 ? 1 : n * fact(n-1);\nconsole.log("Factorial of 5:", fact(5));\nreturn "Recursive logic.";` },
+  { name: "Fibonacci Iterative", category: "JavaScript", difficulty: "medium", code: `function fib(n) {\n  let [a, b] = [0, 1];\n  while (n-- > 0) [a, b] = [b, a + b];\n  return a;\n}\nconsole.log("Fib 10:", fib(10));\nreturn "Efficient iteration.";` },
+  { name: "Currying Sum", category: "JavaScript", difficulty: "hard", code: `const sum = a => b => c => a + b + c;\nconsole.log("Sum(1)(2)(3):", sum(1)(2)(3));\nreturn "Currying pattern.";` },
+  { name: "Debounce Simulation", category: "JavaScript", difficulty: "medium", code: `const debounce = (fn, delay) => {\n  let t;\n  return () => { clearTimeout(t); t = setTimeout(fn, delay); };\n};\nconst act = debounce(() => console.log('Action!'), 500);\nact(); act();\nreturn "Performance tip.";` },
+  { name: "Memoize Function", category: "JavaScript", difficulty: "hard", code: `const memo = (fn) => {\n  const cache = {};\n  return (n) => cache[n] || (cache[n] = fn(n));\n};\nconst fastFact = memo(n => n <= 1 ? 1 : n * fastFact(n-1));\nconsole.log(fastFact(5));\nreturn "Caching results.";` },
+  { name: "Pipe Implementation", category: "JavaScript", difficulty: "hard", code: `const pipe = (...fns) => (v) => fns.reduce((a, f) => f(a), v);\nconst add1 = x => x + 1;\nconst sq = x => x * x;\nconsole.log(pipe(add1, sq)(2));\nreturn "Functional pipes.";` },
+  { name: "Module Pattern", category: "JavaScript", difficulty: "medium", code: `const Counter = (() => {\n  let count = 0;\n  return {\n    inc: () => ++count,\n    val: () => count\n  };\n})();\nCounter.inc();\nconsole.log(Counter.val());\nreturn "Classic IIFE Module.";` },
+  { name: "Semantic Structure", category: "HTML", difficulty: "easy", code: `const html = \`\n  <header><nav>Menu</nav></header>\n  <main>\n    <article>\n      <h1>Title</h1>\n      <section>Content</section>\n    </article>\n    <aside>Sidebar</aside>\n  </main>\n  <footer>Copyright</footer>\n\`;\nconsole.log("Semantic HTML structure created");\nreturn html;` },
+  { name: "Form Validation", category: "HTML", difficulty: "medium", code: `const form = {\n  email: "test@example.com",\n  validateEmail(e) { return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(e); },\n  password: "Secret123",\n  validatePassword(p) { return p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p); }\n};\nconsole.log("Email valid:", form.validateEmail(form.email));\nconsole.log("Password valid:", form.validatePassword(form.password));\nreturn "HTML5 validation patterns.";` },
+  { name: "Accessibility Check", category: "HTML", difficulty: "medium", code: `const a11y = {\n  roles: ["banner", "navigation", "main", "contentinfo"],\n  check(img) { return img.alt ? "Pass" : "Fail: missing alt"; },\n  checkLabel(input) { return input.id ? "Pass" : "Fail: missing label"; }\n};\nconsole.log("Roles:", a11y.roles.join(", "));\nconsole.log("Image:", a11y.check({ alt: "logo" }));\nreturn "a11y best practices.";` },
+  { name: "Meta Tags Builder", category: "HTML", difficulty: "easy", code: `const meta = {\n  title: "SmartQuiz - Master JS",\n  description: "Interactive JavaScript learning platform",\n  ogImage: "https://smartquiz.com/og.png",\n  render() {\n    return \`<title>\${this.title}</title>\\n<meta name="description" content="\${this.description}">\\n<meta property="og:image" content="\${this.ogImage}">\`;\n  }\n};\nconsole.log(meta.render());\nreturn "SEO meta tags.";` },
+  { name: "Canvas Drawing", category: "HTML", difficulty: "medium", code: `const canvas = { width: 400, height: 300 };\nconst ctx = {\n  fillStyle: "#3b82f6",\n  fillRect(x, y, w, h) { console.log(\`Drawing rect at (\${x},\${y}) \${w}x\${h}\`); },\n  arc(x, y, r) { console.log(\`Drawing circle at (\${x},\${y}) r=\${r}\`); }\n};\nctx.fillRect(10, 10, 100, 50);\nctx.arc(200, 150, 40);\nreturn "Canvas 2D API basics.";` },
+  { name: "Flexbox Centering", category: "CSS", difficulty: "easy", code: `const styles = {\n  container: { display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" },\n  card: { padding: "2rem", borderRadius: "12px", background: "#1a1a2e" }\n};\nconsole.log("Flex center:", JSON.stringify(styles.container));\nreturn "Perfect centering.";` },
+  { name: "Grid Layout", category: "CSS", difficulty: "easy", code: `const grid = {\n  display: "grid",\n  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",\n  gap: "16px"\n};\nconsole.log("Responsive grid:", JSON.stringify(grid));\nreturn "CSS Grid magic.";` },
+  { name: "Custom Properties", category: "CSS", difficulty: "medium", code: `const css = {\n  ":root": { "--primary": "#3b82f6", "--radius": "12px", "--spacing": "16px" },\n  ".card": { "background": "var(--primary)", "border-radius": "var(--radius)", "padding": "var(--spacing)" }\n};\nconsole.log("CSS Variables:", JSON.stringify(css));\nreturn "Theme system.";` },
+  { name: "Responsive Breakpoints", category: "CSS", difficulty: "medium", code: `const breakpoints = {\n  sm: "640px", md: "768px", lg: "1024px", xl: "1280px"\n};\nconst mediaQuery = (bp, styles) => \`@media (min-width: \${bp}) { \${styles} }\`;\nconsole.log(mediaQuery(breakpoints.md, ".container { padding: 24px; }"));\nreturn "Mobile-first CSS.";` },
+  { name: "Animation Keyframes", category: "CSS", difficulty: "medium", code: `const animations = {\n  pulse: "0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); }",\n  slideUp: "from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; }",\n  fadeIn: "from { opacity: 0; } to { opacity: 1; }"\n};\nObject.keys(animations).forEach(name => console.log(\`@keyframes \${name} defined\`));\nreturn "CSS animations.";` },
+  { name: "Gradient Builder", category: "CSS", difficulty: "easy", code: `const gradients = {\n  primary: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",\n  dark: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",\n  glass: "linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))"\n};\nObject.entries(gradients).forEach(([name, val]) => console.log(\`\${name}: \${val.substring(0, 40)}...\`));\nreturn "Modern gradients.";` },
+  { name: "useState Hook", category: "React", difficulty: "easy", code: `const Counter = () => {\n  let count = 0;\n  const increment = () => { count++; console.log("Count:", count); };\n  return { count, increment };\n};\nconst c = Counter();\nc.increment();\nc.increment();\nconsole.log("Final:", c.count);\nreturn "React state pattern.";` },
+  { name: "useEffect Pattern", category: "React", difficulty: "medium", code: `const useEffect = (fn, deps) => {\n  console.log("Effect running, deps:", deps);\n  const cleanup = fn();\n  return () => { console.log("Cleanup:", deps); };\n};\nuseEffect(() => { console.log("Mounted!"); return () => console.log("Unmounted!"); }, []);\nreturn "React lifecycle.";` },
+  { name: "Custom Hook", category: "React", difficulty: "medium", code: `const useLocalStorage = (key, initial) => {\n  let value = initial;\n  const get = () => { console.log(\`Reading \${key}\`); return value; };\n  const set = (v) => { value = v; console.log(\`Setting \${key} = \${v}\`); };\n  return [get, set];\n};\nconst [getTheme, setTheme] = useLocalStorage("theme", "dark");\nconsole.log("Theme:", getTheme());\nsetTheme("light");\nreturn "Custom hook pattern.";` },
+  { name: "Component Composition", category: "React", difficulty: "hard", code: `const Card = ({ title, children }) => ({ title, children, render: () => \`<div class="card"><h2>\${title}</h2>\${children}</div>\` });\nconst card = Card({ title: "Hello", children: "World" });\nconsole.log(card.render());\nreturn "Composition pattern.";` },
+  { name: "XSS Prevention", category: "Cybersecurity", difficulty: "medium", code: `const sanitize = (input) => input.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");\nconst malicious = '<script>alert("XSS")</script>';\nconsole.log("Raw:", malicious);\nconsole.log("Clean:", sanitize(malicious));\nreturn "XSS prevention.";` },
+  { name: "Password Hashing", category: "Cybersecurity", difficulty: "medium", code: `const hash = (password) => {\n  let h = 0;\n  for (let i = 0; i < password.length; i++) {\n    h = ((h << 5) - h + password.charCodeAt(i)) | 0;\n  }\n  return h.toString(16);\n};\nconsole.log("Hash:", hash("SecurePass123"));\nconsole.log("Same hash:", hash("SecurePass123") === hash("SecurePass123"));\nreturn "Basic hashing demo.";` },
+  { name: "CSRF Token", category: "Cybersecurity", difficulty: "hard", code: `const generateToken = () => {\n  const arr = new Uint8Array(32);\n  crypto.getRandomValues(arr);\n  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');\n};\nconst token = generateToken();\nconsole.log("CSRF Token:", token.substring(0, 16) + "...");\nconsole.log("Token length:", token.length);\nreturn "CSRF protection.";` },
+  { name: "Input Validation", category: "Cybersecurity", difficulty: "easy", code: `const validate = {\n  email: (e) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(e),\n  phone: (p) => /^\\+?[1-9]\\d{1,14}$/.test(p),\n  username: (u) => /^[a-zA-Z0-9_]{3,20}$/.test(u)\n};\nconsole.log("Email:", validate.email("test@example.com"));\nconsole.log("Phone:", validate.phone("+1234567890"));\nconsole.log("Username:", validate.username("dev_user"));\nreturn "Input validation.";` },
 ];
 
-export default function CodeLab() {
-  const [code, setCode] = useState(SNIPPETS[0].code);
+const DIFF_BG = { easy: 'bg-green-500/10 text-green-400 border-green-500/20', medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20', hard: 'bg-red-500/10 text-red-400 border-red-500/20' };
+const CAT_BG = {
+  JavaScript: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  HTML: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+  CSS: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  React: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+  Cybersecurity: 'bg-red-500/10 text-red-400 border-red-500/20',
+};
+const CAT_COLORS = { JavaScript: 'text-yellow-400', HTML: 'text-orange-400', CSS: 'text-blue-400', React: 'text-cyan-400', Cybersecurity: 'text-red-400' };
+
+function ExitConfirm({ isOpen, onStay, onExit }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-card max-w-sm w-full p-8 text-center">
+        <div className="bg-red-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <AlertTriangle className="text-red-400" size={32} />
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">Quit Challenge?</h3>
+        <p className="text-gray-400 mb-6">Your progress will be lost.</p>
+        <div className="flex gap-3">
+          <button onClick={onStay} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-bold transition-all">Stay</button>
+          <button onClick={onExit} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-all">Quit</button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function ChallengeSettings({ settings, setSettings, onStart, isLaunching }) {
+  const CATEGORIES = ['All', ...new Set(SNIPPETS.map(s => s.category))];
+  return (
+    <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+      <div className="glass-card max-w-2xl w-full p-10 text-center">
+        <div className="bg-primary/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8">
+          <Code className="text-primary" size={40} />
+        </div>
+        <h1 className="text-4xl font-bold text-white mb-4">Code Challenge</h1>
+        <p className="text-gray-400 mb-10 leading-relaxed">Work through code snippets one by one. Run each snippet to complete it and track your progress.</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-left">
+          <DarkSelect label="Category" value={settings.category} onChange={(v) => setSettings({...settings, category: v})} options={CATEGORIES.map(c => ({ value: c, label: c }))} />
+          <DarkSelect label="Difficulty" value={settings.difficulty} onChange={(v) => setSettings({...settings, difficulty: v})} options={[{ value: 'all', label: 'All Levels' }, { value: 'easy', label: 'Easy' }, { value: 'medium', label: 'Medium' }, { value: 'hard', label: 'Hard' }]} />
+          <DarkSelect label="Count" value={settings.count} onChange={(v) => setSettings({...settings, count: v})} options={[{ value: '5', label: '5 Snippets' }, { value: '10', label: '10 Snippets' }, { value: 'all', label: 'All Snippets' }]} />
+        </div>
+        <button onClick={onStart} disabled={isLaunching} className="w-full bg-primary text-white py-5 rounded-2xl font-bold text-xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
+          {isLaunching ? (<><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Loading...</>) : ('Start Challenge')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ChallengeResults({ results, onRestart }) {
+  const [reviewMode, setReviewMode] = useState(false);
+  const total = results.length;
+  const successCount = results.filter(r => !r.hasError).length;
+  const percentage = total > 0 ? Math.round((successCount / total) * 100) : 0;
+  const xp = results.reduce((sum, r) => sum + (r.hasError ? 0 : 50), 0);
+
+  const categoryBreakdown = results.reduce((acc, r) => {
+    if (!acc[r.category]) acc[r.category] = { success: 0, total: 0 };
+    acc[r.category].total++;
+    if (!r.hasError) acc[r.category].success++;
+    return acc;
+  }, {});
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center mb-10">
+        <div className={`w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 ${percentage >= 80 ? 'bg-green-500/20' : percentage >= 50 ? 'bg-yellow-500/20' : 'bg-red-500/20'}`}>
+          <Trophy className={percentage >= 80 ? 'text-green-400' : percentage >= 50 ? 'text-yellow-400' : 'text-red-400'} size={48} />
+        </div>
+        <h2 className="text-4xl font-bold text-white mb-2">Challenge Complete!</h2>
+        <p className="text-gray-400">{percentage >= 80 ? 'Outstanding work!' : percentage >= 50 ? 'Good effort, keep coding!' : 'Keep practicing, you\'ll improve!'}</p>
+      </motion.div>
+
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="glass-card p-5 text-center">
+          <p className="text-gray-500 text-xs font-bold uppercase mb-1">Completed</p>
+          <p className="text-3xl font-bold text-white">{successCount}/{total}</p>
+          <p className="text-xs text-gray-500 mt-1">{percentage}%</p>
+        </div>
+        <div className="glass-card p-5 text-center">
+          <p className="text-gray-500 text-xs font-bold uppercase mb-1">XP Earned</p>
+          <p className="text-3xl font-bold text-primary">+{xp}</p>
+        </div>
+        <div className="glass-card p-5 text-center">
+          <p className="text-gray-500 text-xs font-bold uppercase mb-1">Errors</p>
+          <p className="text-3xl font-bold text-red-400">{results.filter(r => r.hasError).length}</p>
+        </div>
+      </div>
+
+      {Object.keys(categoryBreakdown).length > 0 && (
+        <div className="glass-card p-5 mb-8">
+          <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Category Breakdown</h3>
+          <div className="space-y-3">
+            {Object.entries(categoryBreakdown).map(([cat, data]) => (
+              <div key={cat} className="flex items-center justify-between">
+                <span className={`text-sm font-medium ${CAT_COLORS[cat] || 'text-gray-300'}`}>{cat}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-24 h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary rounded-full" style={{ width: `${(data.success / data.total) * 100}%` }} />
+                  </div>
+                  <span className="text-xs text-gray-400 w-12 text-right">{data.success}/{data.total}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-3 mb-8">
+        <button onClick={() => setReviewMode(!reviewMode)} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
+          <Terminal size={20} /> {reviewMode ? 'Hide Review' : 'Review Snippets'}
+        </button>
+        <button onClick={onRestart} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
+          <RotateCcw size={20} /> Try Again
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {reviewMode && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+            <div className="space-y-3 mb-8">
+              {results.map((r, i) => (
+                <div key={i} className={`glass-card p-4 border-l-4 ${r.hasError ? 'border-l-red-500' : 'border-l-green-500'}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-gray-500">#{i + 1}</span>
+                      <span className="text-sm font-bold text-white">{r.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${CAT_BG[r.category]}`}>{r.category}</span>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${DIFF_BG[r.difficulty]}`}>{r.difficulty}</span>
+                      {r.hasError ? <X size={14} className="text-red-400" /> : <Check size={14} className="text-green-400" />}
+                    </div>
+                  </div>
+                  <div className="bg-black/30 rounded-lg p-3 font-mono text-xs text-gray-400 mb-2 overflow-x-auto whitespace-pre">{r.code}</div>
+                  <p className="text-xs text-gray-500">{r.output || 'No output'}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function ActiveChallenge({ snippets, currentIndex, results, onRun, onNext, isRunning, setIsRunning, showExit, setShowExit }) {
+  const current = snippets[currentIndex];
+  const [code, setCode] = useState(current?.code || '');
   const [output, setOutput] = useState([]);
   const [result, setResult] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [selectedSnippet, setSelectedSnippet] = useState(SNIPPETS[0].name);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const currentResult = results[currentIndex];
+
+  const runCode = useCallback(() => {
+    setIsRunning(true);
+    const logs = [];
+    const customConsole = {
+      log: (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '))
+    };
+    setTimeout(() => {
+      try {
+        const res = new Function('console', code)(customConsole);
+        setOutput(logs);
+        setResult(res);
+        onRun(currentIndex, false, logs, res);
+      } catch (error) {
+        setOutput([...logs, `Error: ${error.message}`]);
+        setResult(null);
+        onRun(currentIndex, true, [...logs, `Error: ${error.message}`], null);
+      }
+      setIsRunning(false);
+    }, 300);
+  }, [code, currentIndex, onRun]);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [runCode]);
 
   const lineCount = useMemo(() => code.split('\n').length, [code]);
+  const isCompleted = currentResult !== undefined;
+  const hasError = currentResult?.hasError;
+
+  return (
+    <div className="max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={() => setShowExit(true)} className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+          <ArrowLeft size={16} /> Exit
+        </button>
+        <div className="flex items-center gap-4">
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${CAT_BG[current?.category]}`}>{current?.category}</span>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${DIFF_BG[current?.difficulty]}`}>{current?.difficulty}</span>
+          <span className="text-sm font-bold text-gray-400">{currentIndex + 1}/{snippets.length}</span>
+        </div>
+      </div>
+
+      {/* Progress Strip */}
+      <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-2">
+        {snippets.map((s, i) => {
+          const r = results[i];
+          let bg = 'bg-white/10';
+          if (i === currentIndex) bg = 'bg-primary shadow-lg shadow-primary/30';
+          else if (r !== undefined) bg = r.hasError ? 'bg-red-500/30' : 'bg-green-500/30';
+          return (
+            <div key={i} className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 transition-all ${bg} ${i === currentIndex ? 'text-white scale-110' : 'text-gray-400'}`}>
+              {i + 1}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Editor */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card flex flex-col overflow-hidden">
+          <div className="p-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <span className="flex items-center gap-2"><Code size={12} /> {current?.name}</span>
+            <span className="text-primary">Editable</span>
+          </div>
+          <div className="flex-1 flex overflow-hidden">
+            <div className="w-10 bg-black/30 border-r border-white/5 py-4 px-1.5 text-right text-[11px] text-gray-600 font-mono select-none">
+              {Array.from({ length: lineCount }, (_, i) => <div key={i} className="leading-[1.625rem]">{i + 1}</div>)}
+            </div>
+            <textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck="false" className="flex-1 w-full bg-transparent p-4 text-primary-200 font-mono text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed" />
+          </div>
+          <div className="p-3 bg-black/40 border-t border-white/10 flex gap-3">
+            <button onClick={runCode} disabled={isRunning} className="flex-1 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+              {isRunning ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Running...</>) : (<><Play size={16} className="fill-current" /> Run</>)}
+            </button>
+            {isCompleted && (
+              <button onClick={onNext} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
+                {currentIndex + 1 < snippets.length ? (<>Next <ChevronRight size={16} /></>) : (<>Finish <Trophy size={16} /></>)}
+              </button>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Output */}
+        <div className="glass-card flex flex-col overflow-hidden">
+          <div className="p-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <span className="flex items-center gap-2"><Terminal size={12} /> Output</span>
+            {isCompleted && (
+              <span className={`flex items-center gap-1 ${hasError ? 'text-red-400' : 'text-green-400'}`}>
+                {hasError ? <><X size={12} /> Error</> : <><Check size={12} /> Success</>}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 p-4 font-mono text-sm overflow-y-auto custom-scrollbar space-y-1.5 bg-black/20">
+            {output.length === 0 && !isRunning && (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <Terminal size={32} className="text-gray-700 mb-3" />
+                <p className="text-gray-600 text-sm">Run the code to complete this snippet</p>
+                <p className="text-gray-700 text-xs mt-1">Ctrl + Enter</p>
+              </div>
+            )}
+            {isRunning && (
+              <div className="flex items-center gap-2 text-primary">
+                <div className="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                <span className="text-sm">Executing...</span>
+              </div>
+            )}
+            {output.map((line, i) => (
+              <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }} className="text-gray-300 border-l-2 border-primary/30 pl-3 py-0.5">{line}</motion.div>
+            ))}
+            {result !== null && (
+              <div className="mt-3 pt-3 border-t border-white/5 flex items-start gap-2">
+                <Sparkles className="text-yellow-400 mt-0.5 shrink-0" size={14} />
+                <div>
+                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-0.5">Return</p>
+                  <p className="text-primary font-bold">{String(result)}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <ExitConfirm isOpen={showExit} onStay={() => setShowExit(false)} onExit={() => window.location.href = '/dashboard'} />
+    </div>
+  );
+}
+
+export default function CodeLab() {
+  const [mode, setMode] = useState('sandbox');
+  const [settings, setSettings] = useState({ category: 'all', difficulty: 'all', count: '5' });
+  const [challengeSnippets, setChallengeSnippets] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [results, setResults] = useState({});
+  const [isLaunching, setIsLaunching] = useState(false);
+  const [showExit, setShowExit] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+  const [showChallengeResults, setShowChallengeResults] = useState(false);
+
+  const [sandboxCode, setSandboxCode] = useState(SNIPPETS[0].code);
+  const [sandboxOutput, setSandboxOutput] = useState([]);
+  const [sandboxResult, setSandboxResult] = useState(null);
+  const [sandboxCopied, setSandboxCopied] = useState(false);
+  const [sandboxSelectedSnippet, setSandboxSelectedSnippet] = useState(SNIPPETS[0].name);
+  const [sandboxCategory, setSandboxCategory] = useState('All');
+  const [sandboxHistory, setSandboxHistory] = useState([]);
 
   const CATEGORIES = useMemo(() => ['All', ...new Set(SNIPPETS.map(s => s.category))], []);
-  const filteredSnippets = useMemo(() =>
-    selectedCategory === 'All' ? SNIPPETS : SNIPPETS.filter(s => s.category === selectedCategory),
-    [selectedCategory]
-  );
+  const filteredSnippets = useMemo(() => sandboxCategory === 'All' ? SNIPPETS : SNIPPETS.filter(s => s.category === sandboxCategory), [sandboxCategory]);
+  const snippetCounts = useMemo(() => { const c = {}; SNIPPETS.forEach(s => { c[s.category] = (c[s.category] || 0) + 1; }); return c; }, []);
 
-  const copyOutput = () => {
-    const text = [...output, result !== null ? `Return: ${String(result)}` : ''].filter(Boolean).join('\n');
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const startChallenge = () => {
+    setIsLaunching(true);
+    setTimeout(() => {
+      let pool = [...SNIPPETS];
+      if (settings.category !== 'all') pool = pool.filter(s => s.category === settings.category);
+      if (settings.difficulty !== 'all') pool = pool.filter(s => s.difficulty === settings.difficulty);
+      const shuffled = pool.sort(() => Math.random() - 0.5);
+      const count = settings.count === 'all' ? shuffled.length : parseInt(settings.count);
+      setChallengeSnippets(shuffled.slice(0, count));
+      setCurrentIndex(0);
+      setResults({});
+      setShowChallengeResults(false);
+      setMode('challenge');
+      setIsLaunching(false);
+    }, 500);
   };
 
-  const formatCode = () => {
+  const handleChallengeRun = (index, hasError, logs, res) => {
+    setResults(prev => ({ ...prev, [index]: { hasError, output: [...logs, res !== null ? `Return: ${String(res)}` : ''].filter(Boolean).join('\n'), code: challengeSnippets[index].code, name: challengeSnippets[index].name, category: challengeSnippets[index].category, difficulty: challengeSnippets[index].difficulty } }));
+  };
+
+  const handleNextSnippet = () => {
+    if (currentIndex + 1 < challengeSnippets.length) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      setShowChallengeResults(true);
+    }
+  };
+
+  const handleRestartChallenge = () => {
+    startChallenge();
+  };
+
+  const formatCode = (code, setCode) => {
     const lines = code.split('\n');
     let indent = 0;
     const formatted = lines.map(line => {
       const trimmed = line.trim();
       if (trimmed.startsWith('}') || trimmed.startsWith(']') || trimmed.startsWith(')')) indent = Math.max(0, indent - 1);
-      const result = '  '.repeat(indent) + trimmed;
+      const r = '  '.repeat(indent) + trimmed;
       if (trimmed.endsWith('{') || trimmed.endsWith('[') || trimmed.endsWith('(')) indent++;
-      return result;
+      return r;
     });
     setCode(formatted.join('\n'));
   };
 
-  const runCode = useCallback(() => {
+  const sandboxRun = useCallback(() => {
     const logs = [];
-    const customConsole = {
-      log: (...args) => logs.push(args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' '))
-    };
-
+    const customConsole = { log: (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ')) };
     try {
-      const executeCode = new Function('console', code);
-      const res = executeCode(customConsole);
-      setOutput(logs);
-      setResult(res);
+      const res = new Function('console', sandboxCode)(customConsole);
+      setSandboxOutput(logs);
+      setSandboxResult(res);
+      setSandboxHistory(prev => [{ code: sandboxCode.substring(0, 60) + '...', output: [...logs, res !== null ? `Return: ${String(res)}` : ''].filter(Boolean).join('\n'), ts: new Date().toLocaleTimeString(), err: false }, ...prev].slice(0, 8));
     } catch (error) {
-      setOutput([...logs, `Error: ${error.message}`]);
-      setResult(null);
+      setSandboxOutput([...logs, `Error: ${error.message}`]);
+      setSandboxResult(null);
+      setSandboxHistory(prev => [{ code: sandboxCode.substring(0, 60) + '...', output: `Error: ${error.message}`, ts: new Date().toLocaleTimeString(), err: true }, ...prev].slice(0, 8));
     }
-  }, [code]);
+  }, [sandboxCode]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        runCode();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [runCode]);
+  if (mode === 'challenge' && !showChallengeResults) {
+    return (
+      <DashboardLayout>
+        <div className="p-6">
+          <ActiveChallenge key={currentIndex} snippets={challengeSnippets} currentIndex={currentIndex} results={results} onRun={handleChallengeRun} onNext={handleNextSnippet} isRunning={isRunning} setIsRunning={setIsRunning} showExit={showExit} setShowExit={setShowExit} />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
-  const loadSnippet = (s) => {
-    setCode(s.code);
-    setOutput([]);
-    setResult(null);
-    setSelectedSnippet(s.name);
-  };
+  if (showChallengeResults) {
+    const resultsArray = Object.entries(results).map(([idx, r]) => ({ ...r, index: parseInt(idx) })).sort((a, b) => a.index - b.index);
+    return (
+      <DashboardLayout>
+        <div className="p-6">
+          <ChallengeResults results={resultsArray} onRestart={handleRestartChallenge} />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <div className="h-full flex flex-col px-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-                <Code className="text-primary" size={32} /> Code Lab
-              </h1>
-              <p className="text-gray-400 mt-1">Real-time JavaScript experimental sandbox.</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-44">
-                <DarkSelect
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  options={CATEGORIES.map(c => ({ value: c, label: c }))}
-                />
-              </div>
-              <div className="w-56">
-                <DarkSelect
-                  value={selectedSnippet}
-                  onChange={(name) => {
-                    const s = filteredSnippets.find(sn => sn.name === name);
-                    if (s) loadSnippet(s);
-                  }}
-                  options={filteredSnippets.map(s => ({ value: s.name, label: s.name }))}
-                />
-              </div>
-              <button 
-                onClick={runCode}
-                className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-2xl font-bold transition-all shadow-xl shadow-primary/30 flex items-center gap-2 group"
-              >
-                <Play size={18} className="fill-current group-hover:scale-110 transition-transform" /> Run
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+              <Code className="text-primary" size={32} /> Code Lab
+            </h1>
+            <p className="text-gray-400 mt-1">
+              {SNIPPETS.length} snippets across {CATEGORIES.length - 1} categories
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setMode('challenge-settings')} className="bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2.5 rounded-xl text-sm font-bold transition-all border border-primary/20 flex items-center gap-2">
+              <Zap size={16} /> Challenge Mode
+            </button>
+          </div>
+        </div>
+
+        {mode === 'challenge-settings' && (
+          <ChallengeSettings settings={settings} setSettings={setSettings} onStart={startChallenge} isLaunching={isLaunching} />
+        )}
+
+        {mode === 'sandbox' && (
+          <>
+            <div className="flex items-center gap-3 mb-4">
+              <DarkSelect value={sandboxCategory} onChange={setSandboxCategory} options={CATEGORIES.map(c => ({ value: c, label: c === 'All' ? `All (${SNIPPETS.length})` : `${c} (${snippetCounts[c] || 0})` }))} />
+              <DarkSelect value={sandboxSelectedSnippet} onChange={(name) => { const s = filteredSnippets.find(sn => sn.name === name); if (s) { setSandboxCode(s.code); setSandboxOutput([]); setSandboxResult(null); setSandboxSelectedSnippet(s.name); } }} options={filteredSnippets.map(s => ({ value: s.name, label: s.name }))} />
+              <button onClick={sandboxRun} className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
+                <Play size={16} className="fill-current" /> Run
               </button>
             </div>
-          </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 flex-1 min-h-0 pb-10">
-          {/* Snippet Library */}
-          <div className="xl:col-span-1 space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2 mb-4 sticky top-0 bg-[#0a0a0a] py-2 z-10">Snippet Library</h3>
-            {filteredSnippets.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => loadSnippet(s)}
-                className={`w-full p-4 rounded-2xl border text-left transition-all ${
-                  code === s.code 
-                    ? 'bg-primary/10 border-primary text-primary shadow-lg shadow-primary/5' 
-                    : 'bg-white/5 border-white/5 text-gray-400 hover:border-white/10 hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Terminal size={14} />
-                  <span className="text-xs font-bold">{s.name}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Editor Area */}
-          <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="glass-card flex flex-col overflow-hidden"
-            >
-              <div className="p-4 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                <span className="flex items-center gap-2"><Code size={12} /> script.js</span>
-                <div className="flex items-center gap-3">
-                  <button onClick={formatCode} className="flex items-center gap-1 text-gray-500 hover:text-white transition-colors" title="Format code">
-                    <Wand2 size={12} /> Format
-                  </button>
-                  <span className="text-primary">Editable Mode</span>
-                </div>
-              </div>
-              <div className="flex-1 flex overflow-hidden">
-                <div className="w-12 bg-black/30 border-r border-white/5 py-6 px-2 text-right text-[11px] text-gray-600 font-mono select-none overflow-hidden">
-                  {Array.from({ length: lineCount }, (_, i) => (
-                    <div key={i} className="leading-[1.625rem]">{i + 1}</div>
-                  ))}
-                </div>
-                <textarea 
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  spellCheck="false"
-                  className="flex-1 w-full bg-transparent p-6 text-primary-200 font-mono text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed"
-                />
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex flex-col gap-6 h-full"
-            >
-              <div className="glass-card flex-1 flex flex-col overflow-hidden">
-                <div className="p-4 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                  <span className="flex items-center gap-2"><Terminal size={12} /> Console Output</span>
-                  {(output.length > 0 || result !== null) && (
-                    <button onClick={copyOutput} className="flex items-center gap-1 text-gray-500 hover:text-white transition-colors">
-                      {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                      {copied ? 'Copied!' : 'Copy'}
-                    </button>
-                  )}
-                </div>
-                <div className="flex-1 p-6 font-mono text-sm overflow-y-auto custom-scrollbar space-y-2 bg-black/20">
-                  {output.length === 0 && !result && (
-                    <p className="text-gray-600 italic">No output yet. Click 'Run Code' to see results.</p>
-                  )}
-                  {output.map((line, i) => (
-                    <div key={i} className="text-gray-300 border-l-2 border-primary/30 pl-4 py-1">
-                      {line}
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 flex-1 min-h-0 pb-6">
+              <div className="xl:col-span-1 space-y-2 max-h-[calc(100vh-220px)] overflow-y-auto pr-2 custom-scrollbar">
+                <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2 mb-3 sticky top-0 bg-[#0a0a0a] py-2 z-10">Snippets ({filteredSnippets.length})</h3>
+                {filteredSnippets.map((s, i) => (
+                  <button key={i} onClick={() => { setSandboxCode(s.code); setSandboxOutput([]); setSandboxResult(null); setSandboxSelectedSnippet(s.name); }} className={`w-full p-3 rounded-xl border text-left transition-all ${sandboxCode === s.code ? 'bg-primary/10 border-primary/50 shadow-lg shadow-primary/5' : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/5'}`}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className={`text-xs font-bold ${sandboxCode === s.code ? 'text-primary' : 'text-gray-300'}`}>{s.name}</span>
                     </div>
-                  ))}
-                  {result !== null && (
-                    <div className="mt-4 pt-4 border-t border-white/5 flex items-start gap-3">
-                      <Sparkles className="text-yellow-400 mt-1 shrink-0" size={16} />
-                      <div>
-                        <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">Return Value:</p>
-                        <p className="text-primary font-bold">{String(result)}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${CAT_BG[s.category]}`}>{s.category}</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${DIFF_BG[s.difficulty]}`}>{s.difficulty}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="xl:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-5 h-full">
+                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="glass-card flex flex-col overflow-hidden">
+                  <div className="p-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    <span className="flex items-center gap-2"><Code size={12} /> script.js</span>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => formatCode(sandboxCode, setSandboxCode)} className="flex items-center gap-1 text-gray-500 hover:text-white transition-colors"><Wand2 size={12} /> Format</button>
+                      <span className="text-primary">Editable</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex overflow-hidden">
+                    <div className="w-10 bg-black/30 border-r border-white/5 py-4 px-1.5 text-right text-[11px] text-gray-600 font-mono select-none">
+                      {Array.from({ length: sandboxCode.split('\n').length }, (_, i) => <div key={i} className="leading-[1.625rem]">{i + 1}</div>)}
+                    </div>
+                    <textarea value={sandboxCode} onChange={(e) => setSandboxCode(e.target.value)} spellCheck="false" className="flex-1 w-full bg-transparent p-4 text-primary-200 font-mono text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed" />
+                  </div>
+                </motion.div>
+
+                <div className="flex flex-col gap-5 h-full">
+                  <div className="glass-card flex-1 flex flex-col overflow-hidden">
+                    <div className="p-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                      <span className="flex items-center gap-2"><Terminal size={12} /> Output</span>
+                      {sandboxOutput.length > 0 && (
+                        <button onClick={() => { navigator.clipboard.writeText([...sandboxOutput, sandboxResult !== null ? `Return: ${String(sandboxResult)}` : ''].filter(Boolean).join('\n')); setSandboxCopied(true); setTimeout(() => setSandboxCopied(false), 2000); }} className="flex items-center gap-1 text-gray-500 hover:text-white transition-colors">
+                          {sandboxCopied ? <><Check size={12} className="text-green-400" /> Copied!</> : <><Copy size={12} /> Copy</>}
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex-1 p-4 font-mono text-sm overflow-y-auto custom-scrollbar space-y-1.5 bg-black/20">
+                      {sandboxOutput.length === 0 && !sandboxResult && (
+                        <div className="flex flex-col items-center justify-center h-full text-center">
+                          <Terminal size={32} className="text-gray-700 mb-3" />
+                          <p className="text-gray-600 text-sm">No output yet</p>
+                          <p className="text-gray-700 text-xs mt-1">Click Run or Ctrl+Enter</p>
+                        </div>
+                      )}
+                      {sandboxOutput.map((line, i) => <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-gray-300 border-l-2 border-primary/30 pl-3 py-0.5">{line}</motion.div>)}
+                      {sandboxResult !== null && (
+                        <div className="mt-3 pt-3 border-t border-white/5 flex items-start gap-2">
+                          <Sparkles className="text-yellow-400 mt-0.5 shrink-0" size={14} />
+                          <div><p className="text-[10px] text-gray-500 uppercase font-bold mb-0.5">Return</p><p className="text-primary font-bold">{String(sandboxResult)}</p></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {sandboxHistory.length > 0 && (
+                    <div className="glass-card p-4 max-h-36 overflow-y-auto custom-scrollbar">
+                      <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Recent Runs</h4>
+                      <div className="space-y-1.5">
+                        {sandboxHistory.map((h, i) => (
+                          <div key={i} className="flex items-center justify-between text-xs p-2 rounded-lg bg-white/[0.02] border border-white/5">
+                            <div className="flex items-center gap-2">
+                              <span className={`w-1.5 h-1.5 rounded-full ${h.err ? 'bg-red-400' : 'bg-green-400'}`} />
+                              <span className="text-gray-500">{h.ts}</span>
+                              <span className="text-gray-600 truncate max-w-[200px]">{h.code}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
                 </div>
               </div>
-            </motion.div>
-          </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </DashboardLayout>
   );
