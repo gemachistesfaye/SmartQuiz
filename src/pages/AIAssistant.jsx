@@ -7,6 +7,24 @@ import { useAuth } from '../context/AuthContext';
 import { db } from '../services/firebase';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
+const TIPS = [
+  "Use console.table() to visualize large arrays and objects more clearly.",
+  "Always use === instead of == to avoid type coercion bugs.",
+  "Arrow functions don't have their own 'this' — use them for callbacks.",
+  "Use optional chaining (?.) to safely access deeply nested properties.",
+  "const prevents reassignment, but objects/arrays are still mutable.",
+  "Destructuring makes extracting values from objects clean and readable.",
+  "Use template literals instead of string concatenation for readability.",
+  "Promise.all() runs multiple async operations in parallel.",
+  "Use early returns to flatten nested if-else chains.",
+  "Map, filter, and reduce are more expressive than for loops.",
+  "Use semantic HTML tags (article, section, nav) for better accessibility.",
+  "CSS Grid is ideal for 2D layouts; Flexbox is best for 1D.",
+  "Always sanitize user input to prevent XSS attacks.",
+  "Use HTTPS everywhere — never send credentials over plain HTTP.",
+  "Hash passwords with bcrypt, never store them in plain text.",
+];
+
 
 export default function AIAssistant() {
   const { currentUser } = useAuth();
@@ -30,6 +48,7 @@ export default function AIAssistant() {
     return saved;
   });
   const [showApiSettings, setShowApiSettings] = useState(false);
+  const [currentTip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -406,7 +425,7 @@ export default function AIAssistant() {
                     <span className="text-xs font-bold text-gray-300">Quick Tip</span>
                   </div>
                   <p className="text-[10px] text-gray-500 leading-relaxed">
-                    Use <code className="text-primary">console.table()</code> to visualize large arrays and objects more clearly.
+                    {currentTip}
                   </p>
                 </div>
                 
