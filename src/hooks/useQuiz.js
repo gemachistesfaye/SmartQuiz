@@ -30,6 +30,10 @@ export const useQuiz = (settings) => {
       if (settings.difficulty !== 'all') {
         fetchedQuestions = fetchedQuestions.filter(q => q.difficulty === settings.difficulty);
       }
+
+      if (settings.category && settings.category !== 'all') {
+        fetchedQuestions = fetchedQuestions.filter(q => q.category === settings.category);
+      }
       
       // Shuffle
       const shuffled = [...fetchedQuestions].sort(() => Math.random() - 0.5);

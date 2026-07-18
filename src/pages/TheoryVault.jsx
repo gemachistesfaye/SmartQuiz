@@ -1,26 +1,42 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import DashboardLayout from '../layouts/DashboardLayout';
+import { useAuth } from '../context/AuthContext';
+import { addBookmark, removeBookmark, subscribeToBookmarks } from '../utils/bookmarks';
 import { concepts } from '../data/theoryVault';
-import { Search, BookOpen, ChevronRight, X, Sparkles, Code, Terminal } from 'lucide-react';
+import { Search, BookOpen, ChevronRight, X, Sparkles, Code, Terminal, Bookmark, BookmarkCheck } from 'lucide-react';
 
 export default function TheoryVault() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedConcept, setSelectedConcept] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
+  const [bookmarks, setBookmarks] = useState([]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const unsub = subscribeToBookmarks(currentUser.uid, (data) => {
+      setBookmarks(data.filter(b => b.type === 'theory'));
+    });
+    return () => unsub();
+  }, [currentUser]);
+
+  const bookmarkedTitles = useMemo(() => new Set(bookmarks.map(b => b.title)), [bookmarks]);
 
   const categories = useMemo(() => ['All', ...new Set(concepts.map(c => c.category))], []);
 
   const filteredConcepts = useMemo(() =>
     concepts.filter(c =>
       (activeCategory === 'All' || c.category === activeCategory) &&
+      (!showBookmarksOnly || bookmarkedTitles.has(c.title)) &&
       (c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
        c.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
        c.subcategory.toLowerCase().includes(searchTerm.toLowerCase()))
-    ), [activeCategory, searchTerm]);
+    ), [activeCategory, searchTerm, showBookmarksOnly, bookmarkedTitles]);
 
   const categoryColors = {
     JavaScript: 'text-yellow-400',
@@ -52,6 +68,17 @@ export default function TheoryVault() {
               className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
             />
           </div>
+          <button
+            onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
+            className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all border shrink-0 ${
+              showBookmarksOnly
+                ? 'bg-primary border-primary text-white'
+                : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+            }`}
+          >
+            {showBookmarksOnly ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+            {showBookmarksOnly ? 'Bookmarked' : `Bookmarks (${bookmarks.length})`}
+          </button>
         </div>
 
         {/* Categories */}
@@ -87,7 +114,7 @@ export default function TheoryVault() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {items.map((concept, i) => (
-                    <ConceptCard key={concept.title} concept={concept} index={i} onClick={() => setSelectedConcept(concept)} />
+                    <ConceptCard key={concept.title} concept={concept} index={i} onClick={() => setSelectedConcept(concept)} isBookmarked={bookmarkedTitles.has(concept.title)} />
                   ))}
                 </div>
               </div>
@@ -97,7 +124,7 @@ export default function TheoryVault() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
               {filteredConcepts.map((concept, i) => (
-                <ConceptCard key={concept.title} concept={concept} index={i} onClick={() => setSelectedConcept(concept)} />
+                <ConceptCard key={concept.title} concept={concept} index={i} onClick={() => setSelectedConcept(concept)} isBookmarked={bookmarkedTitles.has(concept.title)} />
               ))}
             </AnimatePresence>
           </div>
@@ -166,10 +193,26 @@ export default function TheoryVault() {
                       Take {selectedConcept.title} Quiz
                     </button>
                     <button
-                      onClick={() => { toast.success(`${selectedConcept.title} saved to bookmarks!`); }}
-                      className="px-6 border border-white/10 text-white rounded-xl hover:bg-white/5 transition-all"
+                      onClick={async () => {
+                        if (!currentUser) { toast.error("Please log in to bookmark"); return; }
+                        if (bookmarkedTitles.has(selectedConcept.title)) {
+                          await removeBookmark(currentUser.uid, 'theory', selectedConcept.title);
+                          toast.success(`Removed "${selectedConcept.title}"`);
+                        } else {
+                          const ok = await addBookmark(currentUser.uid, {
+                            type: 'theory',
+                            title: selectedConcept.title,
+                            description: selectedConcept.description,
+                            category: selectedConcept.category,
+                            subcategory: selectedConcept.subcategory,
+                          });
+                          toast[ok ? 'success' : 'info'](ok ? `${selectedConcept.title} bookmarked!` : 'Already bookmarked');
+                        }
+                      }}
+                      className="px-6 border border-white/10 text-white rounded-xl hover:bg-white/5 transition-all flex items-center gap-2"
                     >
-                      Bookmark
+                      {bookmarkedTitles.has(selectedConcept.title) ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
+                      {bookmarkedTitles.has(selectedConcept.title) ? 'Bookmarked' : 'Bookmark'}
                     </button>
                   </div>
                 </div>
@@ -182,7 +225,7 @@ export default function TheoryVault() {
   );
 }
 
-function ConceptCard({ concept, index, onClick }) {
+function ConceptCard({ concept, index, onClick, isBookmarked }) {
   const categoryColors = {
     JavaScript: 'bg-yellow-400/20 text-yellow-400',
     HTML: 'bg-orange-400/20 text-orange-400',
@@ -205,8 +248,11 @@ function ConceptCard({ concept, index, onClick }) {
         <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded ${categoryColors[concept.category] || 'bg-primary/10 text-primary'}`}>
           {concept.subcategory}
         </span>
-        <div className="text-gray-600 group-hover:text-primary transition-colors">
-          <ChevronRight size={20} />
+        <div className="flex items-center gap-1">
+          {isBookmarked && <BookmarkCheck size={14} className="text-primary" />}
+          <div className="text-gray-600 group-hover:text-primary transition-colors">
+            <ChevronRight size={20} />
+          </div>
         </div>
       </div>
       <h3 className="text-xl font-bold text-white mb-2">{concept.title}</h3>

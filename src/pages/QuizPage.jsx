@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 export default function QuizPage() {
   const [settings, setSettings] = useState({
     difficulty: 'all',
+    category: 'all',
     timerMode: true,
     mode: 'daily'
   });
@@ -59,13 +60,28 @@ export default function QuizPage() {
           <div className="bg-primary/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8">
             <Brain className="text-primary" size={40} />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">JS Mastery Quiz</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">
+            {settings.category !== 'all' ? settings.category : 'JS'} Mastery Quiz
+          </h1>
           <p className="text-gray-400 mb-10 leading-relaxed">
-            Test your JavaScript knowledge with our advanced quiz engine. 
+            Test your {settings.category !== 'all' ? settings.category : 'JavaScript'} knowledge with our advanced quiz engine.
             Choose your settings and aim for a perfect streak!
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-left">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-left">
+            <DarkSelect
+              label="Category"
+              value={settings.category}
+              onChange={(val) => setSettings({...settings, category: val})}
+              options={[
+                { value: 'all', label: 'All Categories' },
+                { value: 'JavaScript', label: 'JavaScript' },
+                { value: 'HTML', label: 'HTML' },
+                { value: 'CSS', label: 'CSS' },
+                { value: 'React', label: 'React' },
+                { value: 'Cybersecurity', label: 'Cybersecurity' },
+              ]}
+            />
             <DarkSelect
               label="Difficulty"
               value={settings.difficulty}

@@ -5,36 +5,59 @@ import { Play, Code, Terminal, Sparkles, Copy, Check, Wand2 } from 'lucide-react
 import DarkSelect from '../components/ui/DarkSelect';
 
 const SNIPPETS = [
-  { name: "Standard Greeting", code: `const greeting = "Hello, SmartQuiz Master!";\nconst scores = [85, 92, 78, 95];\nconst average = scores.reduce((a, b) => a + b) / scores.length;\nconsole.log(greeting);\nconsole.log("Your average score is:", average);\nreturn "Ready to master JS?";` },
-  { name: "Closure Bank", code: `function createBank(name) {\n  let balance = 1000;\n  return {\n    deposit: (amt) => { balance += amt; return balance; },\n    check: () => name + "'s Balance: $" + balance\n  };\n}\nconst myAcc = createBank("Alice");\nmyAcc.deposit(500);\nconsole.log(myAcc.check());\nreturn "Private data secured.";` },
-  { name: "Array Mastery", code: `const users = [{n:"A",xp:1200},{n:"B",xp:800},{n:"C",xp:2500}];\nconst legends = users.filter(u => u.xp > 1000).map(u => u.n);\nconsole.log("Legends:", legends);\nreturn "Functional logic.";` },
-  { name: "Async Mock", code: `console.log("Start");\nsetTimeout(() => console.log("Task Done!"), 1500);\nconsole.log("Next...");\nreturn "Wait for console.";` },
-  { name: "Destructuring", code: `const user = { id: 1, info: { email: "test@sq.com" } };\nconst { info: { email } } = user;\nconsole.log("Email:", email);\nreturn "Clean extraction.";` },
-  { name: "Promise Chain", code: `Promise.resolve("Step 1")\n  .then(v => v + " -> Step 2")\n  .then(v => { console.log(v); return "Done"; });\nreturn "Promises are cleaner.";` },
-  { name: "Object Factory", code: `const createHero = (name, power) => ({ name, power, use() { return name + " uses " + power; } });\nconst h = createHero("Dev", "Clean Code");\nconsole.log(h.use());\nreturn "Factory pattern.";` },
-  { name: "Map vs Set", code: `const s = new Set([1, 2, 2, 3]);\nconst m = new Map([["a", 1]]);\nconsole.log("Set (Unique):", [...s]);\nconsole.log("Map Value:", m.get("a"));\nreturn "New ES6 collections.";` },
-  { name: "Recursion (Factorial)", code: `const fact = (n) => n <= 1 ? 1 : n * fact(n-1);\nconsole.log("Factorial of 5:", fact(5));\nreturn "Recursive logic.";` },
-  { name: "Proxy Validation", code: `const user = { age: 25 };\nconst proxy = new Proxy(user, {\n  set(target, prop, val) {\n    if (prop === 'age' && val < 0) throw Error("Invalid age");\n    target[prop] = val;\n    return true;\n  }\n});\nproxy.age = 30;\nconsole.log(proxy.age);\nreturn "Advanced Meta-programming.";` },
-  { name: "Currying Sum", code: `const sum = a => b => c => a + b + c;\nconsole.log("Sum(1)(2)(3):", sum(1)(2)(3));\nreturn "Currying pattern.";` },
-  { name: "Module Pattern", code: `const Counter = (() => {\n  let count = 0;\n  return {\n    inc: () => ++count,\n    val: () => count\n  };\n})();\nCounter.inc();\nconsole.log(Counter.val());\nreturn "Classic IIFE Module.";` },
-  { name: "Event Bus (Basic)", code: `const bus = {\n  events: {},\n  on(e, fn) { (this.events[e] = this.events[e] || []).push(fn); },\n  emit(e, d) { this.events[e]?.forEach(fn => fn(d)); }\n};\nbus.on('test', (v) => console.log('Heard:', v));\nbus.emit('test', 'Hello!');\nreturn "Simple Pub/Sub.";` },
-  { name: "Fibonacci Iterative", code: `function fib(n) {\n  let [a, b] = [0, 1];\n  while (n-- > 0) [a, b] = [b, a + b];\n  return a;\n}\nconsole.log("Fib 10:", fib(10));\nreturn "Efficient iteration.";` },
-  { name: "String Interpolation", code: `const u = "Dev", x = 5000;\nconsole.log(\`User \${u} has \${x} XP\`);\nreturn "Template Literals.";` },
-  { name: "Class Inheritance", code: `class Animal { constructor(n) { this.n = n; } speak() { return this.n + " makes a sound."; } }\nclass Dog extends Animal { speak() { return this.n + " barks!"; } }\nconst d = new Dog("Rex");\nconsole.log(d.speak());\nreturn "Modern Classes.";` },
-  { name: "Generator Function", code: `function* gen() { yield 1; yield 2; yield 3; }\nconst it = gen();\nconsole.log(it.next().value);\nconsole.log(it.next().value);\nreturn "Generators are cool.";` },
-  { name: "Default Parameters", code: `const greet = (n = "Guest") => "Welcome, " + n;\nconsole.log(greet());\nconsole.log(greet("Admin"));\nreturn "Clean defaults.";` },
-  { name: "Try/Catch Async", code: `async function test() {\n  try {\n    throw "Boom!";\n  } catch (e) { console.log("Caught:", e); }\n}\ntest();\nreturn "Error handling.";` },
-  { name: "Debounce Simulation", code: `const debounce = (fn, delay) => {\n  let t;\n  return () => { clearTimeout(t); t = setTimeout(fn, delay); };\n};\nconst act = debounce(() => console.log('Action!'), 500);\nact(); act(); // Only one log\nreturn "Performance tip.";` },
-  { name: "Object Assign", code: `const a = {x:1}, b = {y:2};\nconst c = Object.assign({}, a, b);\nconsole.log(c);\nreturn "Object merging.";` },
-  { name: "Symbol Key", code: `const id = Symbol('id');\nconst u = { [id]: 123, name: "A" };\nconsole.log(u[id]);\nreturn "Hidden unique keys.";` },
-  { name: "Nullish Coalescing", code: `const x = 0 ?? 10;\nconst y = null ?? 10;\nconsole.log(x, y);\nreturn "Better than || operator.";` },
-  { name: "Optional Chaining", code: `const u = { profile: { bio: "Hi" } };\nconsole.log(u?.meta?.tags?.[0]);\nreturn "Safe property access.";` },
-  { name: "Pipe Implementation", code: `const pipe = (...fns) => (v) => fns.reduce((a, f) => f(a), v);\nconst add1 = x => x + 1;\nconst sq = x => x * x;\nconsole.log(pipe(add1, sq)(2)); // (2+1)^2 = 9\nreturn "Functional pipes.";` },
-  { name: "Deep Clone (Basic)", code: `const obj = { a: { b: 1 } };\nconst clone = JSON.parse(JSON.stringify(obj));\nclone.a.b = 2;\nconsole.log(obj.a.b, clone.a.b);\nreturn "Deep vs Shallow.";` },
-  { name: "Memoize Function", code: `const memo = (fn) => {\n  const cache = {};\n  return (n) => cache[n] || (cache[n] = fn(n));\n};\nconst fastFact = memo(n => n <= 1 ? 1 : n * fastFact(n-1));\nconsole.log(fastFact(5));\nreturn "Caching results.";` },
-  { name: "Intersection Observer", code: `console.log("Mocking Observer Logic...");\n// Standard JS: new IntersectionObserver(cb, opt);\nreturn "Web API Knowledge.";` },
-  { name: "Worker PostMessage", code: `console.log("Main Thread -> Worker");\n// worker.postMessage({cmd: 'start'});\nreturn "Multi-threading in JS.";` },
-  { name: "Bitwise XOR Swap", code: `let a = 5, b = 10;\na ^= b; b ^= a; a ^= b;\nconsole.log("Swapped:", a, b);\nreturn "Low-level tricks.";` }
+  // JavaScript — Fundamentals
+  { name: "Standard Greeting", category: "JavaScript", code: `const greeting = "Hello, SmartQuiz Master!";\nconst scores = [85, 92, 78, 95];\nconst average = scores.reduce((a, b) => a + b) / scores.length;\nconsole.log(greeting);\nconsole.log("Your average score is:", average);\nreturn "Ready to master JS?";` },
+  { name: "Destructuring", category: "JavaScript", code: `const user = { id: 1, info: { email: "test@sq.com" } };\nconst { info: { email } } = user;\nconsole.log("Email:", email);\nreturn "Clean extraction.";` },
+  { name: "Template Literals", category: "JavaScript", code: `const u = "Dev", x = 5000;\nconsole.log(\`User \${u} has \${x} XP\`);\nreturn "Template Literals.";` },
+  { name: "Default Parameters", category: "JavaScript", code: `const greet = (n = "Guest") => "Welcome, " + n;\nconsole.log(greet());\nconsole.log(greet("Admin"));\nreturn "Clean defaults.";` },
+  { name: "Nullish Coalescing", category: "JavaScript", code: `const x = 0 ?? 10;\nconst y = null ?? 10;\nconsole.log(x, y);\nreturn "Better than || operator.";` },
+  { name: "Optional Chaining", category: "JavaScript", code: `const u = { profile: { bio: "Hi" } };\nconsole.log(u?.meta?.tags?.[0]);\nreturn "Safe property access.";` },
+  { name: "Map vs Set", category: "JavaScript", code: `const s = new Set([1, 2, 2, 3]);\nconst m = new Map([["a", 1]]);\nconsole.log("Set (Unique):", [...s]);\nconsole.log("Map Value:", m.get("a"));\nreturn "New ES6 collections.";` },
+  { name: "Symbol Key", category: "JavaScript", code: `const id = Symbol('id');\nconst u = { [id]: 123, name: "A" };\nconsole.log(u[id]);\nreturn "Hidden unique keys.";` },
+
+  // JavaScript — Advanced
+  { name: "Closure Bank", category: "JavaScript", code: `function createBank(name) {\n  let balance = 1000;\n  return {\n    deposit: (amt) => { balance += amt; return balance; },\n    check: () => name + "'s Balance: $" + balance\n  };\n}\nconst myAcc = createBank("Alice");\nmyAcc.deposit(500);\nconsole.log(myAcc.check());\nreturn "Private data secured.";` },
+  { name: "Proxy Validation", category: "JavaScript", code: `const user = { age: 25 };\nconst proxy = new Proxy(user, {\n  set(target, prop, val) {\n    if (prop === 'age' && val < 0) throw Error("Invalid age");\n    target[prop] = val;\n    return true;\n  }\n});\nproxy.age = 30;\nconsole.log(proxy.age);\nreturn "Advanced Meta-programming.";` },
+  { name: "Generator Function", category: "JavaScript", code: `function* gen() { yield 1; yield 2; yield 3; }\nconst it = gen();\nconsole.log(it.next().value);\nconsole.log(it.next().value);\nreturn "Generators are cool.";` },
+  { name: "Class Inheritance", category: "JavaScript", code: `class Animal { constructor(n) { this.n = n; } speak() { return this.n + " makes a sound."; } }\nclass Dog extends Animal { speak() { return this.n + " barks!"; } }\nconst d = new Dog("Rex");\nconsole.log(d.speak());\nreturn "Modern Classes.";` },
+  { name: "Promise Chain", category: "JavaScript", code: `Promise.resolve("Step 1")\n  .then(v => v + " -> Step 2")\n  .then(v => { console.log(v); return "Done"; });\nreturn "Promises are cleaner.";` },
+  { name: "Try/Catch Async", category: "JavaScript", code: `async function test() {\n  try {\n    throw "Boom!";\n  } catch (e) { console.log("Caught:", e); }\n}\ntest();\nreturn "Error handling.";` },
+  { name: "Recursion (Factorial)", category: "JavaScript", code: `const fact = (n) => n <= 1 ? 1 : n * fact(n-1);\nconsole.log("Factorial of 5:", fact(5));\nreturn "Recursive logic.";` },
+  { name: "Fibonacci Iterative", category: "JavaScript", code: `function fib(n) {\n  let [a, b] = [0, 1];\n  while (n-- > 0) [a, b] = [b, a + b];\n  return a;\n}\nconsole.log("Fib 10:", fib(10));\nreturn "Efficient iteration.";` },
+
+  // JavaScript — Functional
+  { name: "Currying Sum", category: "JavaScript", code: `const sum = a => b => c => a + b + c;\nconsole.log("Sum(1)(2)(3):", sum(1)(2)(3));\nreturn "Currying pattern.";` },
+  { name: "Debounce Simulation", category: "JavaScript", code: `const debounce = (fn, delay) => {\n  let t;\n  return () => { clearTimeout(t); t = setTimeout(fn, delay); };\n};\nconst act = debounce(() => console.log('Action!'), 500);\nact(); act();\nreturn "Performance tip.";` },
+  { name: "Memoize Function", category: "JavaScript", code: `const memo = (fn) => {\n  const cache = {};\n  return (n) => cache[n] || (cache[n] = fn(n));\n};\nconst fastFact = memo(n => n <= 1 ? 1 : n * fastFact(n-1));\nconsole.log(fastFact(5));\nreturn "Caching results.";` },
+  { name: "Pipe Implementation", category: "JavaScript", code: `const pipe = (...fns) => (v) => fns.reduce((a, f) => f(a), v);\nconst add1 = x => x + 1;\nconst sq = x => x * x;\nconsole.log(pipe(add1, sq)(2));\nreturn "Functional pipes.";` },
+  { name: "Module Pattern", category: "JavaScript", code: `const Counter = (() => {\n  let count = 0;\n  return {\n    inc: () => ++count,\n    val: () => count\n  };\n})();\nCounter.inc();\nconsole.log(Counter.val());\nreturn "Classic IIFE Module.";` },
+
+  // HTML
+  { name: "Semantic Structure", category: "HTML", code: `const html = \`\n  <header><nav>Menu</nav></header>\n  <main>\n    <article>\n      <h1>Title</h1>\n      <section>Content</section>\n    </article>\n    <aside>Sidebar</aside>\n  </main>\n  <footer>Copyright</footer>\n\`;\nconsole.log("Semantic HTML structure created");\nreturn html;` },
+  { name: "Form Validation", category: "HTML", code: `const form = {\n  email: "test@example.com",\n  validateEmail(e) { return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(e); },\n  password: "Secret123",\n  validatePassword(p) { return p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p); }\n};\nconsole.log("Email valid:", form.validateEmail(form.email));\nconsole.log("Password valid:", form.validatePassword(form.password));\nreturn "HTML5 validation patterns.";` },
+  { name: "Accessibility Check", category: "HTML", code: `const a11y = {\n  roles: ["banner", "navigation", "main", "contentinfo"],\n  check(img) { return img.alt ? "Pass" : "Fail: missing alt"; },\n  checkLabel(input) { return input.id ? "Pass" : "Fail: missing label"; }\n};\nconsole.log("Roles:", a11y.roles.join(", "));\nconsole.log("Image:", a11y.check({ alt: "logo" }));\nreturn "a11y best practices.";` },
+  { name: "Meta Tags Builder", category: "HTML", code: `const meta = {\n  title: "SmartQuiz - Master JS",\n  description: "Interactive JavaScript learning platform",\n  ogImage: "https://smartquiz.com/og.png",\n  render() {\n    return \`<title>\${this.title}</title>\\n<meta name="description" content="\${this.description}">\\n<meta property="og:image" content="\${this.ogImage}">\`;\n  }\n};\nconsole.log(meta.render());\nreturn "SEO meta tags.";` },
+  { name: "Canvas Drawing", category: "HTML", code: `const canvas = { width: 400, height: 300 };\nconst ctx = {\n  fillStyle: "#3b82f6",\n  fillRect(x, y, w, h) { console.log(\`Drawing rect at (\${x},\${y}) \${w}x\${h}\`); },\n  arc(x, y, r) { console.log(\`Drawing circle at (\${x},\${y}) r=\${r}\`); }\n};\nctx.fillRect(10, 10, 100, 50);\nctx.arc(200, 150, 40);\nreturn "Canvas 2D API basics.";` },
+
+  // CSS
+  { name: "Flexbox Centering", category: "CSS", code: `const styles = {\n  container: { display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" },\n  card: { padding: "2rem", borderRadius: "12px", background: "#1a1a2e" }\n};\nconsole.log("Flex center:", JSON.stringify(styles.container));\nreturn "Perfect centering.";` },
+  { name: "Grid Layout", category: "CSS", code: `const grid = {\n  display: "grid",\n  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",\n  gap: "16px"\n};\nconsole.log("Responsive grid:", JSON.stringify(grid));\nreturn "CSS Grid magic.";` },
+  { name: "Custom Properties", category: "CSS", code: `const css = {\n  ":root": { "--primary": "#3b82f6", "--radius": "12px", "--spacing": "16px" },\n  ".card": { "background": "var(--primary)", "border-radius": "var(--radius)", "padding": "var(--spacing)" }\n};\nconsole.log("CSS Variables:", JSON.stringify(css));\nreturn "Theme system.";` },
+  { name: "Responsive Breakpoints", category: "CSS", code: `const breakpoints = {\n  sm: "640px", md: "768px", lg: "1024px", xl: "1280px"\n};\nconst mediaQuery = (bp, styles) => \`@media (min-width: \${bp}) { \${styles} }\`;\nconsole.log(mediaQuery(breakpoints.md, ".container { padding: 24px; }"));\nreturn "Mobile-first CSS.";` },
+  { name: "Animation Keyframes", category: "CSS", code: `const animations = {\n  pulse: "0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); }",\n  slideUp: "from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; }",\n  fadeIn: "from { opacity: 0; } to { opacity: 1; }"\n};\nObject.keys(animations).forEach(name => console.log(\`@keyframes \${name} defined\`));\nreturn "CSS animations.";` },
+  { name: "Gradient Builder", category: "CSS", code: `const gradients = {\n  primary: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",\n  dark: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",\n  glass: "linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))"\n};\nObject.entries(gradients).forEach(([name, val]) => console.log(\`\${name}: \${val.substring(0, 40)}...\`));\nreturn "Modern gradients.";` },
+
+  // React
+  { name: "useState Hook", category: "React", code: `// React component pattern\nconst Counter = () => {\n  let count = 0;\n  const increment = () => { count++; console.log("Count:", count); };\n  return { count, increment };\n};\nconst c = Counter();\nc.increment();\nc.increment();\nconsole.log("Final:", c.count);\nreturn "React state pattern.";` },
+  { name: "useEffect Pattern", category: "React", code: `const useEffect = (fn, deps) => {\n  console.log("Effect running, deps:", deps);\n  const cleanup = fn();\n  return () => { console.log("Cleanup:", deps); };\n};\nuseEffect(() => { console.log("Mounted!"); return () => console.log("Unmounted!"); }, []);\nreturn "React lifecycle.";` },
+  { name: "Custom Hook", category: "React", code: `const useLocalStorage = (key, initial) => {\n  let value = initial;\n  const get = () => { console.log(\`Reading \${key}\`); return value; };\n  const set = (v) => { value = v; console.log(\`Setting \${key} = \${v}\`); };\n  return [get, set];\n};\nconst [getTheme, setTheme] = useLocalStorage("theme", "dark");\nconsole.log("Theme:", getTheme());\nsetTheme("light");\nreturn "Custom hook pattern.";` },
+  { name: "Component Composition", category: "React", code: `const Card = ({ title, children }) => ({ title, children, render: () => \`<div class="card"><h2>\${title}</h2>\${children}</div>\` });\nconst card = Card({ title: "Hello", children: "World" });\nconsole.log(card.render());\nreturn "Composition pattern.";` },
+
+  // Cybersecurity
+  { name: "XSS Prevention", category: "Cybersecurity", code: `const sanitize = (input) => input.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");\nconst malicious = '<script>alert("XSS")</script>';\nconsole.log("Raw:", malicious);\nconsole.log("Clean:", sanitize(malicious));\nreturn "XSS prevention.";` },
+  { name: "Password Hashing", category: "Cybersecurity", code: `const hash = (password) => {\n  let h = 0;\n  for (let i = 0; i < password.length; i++) {\n    h = ((h << 5) - h + password.charCodeAt(i)) | 0;\n  }\n  return h.toString(16);\n};\nconsole.log("Hash:", hash("SecurePass123"));\nconsole.log("Same hash:", hash("SecurePass123") === hash("SecurePass123"));\nreturn "Basic hashing demo.";` },
+  { name: "CSRF Token", category: "Cybersecurity", code: `const generateToken = () => {\n  const arr = new Uint8Array(32);\n  crypto.getRandomValues(arr);\n  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');\n};\nconst token = generateToken();\nconsole.log("CSRF Token:", token.substring(0, 16) + "...");\nconsole.log("Token length:", token.length);\nreturn "CSRF protection.";` },
+  { name: "Input Validation", category: "Cybersecurity", code: `const validate = {\n  email: (e) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(e),\n  phone: (p) => /^\\+?[1-9]\\d{1,14}$/.test(p),\n  username: (u) => /^[a-zA-Z0-9_]{3,20}$/.test(u)\n};\nconsole.log("Email:", validate.email("test@example.com"));\nconsole.log("Phone:", validate.phone("+1234567890"));\nconsole.log("Username:", validate.username("dev_user"));\nreturn "Input validation.";` },
 ];
 
 export default function CodeLab() {
@@ -43,8 +66,15 @@ export default function CodeLab() {
   const [result, setResult] = useState(null);
   const [copied, setCopied] = useState(false);
   const [selectedSnippet, setSelectedSnippet] = useState(SNIPPETS[0].name);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const lineCount = useMemo(() => code.split('\n').length, [code]);
+
+  const CATEGORIES = useMemo(() => ['All', ...new Set(SNIPPETS.map(s => s.category))], []);
+  const filteredSnippets = useMemo(() =>
+    selectedCategory === 'All' ? SNIPPETS : SNIPPETS.filter(s => s.category === selectedCategory),
+    [selectedCategory]
+  );
 
   const copyOutput = () => {
     const text = [...output, result !== null ? `Return: ${String(result)}` : ''].filter(Boolean).join('\n');
@@ -114,14 +144,21 @@ export default function CodeLab() {
               <p className="text-gray-400 mt-1">Real-time JavaScript experimental sandbox.</p>
             </div>
             <div className="flex items-center gap-4">
+              <div className="w-44">
+                <DarkSelect
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                  options={CATEGORIES.map(c => ({ value: c, label: c }))}
+                />
+              </div>
               <div className="w-56">
                 <DarkSelect
                   value={selectedSnippet}
                   onChange={(name) => {
-                    const s = SNIPPETS.find(sn => sn.name === name);
+                    const s = filteredSnippets.find(sn => sn.name === name);
                     if (s) loadSnippet(s);
                   }}
-                  options={SNIPPETS.map(s => ({ value: s.name, label: s.name }))}
+                  options={filteredSnippets.map(s => ({ value: s.name, label: s.name }))}
                 />
               </div>
               <button 
@@ -137,7 +174,7 @@ export default function CodeLab() {
           {/* Snippet Library */}
           <div className="xl:col-span-1 space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2 mb-4 sticky top-0 bg-[#0a0a0a] py-2 z-10">Snippet Library</h3>
-            {SNIPPETS.map((s, i) => (
+            {filteredSnippets.map((s, i) => (
               <button
                 key={i}
                 onClick={() => loadSnippet(s)}
