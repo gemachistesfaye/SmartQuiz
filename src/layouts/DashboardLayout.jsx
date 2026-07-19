@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import StudentSidebar from '../components/dashboard/StudentSidebar';
-import AdminSidebar from '../components/dashboard/AdminSidebar';
+import Sidebar from '../components/dashboard/Sidebar';
 import Header from '../components/dashboard/Header';
-import MobileSidebar from '../components/dashboard/MobileSidebar';
 import { useAuth } from '../context/AuthContext';
 
 export default function DashboardLayout({ children }) {
@@ -13,13 +11,7 @@ export default function DashboardLayout({ children }) {
     <div className={`min-h-screen flex font-sans transition-colors duration-500 ${
       isAdmin ? 'bg-[#0f0505]' : 'bg-background'
     }`}>
-      {/* Desktop sidebar */}
-      <div className="hidden lg:block">
-        {isAdmin ? <AdminSidebar /> : <StudentSidebar />}
-      </div>
-      
-      {/* Mobile sidebar */}
-      <MobileSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
       
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto custom-scrollbar relative">
         <Header onMenuClick={() => setSidebarOpen(true)} />

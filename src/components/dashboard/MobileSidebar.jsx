@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { 
   LayoutDashboard, BookOpen, Zap, Code, Sparkles, BarChart3, 
-  Trophy, Settings, LogOut, X, Brain, Shield, ChevronRight
+  Trophy, Settings, LogOut, X, Brain, Shield, ChevronRight, AlertTriangle
 } from 'lucide-react';
 
 const studentLinks = [
@@ -15,19 +15,18 @@ const studentLinks = [
   { icon: Sparkles, label: 'AI Assistant', path: '/ai-assistant' },
   { icon: BarChart3, label: 'Analytics', path: '/analytics' },
   { icon: Trophy, label: 'Leaderboard', path: '/leaderboard' },
-  { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 const adminLinks = [
   { icon: Shield, label: 'Admin Panel', path: '/admin' },
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 export default function MobileSidebar({ isOpen, onClose }) {
   const location = useLocation();
-  const { currentUser, userData, isAdmin, logout } = useAuth();
+  const { isAdmin, logout } = useAuth();
   const links = isAdmin ? adminLinks : studentLinks;
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -41,6 +40,13 @@ export default function MobileSidebar({ isOpen, onClose }) {
   useEffect(() => {
     onClose();
   }, [location.pathname]);
+
+  const handleLogout = async () => {
+    setShowLogoutConfirm(false);
+    onClose();
+    await logout();
+    window.location.href = '/';
+  };
 
   return (
     <AnimatePresence>
@@ -58,11 +64,11 @@ export default function MobileSidebar({ isOpen, onClose }) {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed top-0 left-0 bottom-0 w-72 bg-[#0d0d0d] border-r border-white/10 z-[70] lg:hidden flex flex-col"
+            className="fixed top-0 left-0 bottom-0 w-72 bg-[#111111] border-r border-white/10 z-[70] lg:hidden flex flex-col shadow-2xl shadow-black/50"
           >
             {/* Header */}
             <div className="p-5 border-b border-white/10">
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center justify-between">
                 <Link to="/dashboard" className="flex items-center gap-2.5">
                   <div className="bg-primary/20 p-2 rounded-xl">
                     <Brain className="w-6 h-6 text-primary" />
@@ -73,19 +79,6 @@ export default function MobileSidebar({ isOpen, onClose }) {
                   <X size={20} />
                 </button>
               </div>
-              {currentUser && (
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
-                  <img 
-                    src={`https://ui-avatars.com/api/?name=${userData?.fullName || 'User'}&background=random`} 
-                    alt="" 
-                    className="w-9 h-9 rounded-lg"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{userData?.fullName || 'Learner'}</p>
-                    <p className="text-[10px] text-gray-500 truncate">@{userData?.username || 'learner'}</p>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Nav Links */}
@@ -113,11 +106,20 @@ export default function MobileSidebar({ isOpen, onClose }) {
 
             {/* Footer */}
             <div className="p-3 border-t border-white/10">
+              <Link
+                to="/settings"
+                className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  location.pathname === '/settings'
+                    ? 'bg-primary/15 text-primary'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Settings size={18} />
+                <span className="flex-1">Settings</span>
+                {location.pathname === '/settings' && <ChevronRight size={16} className="text-primary" />}
+              </Link>
               <button
-                onClick={async () => {
-                  await logout();
-                  window.location.href = '/';
-                }}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
               >
                 <LogOut size={18} />
@@ -125,6 +127,22 @@ export default function MobileSidebar({ isOpen, onClose }) {
               </button>
             </div>
           </motion.div>
+
+          {showLogoutConfirm && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Logout confirmation">
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-card max-w-sm w-full p-8 text-center">
+                <div className="bg-red-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <AlertTriangle className="text-red-400" size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Log Out?</h3>
+                <p className="text-gray-400 mb-6">Are you sure you want to log out?</p>
+                <div className="flex gap-3">
+                  <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-bold transition-all">Cancel</button>
+                  <button onClick={handleLogout} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-all">Log Out</button>
+                </div>
+              </motion.div>
+            </div>
+          )}
         </>
       )}
     </AnimatePresence>

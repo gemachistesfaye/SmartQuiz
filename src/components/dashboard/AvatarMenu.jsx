@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Settings, HelpCircle, Info, LogOut, X, Brain, ExternalLink } from 'lucide-react';
+import { User, Settings, HelpCircle, Info, LogOut, X, Brain, ExternalLink, AlertTriangle } from 'lucide-react';
 
 function HelpModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -82,6 +82,7 @@ export default function AvatarMenu() {
   const [open, setOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
 
@@ -94,6 +95,8 @@ export default function AvatarMenu() {
   }, []);
 
   const handleLogout = async () => {
+    setShowLogoutConfirm(false);
+    setOpen(false);
     try {
       await logout();
       toast.success("Logged out successfully");
@@ -136,7 +139,7 @@ export default function AvatarMenu() {
                 </button>
               </div>
               <div className="p-2 border-t border-white/5">
-                <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-400/10 transition-all">
+                <button onClick={() => { setOpen(false); setShowLogoutConfirm(true); }} className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-400/10 transition-all">
                   <LogOut size={16} /> Logout
                 </button>
               </div>
@@ -148,6 +151,21 @@ export default function AvatarMenu() {
       <AnimatePresence>
         {showHelp && <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} />}
         {showAbout && <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />}
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Logout confirmation">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="glass-card max-w-sm w-full p-8 text-center">
+              <div className="bg-red-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <AlertTriangle className="text-red-400" size={32} />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Log Out?</h3>
+              <p className="text-gray-400 mb-6">Are you sure you want to log out?</p>
+              <div className="flex gap-3">
+                <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-bold transition-all">Cancel</button>
+                <button onClick={handleLogout} className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold transition-all">Log Out</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
     </>
   );
