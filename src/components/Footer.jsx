@@ -13,10 +13,10 @@ export default function Footer() {
               <div className="bg-primary/20 p-2 rounded-xl">
                 <Brain className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xl font-bold tracking-tighter">Smart<span className="text-gradient">Quiz</span></span>
+              <span className="text-lg font-bold tracking-tighter">Smart<span className="text-primary">Quiz</span></span>
             </div>
             <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-              The premium learning platform for mastering JavaScript through intelligent quizzes and real-world challenges.
+              The learning platform for mastering programming through intelligent quizzes, interactive code labs, and AI-powered guidance.
             </p>
             <div className="flex gap-4">
               <a href="https://github.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="GitHub">
@@ -67,8 +67,8 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} SmartQuiz App. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-sm text-gray-400">
-            <span>Powered by</span>
-            <span className="text-white font-medium">JavaScript Mastery</span>
+            <span>Master Code with</span>
+            <span className="text-white font-medium">SmartQuiz</span>
           </div>
         </div>
       </div>

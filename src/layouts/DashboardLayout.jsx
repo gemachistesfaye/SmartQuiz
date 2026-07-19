@@ -1,26 +1,32 @@
+import { useState } from 'react';
 import StudentSidebar from '../components/dashboard/StudentSidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import Header from '../components/dashboard/Header';
-import MobileNav from '../components/dashboard/MobileNav';
+import MobileSidebar from '../components/dashboard/MobileSidebar';
 import { useAuth } from '../context/AuthContext';
 
 export default function DashboardLayout({ children }) {
   const { isAdmin } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className={`min-h-screen flex p-2 sm:p-4 gap-4 overflow-x-hidden font-sans transition-colors duration-500 ${
+    <div className={`min-h-screen flex font-sans transition-colors duration-500 ${
       isAdmin ? 'bg-[#0f0505]' : 'bg-background'
     }`}>
-      {isAdmin ? <AdminSidebar /> : <StudentSidebar />}
+      {/* Desktop sidebar */}
+      <div className="hidden lg:block">
+        {isAdmin ? <AdminSidebar /> : <StudentSidebar />}
+      </div>
       
-      <div className="flex-1 flex flex-col h-[calc(100vh-2rem)] overflow-y-auto custom-scrollbar relative">
-        <Header />
-        <main className="flex-1 p-4 md:p-6 pb-20 lg:pb-20">
+      {/* Mobile sidebar */}
+      <MobileSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      
+      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto custom-scrollbar relative">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 p-4 md:p-6 pb-24 lg:pb-8">
           {children}
         </main>
       </div>
-
-      <MobileNav />
     </div>
   );
 }

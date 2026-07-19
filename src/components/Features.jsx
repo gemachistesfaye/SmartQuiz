@@ -3,78 +3,78 @@ import { Code2, Brain, Trophy, Terminal, Users, Cpu } from 'lucide-react';
 
 const features = [
   {
-    icon: <Code2 className="w-6 h-6" />,
-    title: "Real-world Projects",
-    description: "Learn by building actual applications, not just reading theory. Our hands-on approach ensures you're job-ready."
+    icon: <Code2 className="w-5 h-5" />,
+    title: "Multi-Language Support",
+    description: "Practice JavaScript, Python, HTML/CSS, React, TypeScript, and cybersecurity concepts — all in one platform."
   },
   {
-    icon: <Brain className="w-6 h-6" />,
-    title: "AI-Powered Hints",
-    description: "Get unstuck instantly with our intelligent tutor that guides you without giving away the direct answers."
+    icon: <Brain className="w-5 h-5" />,
+    title: "AI-Powered Tutor",
+    description: "Get unstuck with intelligent hints that guide you toward the answer without spoiling the learning."
   },
   {
-    icon: <Trophy className="w-6 h-6" />,
-    title: "Gamified Learning",
-    description: "Earn badges, climb the leaderboard, and stay motivated as you master complex JavaScript concepts."
+    icon: <Trophy className="w-5 h-5" />,
+    title: "Gamified Progress",
+    description: "Earn XP, maintain streaks, climb the leaderboard, and unlock achievements as you learn."
   },
   {
-    icon: <Terminal className="w-6 h-6" />,
-    title: "In-Browser IDE",
-    description: "Write, test, and debug code directly in your browser. No setup or external tools required."
+    icon: <Terminal className="w-5 h-5" />,
+    title: "Interactive Code Lab",
+    description: "Write and run code directly in your browser with our built-in IDE — no setup required."
   },
   {
-    icon: <Users className="w-6 h-6" />,
-    title: "Community Driven",
-    description: "Connect with thousands of other learners. Share solutions, review code, and grow together."
+    icon: <Users className="w-5 h-5" />,
+    title: "Built for Ethiopia",
+    description: "Designed with Ethiopian learners in mind — relevant content, local community, and accessible on mobile."
   },
   {
-    icon: <Cpu className="w-6 h-6" />,
-    title: "Performance Metrics",
-    description: "Track your progress with detailed analytics on execution time, memory usage, and code quality."
+    icon: <Cpu className="w-5 h-5" />,
+    title: "Performance Tracking",
+    description: "Detailed analytics show your strengths, weaknesses, and progress across every topic and category."
   }
 ];
 
 export default function Features() {
   return (
-    <section id="features" className="py-24 relative overflow-hidden">
-      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
+    <section id="features" className="py-20 md:py-24 relative overflow-hidden">
+      <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
       
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold mb-6"
+            className="text-3xl md:text-4xl font-bold mb-4"
           >
-            Everything you need to <span className="text-gradient">succeed</span>
+            Everything you need to <span className="text-primary">level up</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-gray-400 text-lg"
+            className="text-gray-400 text-sm md:text-base"
           >
-            Our platform provides a comprehensive suite of tools designed to accelerate your learning journey and make mastering JavaScript an enjoyable experience.
+            A complete learning platform with tools designed to make mastering programming fast, fun, and effective.
           </motion.p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="glass-card p-6 md:p-8 group hover:bg-white/10 transition-colors duration-300"
+              transition={{ delay: index * 0.08 }}
+              className="bg-[#111] border border-white/5 rounded-2xl p-5 md:p-6 hover:border-primary/20 transition-colors group"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-white">{feature.title}</h3>
-              <p className="text-gray-400 leading-relaxed">
+              <h3 className="text-base font-bold text-white mb-2">{feature.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>

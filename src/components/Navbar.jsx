@@ -24,7 +24,7 @@ export default function Navbar() {
           <div className="bg-primary/20 p-2 rounded-xl">
             <Brain className="w-8 h-8 text-primary" />
           </div>
-          <span className="text-2xl font-bold tracking-tighter text-white">Smart<span className="text-gradient">Quiz</span></span>
+          <span className="text-xl font-bold tracking-tighter text-white">Smart<span className="text-primary">Quiz</span></span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
