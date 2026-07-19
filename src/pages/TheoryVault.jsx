@@ -6,7 +6,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
 import { addBookmark, removeBookmark, subscribeToBookmarks } from '../utils/bookmarks';
 import { concepts } from '../data/theoryVault';
-import { Search, BookOpen, ChevronRight, X, Sparkles, Code, Terminal, Bookmark, BookmarkCheck } from 'lucide-react';
+import { Search, BookOpen, ChevronRight, X, Sparkles, Terminal, Bookmark, BookmarkCheck } from 'lucide-react';
 
 export default function TheoryVault() {
   const navigate = useNavigate();
@@ -24,6 +24,15 @@ export default function TheoryVault() {
     });
     return () => unsub();
   }, [currentUser]);
+
+  useEffect(() => {
+    if (selectedConcept) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedConcept]);
 
   const bookmarkedTitles = useMemo(() => new Set(bookmarks.map(b => b.title)), [bookmarks]);
 
@@ -161,26 +170,35 @@ export default function TheoryVault() {
                   <X size={24} />
                 </button>
 
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded ${categoryColors[selectedConcept.category] || 'text-primary'} bg-white/5`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${categoryColors[selectedConcept.category] || 'text-primary'} bg-white/5`}>
                     {selectedConcept.category}
                   </span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
                     {selectedConcept.subcategory}
                   </span>
                 </div>
 
-                <h2 className="text-2xl md:text-4xl font-bold text-white mb-6">{selectedConcept.title}</h2>
+                <h2 className="text-lg md:text-2xl font-bold text-white mb-4">{selectedConcept.title}</h2>
 
-                <div className="space-y-8">
+                <div className="space-y-6">
                   <section>
-                    <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <Terminal size={16} className="text-primary" /> Concept Overview
+                    <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <Terminal size={12} className="text-primary" /> Overview
                     </h4>
-                    <p className="text-gray-400 leading-relaxed whitespace-pre-line">
+                    <p className="text-gray-400 leading-relaxed text-sm whitespace-pre-line">
                       {selectedConcept.content}
                     </p>
                   </section>
+
+                  {selectedConcept.description && (
+                    <section>
+                      <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">Key Points</h4>
+                      <p className="text-gray-500 leading-relaxed text-xs">
+                        {selectedConcept.description}
+                      </p>
+                    </section>
+                  )}
 
                   <div className="flex gap-4 pt-4">
                     <button

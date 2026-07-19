@@ -30,7 +30,7 @@ export default function AIAssistant() {
   const { currentUser } = useAuth();
   const [quizHistory, setQuizHistory] = useState([]);
   const [messages, setMessages] = useState([
-    { role: 'bot', content: "Hello! I'm your SmartQuiz AI Tutor. I can help you understand JavaScript concepts, debug code, or suggest topics to study. What's on your mind today?" }
+    { role: 'bot', content: "Hello! I'm your SmartQuiz AI Tutor. I can help you understand programming concepts, debug code, or suggest topics to study. What's on your mind today?" }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -100,11 +100,11 @@ export default function AIAssistant() {
             messages: [
               {
                 role: "system",
-                content: `You are a specialized "Pro JavaScript Tutor" for the SmartQuiz app. 
+                content: `You are a specialized "Pro Programming Tutor" for the SmartQuiz app. 
                        STRICT RULES:
-                       1. ONLY answer questions related to JavaScript, React, Web Security, CSS, and Web Development.
-                       2. If a user asks about anything else (history, cooking, politics, etc.), politely decline and remind them you are here for JavaScript mastery.
-                       3. Always provide code snippets in JavaScript/JSX where possible.`
+                       1. Answer questions related to programming, computer science, software engineering, and related technologies.
+                       2. If a user asks about anything completely unrelated (history, cooking, politics, etc.), politely decline and remind them you are here for programming mastery.
+                       3. Provide code snippets in the appropriate language based on the user's question.`
               },
               {
                 role: "user",
@@ -144,23 +144,23 @@ export default function AIAssistant() {
       return;
     }
 
-    // Pro JavaScript Intelligence Simulation (Fallback)
+    // Pro Intelligence Simulation (Fallback)
     setTimeout(() => {
       let response = "";
       const lowerInput = input.toLowerCase();
       
       if (lowerInput.includes('how can you help') || lowerInput.includes('what can you do')) {
-        response = "As a **Pro JS Assistant**, I provide: \n\n" +
-                   "• **Deep Dives**: Structural explanations of Engine internals (V8, Event Loop).\n" +
+        response = "As a **Pro AI Assistant**, I provide: \n\n" +
+                   "• **Deep Dives**: Explanations of programming concepts and algorithms.\n" +
                    "• **Code Audit**: Paste your snippets for optimization suggestions.\n" +
-                   "• **Architecture**: Advice on Design Patterns (Singleton, Factory, Observer).\n" +
-                   "• **Modern Standards**: ES2023+ features and best practices.";
+                   "• **Architecture**: Advice on Design Patterns and System Design.\n" +
+                   "• **Language Support**: Help with Python, Java, JavaScript, C++, and more.";
       } else if (lowerInput.includes('review my code') || lowerInput.includes('code review')) {
         response = "### 🔍 Code Review Simulation\n\n" +
-                   "I see you want a code review! Since I am currently in **Simulation Mode**, here are the top 3 things I always look for in JavaScript code:\n\n" +
-                   "1. **Scoping**: Are you using `const` and `let`? Avoid `var` at all costs to prevent memory leaks and scoping bugs.\n" +
-                   "2. **Comparison**: Always use strict equality (`===`) instead of abstract equality (`==`) to avoid weird type coercion bugs.\n" +
-                   "3. **Async Safety**: If you are using `async/await`, make sure your code is wrapped in a `try/catch` block to handle rejected promises.\n\n" +
+                   "I see you want a code review! Since I am currently in **Simulation Mode**, here are the top things I look for in code:\n\n" +
+                   "1. **Readability**: Are variable names clear and descriptive?\n" +
+                   "2. **Efficiency**: Are there any unnecessary loops or redundant operations?\n" +
+                   "3. **Error Handling**: Are edge cases and potential exceptions handled gracefully?\n\n" +
                    "If you paste a specific small snippet, I can try to give you more targeted feedback!";
       } else if (lowerInput.includes('closure')) {
         response = "### 🔒 JavaScript Closures\n\n" +
@@ -208,20 +208,20 @@ export default function AIAssistant() {
                    "Modern CSS features like **Flexbox**, **Grid**, and **Custom Properties (Variables)** make it extremely powerful for creating responsive layouts.";
       } else if (lowerInput.includes('python') || lowerInput.includes('java')) {
         response = "### 🐍☕ Python & Java\n\n" +
-                   "I am primarily a JavaScript tutor, but I know about other languages too!\n\n" +
+                   "I am a general programming tutor and can help with these languages!\n\n" +
                    "• **Python**: Great for backend, AI, and data science. Known for its clean, readable syntax.\n" +
                    "• **Java**: A strictly typed, object-oriented language used heavily in enterprise environments.";
       } else if (lowerInput.includes('how') || lowerInput.includes('what') || lowerInput.includes('code') || lowerInput.includes('function') || lowerInput.includes('variable')) {
         response = "### 💻 General Programming Assistant\n\n" +
-                   "I see you are asking a general programming question! Since I am currently in **Simulation Mode**, here is a quick guide on that topic:\n\n" +
-                   "• **Variables**: Always use `const` by default. Only use `let` if you know the value will change. Never use `var`.\n" +
+                   "I see you are asking a general programming question! Since I am currently in **Simulation Mode**, here is a quick guide on best practices:\n\n" +
+                   "• **Variables**: Use meaningful names and appropriate scoping.\n" +
                    "• **Functions**: Break your code into small, reusable functions. A function should ideally do one thing well.\n" +
-                   "• **Debugging**: Use `console.log()` to check variable values, or use the browser's debugger to step through code.\n\n" +
-                   "Try asking me about **Closures**, **Event Loop**, **Promises**, or **React** for a more detailed specific response!";
+                   "• **Debugging**: Use logging to check variable values, or use a debugger to step through code.\n\n" +
+                   "Try asking me about specific concepts like **Closures**, **Object-Oriented Programming**, **Promises**, or **React** for a more detailed specific response!";
       } else if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
-        response = "Welcome back, Senior Dev! I'm ready to assist with your JavaScript architecture or debugging. What's on the roadmap today?";
+        response = "Welcome! I'm ready to assist with your programming or debugging tasks. What's on the roadmap today?";
       } else {
-        response = "That's a solid inquiry. While I'm specialized in **ES6+ core mechanics**, I can also discuss **React Reconciliation**, **Virtual DOM**, or **Memory Management**. \n\nWould you like a deep dive into any of these?";
+        response = "That's a solid inquiry. While I specialize in programming concepts, I can discuss **Data Structures**, **Algorithms**, **System Design**, or **Web Frameworks**. \n\nWould you like a deep dive into any of these?";
       }
 
       setMessages(prev => [...prev, { role: 'bot', content: response }]);
@@ -238,7 +238,7 @@ export default function AIAssistant() {
             <h1 className="text-xl md:text-3xl font-bold text-white flex items-center gap-3">
               <Sparkles className="text-primary" size={28} /> AI Study Assistant
             </h1>
-            <p className="text-gray-400 mt-1 text-sm hidden md:block">Your personal JavaScript tutor, available 24/7.</p>
+            <p className="text-gray-400 mt-1 text-sm hidden md:block">Your personal programming tutor, available 24/7.</p>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <button 
@@ -403,7 +403,7 @@ export default function AIAssistant() {
                   type="text" 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about JavaScript..."
+                  placeholder="Ask about programming..."
                   className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 md:py-4 pl-5 md:pl-6 pr-14 md:pr-16 text-white focus:outline-none focus:border-primary/50 transition-colors text-sm"
                 />
                 <button 

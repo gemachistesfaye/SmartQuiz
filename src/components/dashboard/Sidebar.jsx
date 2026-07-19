@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, onToggle }) {
   return (
     <>
       {/* Desktop: always-visible sidebar */}
-      <aside className="hidden lg:flex w-64 bg-[#0d0d0d] border-r border-white/5 h-screen sticky top-0 flex-col shrink-0">
+      <aside className="hidden lg:flex w-64 bg-[#080808] border-r border-white/5 h-screen fixed top-0 left-0 flex-col shrink-0 z-30">
         <SidebarContent links={links} location={location} logout={logout} />
       </aside>
 
@@ -66,7 +66,7 @@ export default function Sidebar({ isOpen, onToggle }) {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed top-0 left-0 bottom-0 w-72 bg-[#0d0d0d] border-r border-white/10 z-[70] lg:hidden flex flex-col"
+              className="fixed top-0 left-0 bottom-0 w-72 bg-[#080808] border-r border-white/10 z-[70] lg:hidden flex flex-col"
             >
               <SidebarContent links={links} location={location} logout={logout} onClose={onClose} showClose />
             </motion.div>
