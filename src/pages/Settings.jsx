@@ -20,11 +20,14 @@ function Toggle({ label, description, value, onChange }) {
     <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
       <div>
         <p className="text-sm font-bold text-white">{label}</p>
-        <p className="text-[10px] text-gray-500 mt-0.5">{description}</p>
+        <p className="text-[10px] text-gray-400 mt-0.5">{description}</p>
       </div>
       <button
         onClick={() => onChange(!value)}
-        className={`w-12 h-6 rounded-full transition-colors relative ${value ? 'bg-primary' : 'bg-white/10'}`}
+        role="switch"
+        aria-checked={value}
+        aria-label={label}
+        className={`w-12 h-6 rounded-full transition-colors relative min-h-[24px] ${value ? 'bg-primary' : 'bg-white/10'}`}
       >
         <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all ${value ? 'left-6' : 'left-0.5'}`} />
       </button>
@@ -86,17 +89,17 @@ export default function Settings() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-2xl mx-auto px-6 pb-10">
+      <div className="max-w-2xl mx-auto px-4 md:px-6 pb-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-            <SettingsIcon className="text-primary" size={32} /> Settings
+          <h1 className="text-xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
+            <SettingsIcon className="text-primary" size={28} /> Settings
           </h1>
-          <p className="text-gray-400 mb-8">Manage your preferences and account settings.</p>
+          <p className="text-gray-400 mb-5 md:mb-8 text-sm">Manage your preferences and account settings.</p>
         </motion.div>
 
-        <div className="space-y-6">
+        <div className="space-y-3 md:space-y-6">
           {/* Notifications */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-4 md:p-6">
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-widest">
               <Bell size={16} className="text-primary" /> Notifications
             </h3>
@@ -107,7 +110,7 @@ export default function Settings() {
           </motion.div>
 
           {/* Appearance */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card p-4 md:p-6">
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-widest">
               <Moon size={16} className="text-primary" /> Appearance
             </h3>
@@ -118,13 +121,13 @@ export default function Settings() {
           </motion.div>
 
           {/* Quiz Defaults */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card p-4 md:p-6">
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-widest">
               <RotateCcw size={16} className="text-primary" /> Quiz Defaults
             </h3>
             <div className="p-4 rounded-xl bg-white/5 border border-white/5">
               <p className="text-sm font-bold text-white mb-1">Default Difficulty</p>
-              <p className="text-[10px] text-gray-500 mb-3">Applied when starting a new quiz</p>
+              <p className="text-[10px] text-gray-400 mb-3">Applied when starting a new quiz</p>
               <div className="flex gap-2">
                 {['all', 'easy', 'medium', 'hard'].map(d => (
                   <button
@@ -142,7 +145,7 @@ export default function Settings() {
           </motion.div>
 
           {/* Account */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-card p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-card p-4 md:p-6">
             <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-widest">
               <Shield size={16} className="text-primary" /> Account
             </h3>

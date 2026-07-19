@@ -1,4 +1,5 @@
-import { Brain, Globe, MessageCircle, Mail, MapPin } from 'lucide-react';
+import { Brain, ExternalLink, MessageCircle, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -18,17 +19,14 @@ export default function Footer() {
               The premium learning platform for mastering JavaScript through intelligent quizzes and real-world challenges.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Globe className="w-5 h-5" />
+              <a href="https://github.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="GitHub">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://github.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Community">
                 <MessageCircle className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="mailto:support@smartquiz.app" className="text-gray-400 hover:text-white transition-colors" aria-label="Email us">
                 <Mail className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <MapPin className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -36,38 +34,39 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-6">Product</h4>
             <ul className="space-y-4 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-primary transition-colors">Features</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Pricing</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Curriculum</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Changelog</a></li>
+              <li><Link to="/#features" className="hover:text-primary transition-colors">Features</Link></li>
+              <li><Link to="/quiz" className="hover:text-primary transition-colors">Quiz Arena</Link></li>
+              <li><Link to="/codelab" className="hover:text-primary transition-colors">Code Lab</Link></li>
+              <li><Link to="/ai-assistant" className="hover:text-primary transition-colors">AI Tutor</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-white font-semibold mb-6">Resources</h4>
             <ul className="space-y-4 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-primary transition-colors">Documentation</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Community</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Help Center</a></li>
+              <li><Link to="/theory" className="hover:text-primary transition-colors">Theory Vault</Link></li>
+              <li><Link to="/leaderboard" className="hover:text-primary transition-colors">Leaderboard</Link></li>
+              <li><Link to="/analytics" className="hover:text-primary transition-colors">Analytics</Link></li>
+              <li><a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-primary transition-colors">Documentation</a></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white font-semibold mb-6">Legal</h4>
+            <h4 className="text-white font-semibold mb-6">Account</h4>
             <ul className="space-y-4 text-sm text-gray-400">
-              <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Cookie Policy</a></li>
+              <li><Link to="/profile" className="hover:text-primary transition-colors">Profile</Link></li>
+              <li><Link to="/settings" className="hover:text-primary transition-colors">Settings</Link></li>
+              <li><Link to="/login" className="hover:text-primary transition-colors">Log In</Link></li>
+              <li><Link to="/register" className="hover:text-primary transition-colors">Sign Up</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-400 text-sm">
             &copy; {new Date().getFullYear()} SmartQuiz App. All rights reserved.
           </p>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-gray-400">
             <span>Powered by</span>
             <span className="text-white font-medium">JavaScript Mastery</span>
           </div>

@@ -72,7 +72,7 @@ export default function Testimonials() {
                 />
                 <div>
                   <h4 className="text-white font-medium">{testimonial.name}</h4>
-                  <p className="text-sm text-gray-500">{testimonial.role}</p>
+                  <p className="text-sm text-gray-400">{testimonial.role}</p>
                 </div>
               </div>
             </motion.div>

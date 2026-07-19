@@ -31,24 +31,24 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 pb-10">
+      <div className="space-y-4 md:space-y-8 pb-4 md:pb-10">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-6"
+          className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 px-4 md:px-6"
         >
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+            <h1 className="text-xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
               Welcome back, {userData?.fullName?.split(' ')[0] || 'Learner'}! <Sparkles className="text-yellow-400" />
             </h1>
-            <p className="text-gray-400">Ready to continue your JavaScript mastery journey?</p>
+            <p className="text-gray-400 text-sm md:text-base">Ready to continue your JavaScript mastery journey?</p>
           </div>
         </motion.div>
 
         {/* Main content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-6">
-          <div className="lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 px-4 md:px-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-8">
             <RecommendationEngine />
             <StatCards />
             <ProgressChart />
@@ -57,12 +57,12 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card p-6"
+              className="glass-card p-4 md:p-6"
             >
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <Target size={20} className="text-primary" /> Quick Actions
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible">
                 {[
                   { to: '/quiz', label: 'Take Quiz', icon: <Zap size={18} />, color: 'text-yellow-400' },
                   { to: '/codelab', label: 'Code Lab', icon: <Brain size={18} />, color: 'text-purple-400' },
@@ -72,7 +72,7 @@ export default function Dashboard() {
                   <Link
                     key={action.to}
                     to={action.to}
-                    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 hover:bg-primary/5 transition-all text-center"
+                    className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 hover:bg-primary/5 transition-all text-center min-h-[72px] justify-center min-w-[100px] shrink-0 md:min-w-0 md:flex-1"
                   >
                     <div className={action.color}>{action.icon}</div>
                     <span className="text-xs font-bold text-gray-300">{action.label}</span>
@@ -87,19 +87,19 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* Recent Quiz Results */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="glass-card p-6"
+              className="glass-card p-4 md:p-6"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
                   <Trophy size={20} className="text-yellow-400" /> Recent Results
                 </h3>
-                <Link to="/analytics" className="text-[10px] font-bold text-primary flex items-center gap-1 hover:underline">
-                  View All <ArrowRight size={10} />
+                <Link to="/analytics" className="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+                  View All <ArrowRight size={12} />
                 </Link>
               </div>
               {recentQuizzes.length === 0 ? (
@@ -124,7 +124,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass-card p-6 border-primary/20 bg-primary/5 relative overflow-hidden"
+              className="glass-card p-4 md:p-6 border-primary/20 bg-primary/5 relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 blur-2xl" />
               <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
@@ -140,7 +140,7 @@ export default function Dashboard() {
             </motion.div>
 
             {/* Streak */}
-            <div className="glass-card p-6 bg-gradient-to-br from-secondary/10 to-primary/10 border-white/5">
+            <div className="glass-card p-4 md:p-6 bg-gradient-to-br from-secondary/10 to-primary/10 border-white/5">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <Zap size={20} className="text-secondary" /> Study Streak
               </h3>

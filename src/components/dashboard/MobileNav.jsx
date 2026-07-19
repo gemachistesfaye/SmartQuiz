@@ -18,7 +18,7 @@ export default function MobileNav() {
   if (isAdmin) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 lg:hidden z-50 bg-[#0a0a0a]/90 backdrop-blur-xl border-t border-white/10 px-2 py-2 safe-area-inset">
+    <nav className="fixed bottom-0 left-0 right-0 lg:hidden z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-white/10 px-1 py-1 pb-safe" role="navigation" aria-label="Mobile navigation">
       <div className="flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -27,14 +27,15 @@ export default function MobileNav() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all min-w-[48px] ${
+              aria-label={item.label}
+              className={`flex flex-col items-center gap-1 px-3 py-2 min-w-[48px] min-h-[48px] justify-center rounded-xl transition-all ${
                 isActive
-                  ? 'text-primary bg-primary/10'
-                  : 'text-gray-500 hover:text-gray-300'
+                  ? 'text-primary bg-primary/20'
+                  : 'text-gray-400 hover:text-gray-200'
               }`}
             >
               <Icon size={20} />
-              <span className="text-[8px] font-bold uppercase tracking-wider">{item.label}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider">{item.label}</span>
             </Link>
           );
         })}

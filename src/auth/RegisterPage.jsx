@@ -91,8 +91,10 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
-            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <label htmlFor="reg-fullname" className="sr-only">Full Name</label>
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
+              id="reg-fullname"
               type="text" 
               placeholder="Full Name" 
               required
@@ -102,8 +104,10 @@ export default function RegisterPage() {
           </div>
 
           <div className="relative">
-            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <label htmlFor="reg-username" className="sr-only">Username</label>
+            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
+              id="reg-username"
               type="text" 
               placeholder="Username" 
               required
@@ -113,8 +117,10 @@ export default function RegisterPage() {
           </div>
 
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <label htmlFor="reg-email" className="sr-only">Email Address</label>
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
+              id="reg-email"
               type="email" 
               placeholder="Email Address" 
               required
@@ -125,8 +131,10 @@ export default function RegisterPage() {
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <label htmlFor="reg-password" className="sr-only">Password</label>
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
+              id="reg-password"
               type={showPassword ? "text" : "password"} 
               placeholder="Password" 
               required
@@ -138,8 +146,9 @@ export default function RegisterPage() {
             />
             <button 
               type="button"
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -164,8 +173,10 @@ export default function RegisterPage() {
           )}
 
           <div className="relative">
-            <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <label htmlFor="reg-confirm" className="sr-only">Confirm Password</label>
+            <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input 
+              id="reg-confirm"
               type="password" 
               placeholder="Confirm Password" 
               required
@@ -181,7 +192,7 @@ export default function RegisterPage() {
               className="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20"
               onChange={(e) => setFormData({...formData, agree: e.target.checked})}
             />
-            <label htmlFor="agree" className="text-xs text-gray-400">
+            <label htmlFor="agree" className="text-xs text-gray-300">
               I agree to the <span className="text-primary hover:underline cursor-pointer">Terms & Conditions</span>
             </label>
           </div>
@@ -194,7 +205,7 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <p className="text-center text-gray-500 text-sm mt-8">
+        <p className="text-center text-gray-400 text-sm mt-8">
           Already have an account? <Link to="/login" className="text-primary font-bold hover:underline">Log In</Link>
         </p>
       </motion.div>

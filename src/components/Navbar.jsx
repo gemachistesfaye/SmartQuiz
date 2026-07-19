@@ -65,7 +65,12 @@ export default function Navbar() {
           )}
         </div>
 
-        <button className="md:hidden text-gray-300" onClick={() => setIsOpen(!isOpen)}>
+        <button 
+          className="md:hidden text-gray-300 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-white/10 transition-colors" 
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+        >
           {isOpen ? <X /> : <Menu />}
         </button>
       </div>
@@ -75,20 +80,21 @@ export default function Navbar() {
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-full left-0 w-full glass border-t border-white/10 p-6 flex flex-col gap-4 md:hidden"
+          className="absolute top-full left-0 w-full glass border-t border-white/10 p-6 flex flex-col gap-2 md:hidden"
+          role="menu"
         >
-          <a href="#features" className="text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>Features</a>
-          <a href="#testimonials" className="text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>Testimonials</a>
-          <Link to="/quiz" className="text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>Quick Quiz</Link>
+          <a href="#features" className="text-gray-300 hover:text-white py-3 px-4 min-h-[44px] flex items-center rounded-xl hover:bg-white/5 transition-colors" onClick={() => setIsOpen(false)} role="menuitem">Features</a>
+          <a href="#testimonials" className="text-gray-300 hover:text-white py-3 px-4 min-h-[44px] flex items-center rounded-xl hover:bg-white/5 transition-colors" onClick={() => setIsOpen(false)} role="menuitem">Testimonials</a>
+          <Link to="/quiz" className="text-gray-300 hover:text-white py-3 px-4 min-h-[44px] flex items-center rounded-xl hover:bg-white/5 transition-colors" onClick={() => setIsOpen(false)} role="menuitem">Quick Quiz</Link>
           <hr className="border-white/10 my-2" />
           {currentUser ? (
-            <Link to="/dashboard" className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-center" onClick={() => setIsOpen(false)}>
+            <Link to="/dashboard" className="bg-primary text-white px-5 py-3 min-h-[44px] flex items-center justify-center rounded-xl font-bold" onClick={() => setIsOpen(false)} role="menuitem">
               Dashboard
             </Link>
           ) : (
             <>
-              <Link to="/login" className="text-left text-gray-300 hover:text-white" onClick={() => setIsOpen(false)}>Log in</Link>
-              <Link to="/register" className="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-center mt-2" onClick={() => setIsOpen(false)}>
+              <Link to="/login" className="text-left text-gray-300 hover:text-white py-3 px-4 min-h-[44px] flex items-center rounded-xl hover:bg-white/5 transition-colors" onClick={() => setIsOpen(false)} role="menuitem">Log in</Link>
+              <Link to="/register" className="bg-primary text-white px-5 py-3 min-h-[44px] flex items-center justify-center rounded-xl font-bold mt-2" onClick={() => setIsOpen(false)} role="menuitem">
                 Get Started
               </Link>
             </>

@@ -22,10 +22,11 @@ export default function Stats() {
               className="text-center"
             >
               <div className="text-4xl md:text-5xl font-bold text-gradient mb-2">{stat.value}</div>
-              <div className="text-sm md:text-base text-gray-400 font-medium uppercase tracking-wider">{stat.label}</div>
+              <div className="text-sm md:text-base text-gray-300 font-medium uppercase tracking-wider">{stat.label}</div>
             </motion.div>
           ))}
         </div>
+        <p className="text-center text-gray-500 text-xs mt-4">* Projections based on platform growth targets</p>
       </div>
     </section>
   );

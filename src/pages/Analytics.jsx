@@ -50,18 +50,18 @@ export default function Analytics() {
 
   return (
     <DashboardLayout>
-      <div className="px-6 pb-20 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="px-4 md:px-6 pb-24 space-y-4 md:space-y-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Target className="text-primary" size={32} /> Analytics
+            <h1 className="text-xl md:text-3xl font-bold text-white flex items-center gap-3">
+              <Target className="text-primary" size={28} /> Analytics
             </h1>
-            <p className="text-gray-400 mt-1">Your learning journey at a glance.</p>
+            <p className="text-gray-400 mt-1 text-sm">Your learning journey at a glance.</p>
           </div>
         </div>
 
         {/* Stat cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
             { label: 'Total XP', value: totalXP.toLocaleString(), icon: <Zap className="text-yellow-400" />, bg: 'bg-yellow-400/10' },
             { label: 'Avg. Score', value: totalQuizzes > 0 ? `${avgScore}%` : '—', icon: <Target className="text-blue-400" />, bg: 'bg-blue-400/10' },
@@ -73,10 +73,10 @@ export default function Analytics() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="glass-card p-5"
+              className="glass-card p-3 md:p-5"
             >
-              <div className={`p-2 rounded-lg inline-block mb-3 ${stat.bg}`}>{stat.icon}</div>
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{stat.label}</p>
+              <div className={`p-2 rounded-lg inline-block mb-2 md:mb-3 ${stat.bg}`}>{stat.icon}</div>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">{stat.label}</p>
               <p className="text-2xl font-bold text-white">{stat.value}</p>
             </motion.div>
           ))}
@@ -86,19 +86,19 @@ export default function Analytics() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8"
+          className="glass-card p-4 md:p-8"
         >
-          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-white mb-4 md:mb-6 flex items-center gap-2">
             <TrendingUp size={20} className="text-primary" /> Score History
           </h3>
           {loading ? (
-            <div className="flex justify-center py-12">
+            <div className="flex justify-center py-8 md:py-12">
               <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
             </div>
           ) : chartData.length === 0 ? (
             <p className="text-gray-500 text-center py-12">No quiz history yet. Take a quiz to see your progress!</p>
           ) : (
-            <div className="h-[300px]">
+            <div className="h-[200px] md:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
                   <defs>
@@ -126,12 +126,12 @@ export default function Analytics() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-8"
+            className="glass-card p-4 md:p-8"
           >
-            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-white mb-4 md:mb-6 flex items-center gap-2">
               <Brain size={20} className="text-primary" /> Category Breakdown
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {Object.entries(categoryBreakdown).map(([cat, data]) => {
                 const pct = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
                 return (
@@ -158,13 +158,13 @@ export default function Analytics() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-8"
+            className="glass-card p-4 md:p-8"
           >
-            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-white mb-4 md:mb-6 flex items-center gap-2">
               <Clock size={20} className="text-primary" /> Recent Quizzes
             </h3>
-            <div className="space-y-3">
-              {history.slice(0, 10).map((h, i) => (
+            <div className="space-y-2 md:space-y-3">
+              {history.slice(0, 5).map((h, i) => (
                 <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
                   <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${(h.percentage || 0) >= 80 ? 'bg-green-400' : (h.percentage || 0) >= 50 ? 'bg-yellow-400' : 'bg-red-400'}`} />

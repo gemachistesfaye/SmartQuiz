@@ -32,13 +32,13 @@ export default function ProgressChart() {
   }, [currentUser]);
 
   return (
-    <div className="glass-card p-6 h-[400px]">
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-xl font-bold text-white">Performance Overview</h3>
-        <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Last 7 Quizzes</span>
+    <div className="glass-card p-4 md:p-6 h-[250px] md:h-[400px]">
+      <div className="flex items-center justify-between mb-4 md:mb-8">
+        <h3 className="text-lg font-bold text-white">Performance Overview</h3>
+        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Last 7 Quizzes</span>
       </div>
       
-      <div className="w-full h-full pb-10 min-h-[300px]">
+      <div className="w-full h-full pb-4 md:pb-10 min-h-[150px] md:min-h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>

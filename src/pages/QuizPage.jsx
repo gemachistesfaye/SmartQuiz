@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../hooks/useQuiz';
-import { Brain, Timer, Zap, Trophy, ArrowLeft, Check, X, ChevronRight, RotateCcw, BarChart3, AlertTriangle } from 'lucide-react';
+import { Brain, Timer, Zap, Trophy, ArrowLeft, Check, X, ChevronRight, RotateCcw, BarChart3, AlertTriangle, Target, Globe, Palette, Atom, Shield, Clock, Unlock, Rocket, Code, Server, FileText, Folder } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 
 function ExitConfirm({ isOpen, onStay, onExit }) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Quit quiz confirmation">
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -39,12 +39,14 @@ function ExitConfirm({ isOpen, onStay, onExit }) {
 }
 
 const CATEGORY_META = [
-  { value: 'all', label: 'All Categories', icon: '🎯', count: 255, color: 'from-primary/20 to-primary/5 border-primary/30' },
-  { value: 'JavaScript', label: 'JavaScript', icon: '⚡', count: 50, color: 'from-yellow-500/20 to-yellow-500/5 border-yellow-500/30' },
-  { value: 'HTML', label: 'HTML', icon: '🌐', count: 42, color: 'from-orange-500/20 to-orange-500/5 border-orange-500/30' },
-  { value: 'CSS', label: 'CSS', icon: '🎨', count: 56, color: 'from-blue-500/20 to-blue-500/5 border-blue-500/30' },
-  { value: 'React', label: 'React', icon: '⚛️', count: 48, color: 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/30' },
-  { value: 'Cybersecurity', label: 'Cybersecurity', icon: '🔒', count: 59, color: 'from-red-500/20 to-red-500/5 border-red-500/30' },
+  { value: 'all', label: 'All Categories', icon: <Target size={24} className="text-primary" />, count: 505, color: 'from-primary/20 to-primary/5 border-primary/30' },
+  { value: 'JavaScript', label: 'JavaScript', icon: <Zap size={24} className="text-yellow-400" />, count: 50, color: 'from-yellow-500/20 to-yellow-500/5 border-yellow-500/30' },
+  { value: 'HTML', label: 'HTML', icon: <Globe size={24} className="text-orange-400" />, count: 42, color: 'from-orange-500/20 to-orange-500/5 border-orange-500/30' },
+  { value: 'CSS', label: 'CSS', icon: <Palette size={24} className="text-blue-400" />, count: 56, color: 'from-blue-500/20 to-blue-500/5 border-blue-500/30' },
+  { value: 'React', label: 'React', icon: <Atom size={24} className="text-cyan-400" />, count: 48, color: 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/30' },
+  { value: 'Cybersecurity', label: 'Cybersecurity', icon: <Shield size={24} className="text-red-400" />, count: 59, color: 'from-red-500/20 to-red-500/5 border-red-500/30' },
+  { value: 'Python', label: 'Python', icon: <Code size={24} className="text-green-400" />, count: 125, color: 'from-green-500/20 to-green-500/5 border-green-500/30' },
+  { value: 'Backend', label: 'Backend', icon: <Server size={24} className="text-purple-400" />, count: 125, color: 'from-purple-500/20 to-purple-500/5 border-purple-500/30' },
 ];
 
 const DIFF_META = [
@@ -55,8 +57,8 @@ const DIFF_META = [
 ];
 
 const MODE_META = [
-  { value: 'daily', label: 'Daily Challenge', desc: '5 questions, timed', icon: '⏱️' },
-  { value: 'free', label: 'Free Practice', desc: 'Choose your count, no timer', icon: '🔓' },
+  { value: 'daily', label: 'Daily Challenge', desc: '5 questions, timed', icon: <Clock size={20} className="text-primary" /> },
+  { value: 'free', label: 'Free Practice', desc: 'Choose your count, no timer', icon: <Unlock size={20} className="text-green-400" /> },
 ];
 
 function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
@@ -77,11 +79,11 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
           Test your knowledge. Choose your settings and aim for a perfect streak!
         </p>
         <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
-          <span>📝 255 questions</span>
+          <span className="flex items-center gap-1.5"><FileText size={12} /> 505 questions</span>
           <span>•</span>
-          <span>📂 5 categories</span>
+          <span className="flex items-center gap-1.5"><Folder size={12} /> 7 categories</span>
           <span>•</span>
-          <span>⚡ 3 difficulty levels</span>
+          <span className="flex items-center gap-1.5"><BarChart3 size={12} /> 3 difficulty levels</span>
         </div>
       </motion.div>
 
@@ -99,7 +101,7 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
                   : 'hover:scale-[1.01] opacity-70 hover:opacity-100'
               }`}
             >
-              <div className="text-2xl mb-2">{cat.icon}</div>
+              <div className="mb-2">{cat.icon}</div>
               <p className="text-sm font-bold text-white">{cat.label}</p>
               <p className="text-[10px] text-gray-400 mt-0.5">{cat.count} questions</p>
               {settings.category === cat.value && (
@@ -145,7 +147,7 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
               }`}
             >
               <div className="flex items-center gap-3 mb-1">
-                <span className="text-xl">{m.icon}</span>
+                {m.icon}
                 <span className="text-sm font-bold text-white">{m.label}</span>
               </div>
               <p className="text-[11px] text-gray-400 ml-9">{m.desc}</p>
@@ -172,7 +174,7 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
             </>
           ) : (
             <>
-              🚀 Launch Quiz
+              <Rocket size={20} /> Launch Quiz
             </>
           )}
         </span>
@@ -183,24 +185,27 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
 
 function QuestionOverview({ questions, currentIndex, results }) {
   return (
-    <div className="flex items-center gap-1.5 mb-6 overflow-x-auto pb-2">
-      {questions.map((q, i) => {
-        const result = results[i];
-        let bg = 'bg-white/10';
-        if (i === currentIndex) bg = 'bg-primary shadow-lg shadow-primary/30';
-        else if (result) bg = result.isCorrect ? 'bg-green-500/30' : 'bg-red-500/30';
+    <div className="relative mb-6">
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-hide">
+        {questions.map((q, i) => {
+          const result = results[i];
+          let bg = 'bg-white/10';
+          if (i === currentIndex) bg = 'bg-primary shadow-lg shadow-primary/30';
+          else if (result) bg = result.isCorrect ? 'bg-green-500/30' : 'bg-red-500/30';
 
-        return (
-          <div
-            key={i}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 transition-all ${bg} ${
-              i === currentIndex ? 'text-white scale-110' : 'text-gray-400'
-            }`}
-          >
-            {i + 1}
-          </div>
-        );
-      })}
+          return (
+            <div
+              key={i}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 transition-all ${bg} ${
+                i === currentIndex ? 'text-white scale-110' : 'text-gray-400'
+              }`}
+            >
+              {i + 1}
+            </div>
+          );
+        })}
+      </div>
+      <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
     </div>
   );
 }
@@ -437,22 +442,22 @@ function ResultsScreen({ quiz, onRestart }) {
         </div>
       )}
 
-      <div className="flex gap-3 mb-8">
+      <div className="flex flex-col sm:flex-row gap-3 mb-8">
         <button
           onClick={() => setReviewMode(!reviewMode)}
-          className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10"
+          className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10 min-h-[48px]"
         >
           <BarChart3 size={20} /> {reviewMode ? 'Hide Review' : 'Review Answers'}
         </button>
         <button
           onClick={onRestart}
-          className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10"
+          className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10 min-h-[48px]"
         >
           <RotateCcw size={20} /> Try Again
         </button>
         <Link
           to="/dashboard"
-          className="flex-1 bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2"
+          className="flex-1 bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 min-h-[48px]"
         >
           <ArrowLeft size={20} /> Dashboard
         </Link>

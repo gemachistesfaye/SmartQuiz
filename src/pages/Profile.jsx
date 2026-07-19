@@ -34,28 +34,28 @@ export default function Profile() {
 
   return (
     <DashboardLayout>
-      <div className="px-6 pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="px-4 md:px-6 pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
           
           {/* Left Column: Avatar & Stats */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 md:space-y-6">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`glass-card p-8 text-center ${isAdmin ? 'border-red-500/10' : ''}`}
+              className={`glass-card p-5 md:p-8 text-center ${isAdmin ? 'border-red-500/10' : ''}`}
             >
-              <div className="relative inline-block mb-6">
+              <div className="relative inline-block mb-4 md:mb-6">
                 <img 
                   src={`https://ui-avatars.com/api/?name=${userData?.fullName || 'User'}&size=128&background=random`} 
                   alt="Profile" 
-                  className="w-32 h-32 rounded-3xl border-4 border-white/5"
+                  className="w-20 h-20 md:w-32 md:h-32 rounded-2xl md:rounded-3xl border-4 border-white/5"
                 />
                 <button type="button" className={`absolute -bottom-2 -right-2 p-2.5 rounded-xl shadow-lg transition-all ${isAdmin ? 'bg-red-500' : 'bg-primary'}`}>
                   <Camera size={20} className="text-white" />
                 </button>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-1">{userData?.fullName}</h2>
-              <p className="text-gray-500 mb-6 font-medium">@{userData?.username}</p>
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-1">{userData?.fullName}</h2>
+              <p className="text-gray-400 mb-4 md:mb-6 font-medium text-sm">@{userData?.username}</p>
               <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
                 isAdmin ? 'bg-red-500/10 text-red-500' : 'bg-primary/10 text-primary'
               }`}>
@@ -67,7 +67,7 @@ export default function Profile() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass-card p-6 grid grid-cols-2 gap-4"
+              className="glass-card p-4 md:p-6 grid grid-cols-2 gap-3 md:gap-4"
             >
               <div className="text-center p-4 rounded-2xl bg-white/5">
                 <Trophy className="text-yellow-400 mx-auto mb-2" size={24} />
@@ -83,21 +83,21 @@ export default function Profile() {
           </div>
 
           {/* Right Column: Edit Profile */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="glass-card p-8"
+              className="glass-card p-5 md:p-8"
             >
-              <div className="flex items-center gap-3 mb-8">
+              <div className="flex items-center gap-3 mb-5 md:mb-8">
                 <User className={isAdmin ? 'text-red-500' : 'text-primary'} size={24} />
                 <h3 className="text-xl font-bold text-white">Account Settings</h3>
               </div>
 
-              <form onSubmit={handleUpdate} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form onSubmit={handleUpdate} className="space-y-4 md:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-500 uppercase ml-1">Full Name</label>
+                    <label className="text-sm font-semibold text-gray-400 uppercase ml-1">Full Name</label>
                     <input 
                       type="text" 
                       value={formData.fullName}
@@ -108,7 +108,7 @@ export default function Profile() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-500 uppercase ml-1">Username</label>
+                    <label className="text-sm font-semibold text-gray-400 uppercase ml-1">Username</label>
                     <input 
                       type="text" 
                       value={formData.username}
@@ -121,7 +121,7 @@ export default function Profile() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-500 uppercase ml-1">Email Address</label>
+                  <label className="text-sm font-semibold text-gray-400 uppercase ml-1">Email Address</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" size={18} />
                     <input 
@@ -150,13 +150,13 @@ export default function Profile() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass-card p-8"
+              className="glass-card p-5 md:p-8"
             >
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-4 md:mb-6">
                 <Shield className={isAdmin ? 'text-red-400' : 'text-gray-400'} size={24} />
                 <h3 className="text-xl font-bold text-white">Security</h3>
               </div>
-              <p className="text-gray-400 text-sm mb-6">Manage your account security settings.</p>
+              <p className="text-gray-400 text-sm mb-4 md:mb-6">Manage your account security settings.</p>
               
               <div className="space-y-4">
                 <button 

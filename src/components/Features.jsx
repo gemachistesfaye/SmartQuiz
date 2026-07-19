@@ -68,7 +68,7 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="glass-card p-8 group hover:bg-white/10 transition-colors duration-300"
+              className="glass-card p-6 md:p-8 group hover:bg-white/10 transition-colors duration-300"
             >
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}

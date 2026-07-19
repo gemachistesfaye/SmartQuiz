@@ -60,7 +60,7 @@ const CAT_COLORS = { JavaScript: 'text-yellow-400', HTML: 'text-orange-400', CSS
 function ExitConfirm({ isOpen, onStay, onExit }) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Quit challenge confirmation">
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-card max-w-sm w-full p-8 text-center">
         <div className="bg-red-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <AlertTriangle className="text-red-400" size={32} />
@@ -100,17 +100,17 @@ const CODE_COUNT_META = [
 
 function ChallengeSettings({ settings, setSettings, onStart, isLaunching }) {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10">
+    <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10">
       {/* Hero */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-        <div className="relative inline-block mb-6">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 md:mb-12">
+        <div className="relative inline-block mb-4 md:mb-6">
           <div className="absolute inset-0 bg-primary/30 rounded-3xl blur-2xl animate-pulse" />
-          <div className="relative bg-gradient-to-br from-primary/30 to-primary/10 w-24 h-24 rounded-3xl flex items-center justify-center border border-primary/30">
-            <Code className="text-primary" size={44} />
+          <div className="relative bg-gradient-to-br from-primary/30 to-primary/10 w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-3xl flex items-center justify-center border border-primary/30">
+            <Code className="text-primary" size={32} />
           </div>
         </div>
-        <h1 className="text-4xl font-bold text-white mb-3">Code Challenge</h1>
-        <p className="text-gray-400 text-lg">Work through code snippets one by one. Run each to complete and track your progress.</p>
+        <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-3">Code Challenge</h1>
+        <p className="text-gray-400 text-sm md:text-lg px-4">Work through code snippets one by one.</p>
         <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
           <span>💻 40 snippets</span>
           <span>•</span>
@@ -229,27 +229,27 @@ function ChallengeResults({ results, onRestart }) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center mb-10">
-        <div className={`w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 ${percentage >= 80 ? 'bg-green-500/20' : percentage >= 50 ? 'bg-yellow-500/20' : 'bg-red-500/20'}`}>
-          <Trophy className={percentage >= 80 ? 'text-green-400' : percentage >= 50 ? 'text-yellow-400' : 'text-red-400'} size={48} />
+      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center mb-6 md:mb-10">
+        <div className={`w-16 h-16 md:w-24 md:h-24 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-3 md:mb-6 ${percentage >= 80 ? 'bg-green-500/20' : percentage >= 50 ? 'bg-yellow-500/20' : 'bg-red-500/20'}`}>
+          <Trophy className={percentage >= 80 ? 'text-green-400' : percentage >= 50 ? 'text-yellow-400' : 'text-red-400'} size={32} />
         </div>
-        <h2 className="text-4xl font-bold text-white mb-2">Challenge Complete!</h2>
-        <p className="text-gray-400">{percentage >= 80 ? 'Outstanding work!' : percentage >= 50 ? 'Good effort, keep coding!' : 'Keep practicing, you\'ll improve!'}</p>
+        <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">Challenge Complete!</h2>
+        <p className="text-gray-400 text-sm">{percentage >= 80 ? 'Outstanding work!' : percentage >= 50 ? 'Good effort!' : 'Keep practicing!'}</p>
       </motion.div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="glass-card p-5 text-center">
-          <p className="text-gray-500 text-xs font-bold uppercase mb-1">Completed</p>
-          <p className="text-3xl font-bold text-white">{successCount}/{total}</p>
-          <p className="text-xs text-gray-500 mt-1">{percentage}%</p>
+      <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8">
+        <div className="glass-card p-3 md:p-5 text-center">
+          <p className="text-gray-500 text-[10px] md:text-xs font-bold uppercase mb-1">Completed</p>
+          <p className="text-xl md:text-3xl font-bold text-white">{successCount}/{total}</p>
+          <p className="text-[10px] md:text-xs text-gray-500 mt-1">{percentage}%</p>
         </div>
-        <div className="glass-card p-5 text-center">
-          <p className="text-gray-500 text-xs font-bold uppercase mb-1">XP Earned</p>
-          <p className="text-3xl font-bold text-primary">+{xp}</p>
+        <div className="glass-card p-3 md:p-5 text-center">
+          <p className="text-gray-500 text-[10px] md:text-xs font-bold uppercase mb-1">XP Earned</p>
+          <p className="text-xl md:text-3xl font-bold text-primary">+{xp}</p>
         </div>
-        <div className="glass-card p-5 text-center">
-          <p className="text-gray-500 text-xs font-bold uppercase mb-1">Errors</p>
-          <p className="text-3xl font-bold text-red-400">{results.filter(r => r.hasError).length}</p>
+        <div className="glass-card p-3 md:p-5 text-center">
+          <p className="text-gray-500 text-[10px] md:text-xs font-bold uppercase mb-1">Errors</p>
+          <p className="text-xl md:text-3xl font-bold text-red-400">{results.filter(r => r.hasError).length}</p>
         </div>
       </div>
 
@@ -272,11 +272,11 @@ function ChallengeResults({ results, onRestart }) {
         </div>
       )}
 
-      <div className="flex gap-3 mb-8">
-        <button onClick={() => setReviewMode(!reviewMode)} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
+      <div className="flex flex-col sm:flex-row gap-3 mb-8">
+        <button onClick={() => setReviewMode(!reviewMode)} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 min-h-[48px] rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
           <Terminal size={20} /> {reviewMode ? 'Hide Review' : 'Review Snippets'}
         </button>
-        <button onClick={onRestart} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
+        <button onClick={onRestart} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-4 min-h-[48px] rounded-2xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
           <RotateCcw size={20} /> Try Again
         </button>
       </div>
@@ -315,10 +315,12 @@ function ActiveChallenge({ snippets, currentIndex, results, onRun, onNext, isRun
   const [code, setCode] = useState(current?.code || '');
   const [output, setOutput] = useState([]);
   const [result, setResult] = useState(null);
+  const [activeTab, setActiveTab] = useState('editor');
   const currentResult = results[currentIndex];
 
   const runCode = useCallback(() => {
     setIsRunning(true);
+    if (window.innerWidth < 1024) setActiveTab('output');
     const logs = [];
     const customConsole = {
       log: (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '))
@@ -354,7 +356,7 @@ function ActiveChallenge({ snippets, currentIndex, results, onRun, onNext, isRun
     <div className="max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <button onClick={() => setShowExit(true)} className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+        <button onClick={() => setShowExit(true)} className="flex items-center gap-2 px-3 py-2 min-h-[44px] bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
           <ArrowLeft size={16} /> Exit
         </button>
         <div className="flex items-center gap-4">
@@ -379,9 +381,19 @@ function ActiveChallenge({ snippets, currentIndex, results, onRun, onNext, isRun
         })}
       </div>
 
+      {/* Mobile tab bar */}
+      <div className="flex lg:hidden gap-2 mb-3">
+        <button onClick={() => setActiveTab('editor')} className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'editor' ? 'bg-primary text-white' : 'bg-white/5 text-gray-400'}`}>
+          <Code size={14} className="inline mr-1" /> Editor
+        </button>
+        <button onClick={() => setActiveTab('output')} className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'output' ? 'bg-primary text-white' : 'bg-white/5 text-gray-400'}`}>
+          <Terminal size={14} className="inline mr-1" /> Output
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Editor */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card flex flex-col overflow-hidden">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`glass-card flex flex-col overflow-hidden ${activeTab !== 'editor' ? 'hidden lg:flex' : ''}`}>
           <div className="p-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
             <span className="flex items-center gap-2"><Code size={12} /> {current?.name}</span>
             <span className="text-primary">Editable</span>
@@ -393,11 +405,11 @@ function ActiveChallenge({ snippets, currentIndex, results, onRun, onNext, isRun
             <textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck="false" className="flex-1 w-full bg-transparent p-4 text-primary-200 font-mono text-sm focus:outline-none resize-none custom-scrollbar leading-relaxed" />
           </div>
           <div className="p-3 bg-black/40 border-t border-white/10 flex gap-3">
-            <button onClick={runCode} disabled={isRunning} className="flex-1 bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+            <button onClick={runCode} disabled={isRunning} className="flex-1 bg-primary hover:bg-primary/90 text-white py-3 min-h-[44px] rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50">
               {isRunning ? (<><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Running...</>) : (<><Play size={16} className="fill-current" /> Run</>)}
             </button>
             {isCompleted && (
-              <button onClick={onNext} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
+              <button onClick={onNext} className="flex-1 bg-white/5 hover:bg-white/10 text-white py-3 min-h-[44px] rounded-xl font-bold transition-all flex items-center justify-center gap-2 border border-white/10">
                 {currentIndex + 1 < snippets.length ? (<>Next <ChevronRight size={16} /></>) : (<>Finish <Trophy size={16} /></>)}
               </button>
             )}
@@ -405,7 +417,7 @@ function ActiveChallenge({ snippets, currentIndex, results, onRun, onNext, isRun
         </motion.div>
 
         {/* Output */}
-        <div className="glass-card flex flex-col overflow-hidden">
+        <div className={`glass-card flex flex-col overflow-hidden ${activeTab !== 'output' ? 'hidden lg:flex' : ''}`}>
           <div className="p-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
             <span className="flex items-center gap-2"><Terminal size={12} /> Output</span>
             {isCompleted && (
@@ -535,7 +547,7 @@ export default function CodeLab() {
   if (mode === 'challenge' && !showChallengeResults) {
     return (
       <DashboardLayout>
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <ActiveChallenge key={currentIndex} snippets={challengeSnippets} currentIndex={currentIndex} results={results} onRun={handleChallengeRun} onNext={handleNextSnippet} isRunning={isRunning} setIsRunning={setIsRunning} showExit={showExit} setShowExit={setShowExit} />
         </div>
       </DashboardLayout>
@@ -546,7 +558,7 @@ export default function CodeLab() {
     const resultsArray = Object.entries(results).map(([idx, r]) => ({ ...r, index: parseInt(idx) })).sort((a, b) => a.index - b.index);
     return (
       <DashboardLayout>
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <ChallengeResults results={resultsArray} onRestart={handleRestartChallenge} />
         </div>
       </DashboardLayout>
@@ -555,11 +567,11 @@ export default function CodeLab() {
 
   return (
     <DashboardLayout>
-      <div className="h-full flex flex-col px-6">
+      <div className="h-full flex flex-col px-4 md:px-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Code className="text-primary" size={32} /> Code Lab
+            <h1 className="text-xl md:text-3xl font-bold text-white flex items-center gap-3">
+              <Code className="text-primary" size={28} /> Code Lab
             </h1>
             <p className="text-gray-400 mt-1">
               {SNIPPETS.length} snippets across {CATEGORIES.length - 1} categories
@@ -590,7 +602,7 @@ export default function CodeLab() {
                   );
                 })}
               </div>
-              <button onClick={sandboxRun} className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
+              <button onClick={sandboxRun} className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 min-h-[44px] rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
                 <Play size={16} className="fill-current" /> Run
               </button>
             </div>

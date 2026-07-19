@@ -46,7 +46,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link to="/dashboard" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full text-lg font-medium transition-all shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] flex items-center justify-center gap-2 group">
+            <Link to="/register" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full text-lg font-medium transition-all shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] flex items-center justify-center gap-2 group">
               Start Learning Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -60,19 +60,19 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-16 grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto border-t border-white/10 pt-8"
+            className="mt-16 grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto border-t border-white/10 pt-8"
           >
             <div className="flex flex-col items-center justify-center">
               <Zap className="w-6 h-6 text-yellow-400 mb-2" />
-              <span className="text-sm text-gray-400">Lightning Fast</span>
+              <span className="text-xs sm:text-sm text-gray-300">Lightning Fast</span>
             </div>
             <div className="flex flex-col items-center justify-center border-x border-white/10">
               <Shield className="w-6 h-6 text-green-400 mb-2" />
-              <span className="text-sm text-gray-400">Enterprise Security</span>
+              <span className="text-xs sm:text-sm text-gray-300">Enterprise Security</span>
             </div>
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center col-span-2 sm:col-span-1">
               <Sparkles className="w-6 h-6 text-primary mb-2" />
-              <span className="text-sm text-gray-400">AI Powered</span>
+              <span className="text-xs sm:text-sm text-gray-300">AI Powered</span>
             </div>
           </motion.div>
         </div>

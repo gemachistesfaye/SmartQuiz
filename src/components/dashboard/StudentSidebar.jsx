@@ -40,7 +40,7 @@ export default function StudentSidebar() {
       <nav className="flex-1 space-y-6">
         {sections.map((section) => (
           <div key={section.label}>
-            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 px-4">{section.label}</div>
+            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 px-4">{section.label}</div>
             <div className="space-y-1">
               {section.items.map((item) => {
                 const Icon = item.icon;

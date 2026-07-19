@@ -51,7 +51,9 @@ export default function NotificationPanel() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition-colors relative"
+        className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition-colors relative min-w-[44px] min-h-[44px] flex items-center justify-center"
+        aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+        aria-expanded={open}
       >
         <Bell size={20} />
         {unreadCount > 0 && (
@@ -105,8 +107,8 @@ export default function NotificationPanel() {
                             <p className="text-xs font-bold text-white truncate">{n.title}</p>
                             {!n.read && <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
                           </div>
-                          <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
-                          <p className="text-[9px] text-gray-600 mt-1">{n.time}</p>
+                          <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
+                          <p className="text-[10px] text-gray-500 mt-1">{n.time}</p>
                         </div>
                         {!n.read && (
                           <button onClick={(e) => { e.stopPropagation(); markAsRead(n.id); }} className="text-gray-600 hover:text-white shrink-0 mt-1">

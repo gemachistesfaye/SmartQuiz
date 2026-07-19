@@ -8,14 +8,14 @@ export default function DashboardLayout({ children }) {
   const { isAdmin } = useAuth();
 
   return (
-    <div className={`min-h-screen flex p-4 gap-4 overflow-hidden font-sans transition-colors duration-500 ${
+    <div className={`min-h-screen flex p-2 sm:p-4 gap-4 overflow-x-hidden font-sans transition-colors duration-500 ${
       isAdmin ? 'bg-[#0f0505]' : 'bg-background'
     }`}>
       {isAdmin ? <AdminSidebar /> : <StudentSidebar />}
       
       <div className="flex-1 flex flex-col h-[calc(100vh-2rem)] overflow-y-auto custom-scrollbar relative">
         <Header />
-        <main className="flex-1 p-2 md:p-6 pb-24 lg:pb-20">
+        <main className="flex-1 p-4 md:p-6 pb-20 lg:pb-20">
           {children}
         </main>
       </div>

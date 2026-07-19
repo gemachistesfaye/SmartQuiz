@@ -231,26 +231,28 @@ export default function AIAssistant() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col h-full px-6 pb-6">
+      <div className="flex flex-col h-full px-4 md:px-6 pb-6">
         {/* Chat Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4 md:mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Sparkles className="text-primary" size={32} /> AI Study Assistant
+            <h1 className="text-xl md:text-3xl font-bold text-white flex items-center gap-3">
+              <Sparkles className="text-primary" size={28} /> AI Study Assistant
             </h1>
-            <p className="text-gray-400 mt-1">Your personal JavaScript tutor, available 24/7.</p>
+            <p className="text-gray-400 mt-1 text-sm hidden md:block">Your personal JavaScript tutor, available 24/7.</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <button 
               onClick={() => setShowApiSettings(!showApiSettings)}
-              className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition-all relative group"
+              className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white transition-all relative group min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label="AI API settings"
+              aria-expanded={showApiSettings}
             >
               <Settings size={20} />
               <div className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-[#111] border border-white/10 rounded-lg text-[10px] text-gray-500 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
                 AI API Settings
               </div>
             </button>
-            <div className={`flex items-center gap-2 px-4 py-2 border rounded-full transition-colors ${
+            <div className={`hidden md:flex items-center gap-2 px-4 py-2 border rounded-full transition-colors ${
               apiKey ? 'bg-green-500/10 border-green-500/20 text-green-500' : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500'
             }`}>
               <div className={`w-2 h-2 rounded-full animate-pulse ${apiKey ? 'bg-green-500' : 'bg-yellow-500'}`} />
@@ -268,12 +270,15 @@ export default function AIAssistant() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="absolute top-24 right-6 w-80 glass-card p-6 z-50 border-primary/20 shadow-2xl"
+              className="absolute top-24 right-6 w-full max-w-80 glass-card p-6 z-50 border-primary/20 shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              aria-label="API settings"
             >
               <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
                 <Settings size={16} /> OpenAI API Config
               </h3>
-              <p className="text-[10px] text-gray-500 mb-4 leading-relaxed">
+              <p className="text-[10px] text-gray-400 mb-4 leading-relaxed">
                 Enter your OpenAI API Key to enable real-time, unlimited AI conversations. 
                 Get one at <a href="https://platform.openai.com/" target="_blank" rel="noreferrer" className="text-primary hover:underline">OpenAI Platform</a>.
               </p>
@@ -302,10 +307,10 @@ export default function AIAssistant() {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 flex-1 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8 flex-1 min-h-0">
           {/* Chat Window */}
           <div className="lg:col-span-3 flex flex-col glass-card overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-6 custom-scrollbar">
               <AnimatePresence>
                 {messages.map((msg, i) => (
                   <motion.div
@@ -314,13 +319,13 @@ export default function AIAssistant() {
                     animate={{ opacity: 1, y: 0 }}
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className={`flex gap-4 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                    <div className={`flex gap-3 md:gap-4 max-w-[85%] md:max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                      <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shrink-0 ${
                         msg.role === 'user' ? 'bg-primary' : 'bg-white/10 text-primary'
                       }`}>
                         {msg.role === 'user' ? <User size={20} /> : <Bot size={20} />}
                       </div>
-                      <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
+                      <div className={`p-3 md:p-4 rounded-2xl text-sm leading-relaxed ${
                         msg.role === 'user' 
                           ? 'bg-primary text-white rounded-tr-none' 
                           : 'bg-white/5 text-gray-300 border border-white/5 rounded-tl-none prose prose-invert prose-sm max-w-none'
@@ -353,8 +358,8 @@ export default function AIAssistant() {
                 ))}
               </AnimatePresence>
               {isTyping && (
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-primary">
+                <div className="flex gap-3 md:gap-4">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white/10 flex items-center justify-center text-primary">
                     <Bot size={20} />
                   </div>
                   <div className="bg-white/5 border border-white/5 p-4 rounded-2xl rounded-tl-none flex items-center gap-2">
@@ -367,44 +372,44 @@ export default function AIAssistant() {
             </div>
 
             {/* Quick Prompts */}
-            <div className="px-6 py-3 border-t border-white/5 flex gap-2 overflow-x-auto bg-white/[0.01]">
+            <div className="px-3 md:px-6 py-2 md:py-3 border-t border-white/5 flex gap-2 overflow-x-auto bg-white/[0.01] scrollbar-hide">
               <button 
                 type="button"
                 onClick={() => setInput("Review my code: ")}
-                className="text-[10px] font-bold text-gray-400 hover:text-white bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1"
+                className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
               >
-                <span>🔍</span> Code Review
+                <span aria-hidden="true">🔍</span> Code Review
               </button>
               <button 
                 type="button"
                 onClick={() => setInput("Explain the Event Loop")}
-                className="text-[10px] font-bold text-gray-400 hover:text-white bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1"
+                className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
               >
-                <span>🔄</span> Event Loop
+                <span aria-hidden="true">🔄</span> Event Loop
               </button>
               <button 
                 type="button"
                 onClick={() => setInput("What is a Closure?")}
-                className="text-[10px] font-bold text-gray-400 hover:text-white bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1"
+                className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
               >
-                <span>🔒</span> Closures
+                <span aria-hidden="true">🔒</span> Closures
               </button>
             </div>
 
             {/* Input Area */}
-            <form onSubmit={handleSend} className="p-6 border-t border-white/5 bg-white/[0.02]">
+            <form onSubmit={handleSend} className="p-3 md:p-6 border-t border-white/5 bg-white/[0.02]">
               <div className="relative">
                 <input 
                   type="text" 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask me anything about JavaScript..."
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-white focus:outline-none focus:border-primary/50 transition-colors"
+                  placeholder="Ask about JavaScript..."
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 md:py-4 pl-5 md:pl-6 pr-14 md:pr-16 text-white focus:outline-none focus:border-primary/50 transition-colors text-sm"
                 />
                 <button 
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-white p-3 rounded-xl transition-all disabled:opacity-50"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-white p-3 rounded-xl transition-all disabled:opacity-50 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 >
                   <Send size={18} />
                 </button>
@@ -413,7 +418,7 @@ export default function AIAssistant() {
           </div>
 
           {/* AI Insights Sidebar */}
-          <div className="space-y-6">
+          <div className="hidden lg:block space-y-6">
             <div className="glass-card p-6">
               <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-widest">
                 <Brain size={16} className="text-primary" /> Learning Insights
