@@ -6,12 +6,11 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
 import { addBookmark, removeBookmark, subscribeToBookmarks } from '../utils/bookmarks';
 import { concepts } from '../data/theoryVault';
-import { Search, BookOpen, ChevronRight, X, Sparkles, Terminal, Bookmark, BookmarkCheck } from 'lucide-react';
+import { BookOpen, ChevronRight, X, Sparkles, Terminal, Bookmark, BookmarkCheck } from 'lucide-react';
 
 export default function TheoryVault() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedConcept, setSelectedConcept] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
@@ -41,11 +40,8 @@ export default function TheoryVault() {
   const filteredConcepts = useMemo(() =>
     concepts.filter(c =>
       (activeCategory === 'All' || c.category === activeCategory) &&
-      (!showBookmarksOnly || bookmarkedTitles.has(c.title)) &&
-      (c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       c.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       c.subcategory.toLowerCase().includes(searchTerm.toLowerCase()))
-    ), [activeCategory, searchTerm, showBookmarksOnly, bookmarkedTitles]);
+      (!showBookmarksOnly || bookmarkedTitles.has(c.title))
+    ), [activeCategory, showBookmarksOnly, bookmarkedTitles]);
 
   const categoryColors = {
     JavaScript: 'text-yellow-400',
@@ -75,16 +71,6 @@ export default function TheoryVault() {
             <p className="text-gray-400 mt-1 text-sm">{concepts.length} concepts across {categories.length - 1} categories</p>
           </div>
 
-          <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Search concepts..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors text-sm"
-            />
-          </div>
           <button
             onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all border shrink-0 ${
@@ -147,48 +133,51 @@ export default function TheoryVault() {
         {/* Modal */}
         <AnimatePresence>
           {selectedConcept && (
-            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={selectedConcept.title}>
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-6" role="dialog" aria-modal="true" aria-label={selectedConcept.title}>
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedConcept(null)}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/70 backdrop-blur-md"
               />
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="relative w-full max-w-2xl bg-[#0d0d0d] border border-white/10 rounded-2xl p-6 md:p-12 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl"
+                className="relative w-full max-w-2xl bg-[#0a0a0f] border border-white/10 rounded-2xl md:rounded-3xl flex flex-col max-h-[85vh] shadow-2xl shadow-black/50 overflow-hidden"
               >
-                <button
-                  onClick={() => setSelectedConcept(null)}
-                  className="absolute top-4 right-4 md:top-8 md:right-8 text-gray-400 hover:text-white transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-white/10"
-                  aria-label="Close"
-                >
-                  <X size={24} />
-                </button>
-
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${categoryColors[selectedConcept.category] || 'text-primary'} bg-white/5`}>
-                    {selectedConcept.category}
-                  </span>
-                  <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
-                    {selectedConcept.subcategory}
-                  </span>
+                {/* Sticky Header */}
+                <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/5 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-lg ${categoryColors[selectedConcept.category] || 'text-primary'} bg-white/5`}>
+                      {selectedConcept.category}
+                    </span>
+                    <span className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                      {selectedConcept.subcategory}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setSelectedConcept(null)}
+                    className="text-gray-400 hover:text-white transition-colors p-2 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl hover:bg-white/10"
+                    aria-label="Close"
+                  >
+                    <X size={20} />
+                  </button>
                 </div>
 
-                <h2 className="text-lg md:text-2xl font-bold text-white mb-4">{selectedConcept.title}</h2>
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 md:space-y-6 custom-scrollbar">
+                  <h2 className="text-lg md:text-2xl font-bold text-white">{selectedConcept.title}</h2>
 
-                <div className="space-y-6">
                   <section>
                     <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
                       <Terminal size={12} className="text-primary" /> Overview
                     </h4>
-                    <p className="text-gray-400 leading-relaxed text-sm whitespace-pre-line">
+                    <div className="text-gray-400 leading-relaxed text-sm whitespace-pre-line">
                       {selectedConcept.content}
-                    </p>
+                    </div>
                   </section>
 
                   {selectedConcept.description && (
@@ -199,11 +188,14 @@ export default function TheoryVault() {
                       </p>
                     </section>
                   )}
+                </div>
 
-                  <div className="flex gap-4 pt-4">
+                {/* Sticky Footer */}
+                <div className="p-4 md:p-6 border-t border-white/5 shrink-0">
+                  <div className="flex gap-3">
                     <button
                       onClick={() => { setSelectedConcept(null); navigate(`/quiz?category=${encodeURIComponent(selectedConcept.category)}`); }}
-                      className="flex-1 bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                      className="flex-1 bg-primary text-white py-3 md:py-3.5 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 text-sm"
                     >
                       Take {selectedConcept.category} Quiz
                     </button>
@@ -224,10 +216,10 @@ export default function TheoryVault() {
                           toast[ok ? 'success' : 'info'](ok ? `${selectedConcept.title} bookmarked!` : 'Already bookmarked');
                         }
                       }}
-                      className="px-6 border border-white/10 text-white rounded-xl hover:bg-white/5 transition-all flex items-center gap-2"
+                      className="px-5 border border-white/10 text-white rounded-xl hover:bg-white/5 transition-all flex items-center gap-2 text-sm"
                     >
                       {bookmarkedTitles.has(selectedConcept.title) ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
-                      {bookmarkedTitles.has(selectedConcept.title) ? 'Bookmarked' : 'Bookmark'}
+                      {bookmarkedTitles.has(selectedConcept.title) ? 'Saved' : 'Save'}
                     </button>
                   </div>
                 </div>
