@@ -239,35 +239,35 @@ function ActiveQuiz({ quiz, settings }) {
 
   return (
     <div className="max-w-3xl mx-auto px-2 md:px-0">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2 md:mb-3">
         <button
           onClick={() => setShowExit(true)}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all text-xs font-medium"
+          className="flex items-center gap-1.5 px-2 py-1.5 bg-white/5 border border-white/10 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all text-[11px] font-medium"
         >
-          <ArrowLeft size={14} /> Exit
+          <ArrowLeft size={12} /> Exit
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           {settings.timerMode && (
-            <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border ${
+            <div className={`flex items-center gap-1 px-2 py-1.5 rounded-lg border ${
               timeLeft < 10 ? 'bg-red-500/10 border-red-500/30' : 'bg-white/5 border-white/10'
             }`}>
-              <Timer className={timeLeft < 10 ? 'text-red-400' : 'text-primary'} size={14} />
-              <span className={`font-mono text-sm font-bold ${timeLeft < 10 ? 'text-red-400' : 'text-white'}`}>
+              <Timer className={timeLeft < 10 ? 'text-red-400' : 'text-primary'} size={12} />
+              <span className={`font-mono text-xs font-bold ${timeLeft < 10 ? 'text-red-400' : 'text-white'}`}>
                 {timeLeft}s
               </span>
             </div>
           )}
-          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-orange-400/10 border border-orange-400/20">
-            <Zap size={14} className="text-orange-400" />
-            <span className="text-orange-400 font-bold text-xs">{streak}</span>
+          <div className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-orange-400/10 border border-orange-400/20">
+            <Zap size={12} className="text-orange-400" />
+            <span className="text-orange-400 font-bold text-[11px]">{streak}</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10">
-            <span className="text-gray-400 text-xs font-bold">{score}/{totalQuestions}</span>
+          <div className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-white/5 border border-white/10">
+            <span className="text-gray-400 text-[11px] font-bold">{score}/{totalQuestions}</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full h-1 bg-white/5 rounded-full mb-4 overflow-hidden">
+      <div className="w-full h-1 bg-white/5 rounded-full mb-3 md:mb-4 overflow-hidden">
         <motion.div
           className="h-full bg-primary"
           animate={{ width: `${((currentQuestionIndex) / totalQuestions) * 100}%` }}
@@ -283,13 +283,13 @@ function ActiveQuiz({ quiz, settings }) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
         >
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Question {currentQuestionIndex + 1} of {totalQuestions}</span>
+          <div className="flex items-center gap-2 mb-2 md:mb-3">
+            <span className="text-[9px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Question {currentQuestionIndex + 1} of {totalQuestions}</span>
             {currentQuestion?.category && (
-              <span className="text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">{currentQuestion.category}</span>
+              <span className="text-[9px] md:text-xs font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">{currentQuestion.category}</span>
             )}
             {currentQuestion?.difficulty && (
-              <span className={`text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded ${
+              <span className={`text-[9px] md:text-xs font-bold px-1.5 py-0.5 rounded ${
                 currentQuestion.difficulty === 'easy' ? 'bg-green-500/10 text-green-400' :
                 currentQuestion.difficulty === 'medium' ? 'bg-yellow-500/10 text-yellow-400' :
                 'bg-red-500/10 text-red-400'
@@ -297,15 +297,15 @@ function ActiveQuiz({ quiz, settings }) {
             )}
           </div>
 
-          <h2 className="text-lg md:text-2xl font-bold text-white mb-4 md:mb-6 leading-tight">
+          <h2 className="text-base md:text-2xl font-bold text-white mb-3 md:mb-6 leading-tight">
             {currentQuestion?.question}
           </h2>
 
-          <div className="space-y-2 md:space-y-3 mb-4 md:mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 mb-4 md:mb-6">
             {currentQuestion?.options.map((option, index) => {
               const isOptionCorrect = index === currentQuestion.correct;
               const isSelected = selected === index;
-              let classes = "w-full text-left p-3 md:p-5 rounded-xl md:rounded-2xl border transition-all duration-300 ";
+              let classes = "w-full text-left p-3 md:p-4 rounded-xl border transition-all duration-300 ";
 
               if (showFeedback) {
                 if (isOptionCorrect) classes += "bg-green-500/15 border-green-500/40 text-green-300";
@@ -317,8 +317,8 @@ function ActiveQuiz({ quiz, settings }) {
 
               return (
                 <button key={index} onClick={() => handleSelect(index)} disabled={showFeedback} className={classes}>
-                  <div className="flex items-center gap-3 md:gap-4">
-                    <span className={`w-7 h-7 md:w-9 md:h-9 flex items-center justify-center rounded-lg md:rounded-xl text-xs md:text-sm font-bold shrink-0 ${
+                  <div className="flex items-center gap-3">
+                    <span className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold shrink-0 ${
                       showFeedback && isOptionCorrect ? 'bg-green-500/20 text-green-400' :
                       showFeedback && isSelected ? 'bg-red-500/20 text-red-400' :
                       'bg-white/5 text-gray-400'
@@ -327,7 +327,7 @@ function ActiveQuiz({ quiz, settings }) {
                        showFeedback && isSelected ? <X size={14} /> :
                        String.fromCharCode(65 + index)}
                     </span>
-                    <span className="font-medium text-sm md:text-base">{option}</span>
+                    <span className="font-medium text-sm">{option}</span>
                   </div>
                 </button>
               );
@@ -343,24 +343,24 @@ function ActiveQuiz({ quiz, settings }) {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <div className={`p-4 md:p-6 rounded-xl md:rounded-2xl border mb-4 md:mb-6 ${
+                <div className={`p-3 md:p-6 rounded-xl md:rounded-2xl border mb-3 md:mb-6 ${
                   isCorrect ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'
                 }`}>
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-1.5 md:mb-2">
                     {isCorrect ? (
-                      <Check size={16} className="text-green-400" />
+                      <Check size={14} className="text-green-400" />
                     ) : (
-                      <X size={16} className="text-red-400" />
+                      <X size={14} className="text-red-400" />
                     )}
-                    <span className={`font-bold text-sm ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                    <span className={`font-bold text-xs md:text-sm ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
                       {isCorrect ? 'Correct!' : 'Not quite right'}
                     </span>
                   </div>
-                  <p className="text-gray-300 leading-relaxed text-xs md:text-sm">{currentQuestion?.explanation}</p>
+                  <p className="text-gray-300 leading-relaxed text-[11px] md:text-sm">{currentQuestion?.explanation}</p>
                 </div>
                 <button
                   onClick={handleNext}
-                  className="w-full bg-primary text-white py-3 md:py-4 rounded-xl md:rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 text-sm md:text-base"
+                  className="w-full bg-primary text-white py-2.5 md:py-4 rounded-xl md:rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 text-xs md:text-base"
                 >
                   {currentQuestionIndex + 1 < totalQuestions ? (
                     <>Continue <ChevronRight size={18} /></>

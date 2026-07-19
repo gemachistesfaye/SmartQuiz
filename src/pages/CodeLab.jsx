@@ -197,11 +197,11 @@ function ChallengeSettings({ settings, setSettings, onStart, isLaunching }) {
         <select
           value={settings.category}
           onChange={(e) => setSettings({...settings, category: e.target.value})}
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-primary/50 appearance-none cursor-pointer min-h-[48px]"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+          className="w-full bg-[#111118] border border-white/10 rounded-2xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer min-h-[48px] transition-all hover:border-white/20 shadow-lg shadow-black/20"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}
         >
           {CODE_CAT_META.map(cat => (
-            <option key={cat.value} value={cat.value}>{cat.label} ({cat.count})</option>
+            <option key={cat.value} value={cat.value} className="bg-[#111118] text-white">{cat.label} ({cat.count})</option>
           ))}
         </select>
       </motion.div>

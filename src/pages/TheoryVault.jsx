@@ -103,11 +103,11 @@ export default function TheoryVault() {
           <select
             value={activeCategory}
             onChange={(e) => setActiveCategory(e.target.value)}
-            className="w-full md:w-72 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-primary/50 appearance-none cursor-pointer min-h-[44px]"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+            className="w-full md:w-72 bg-[#111118] border border-white/10 rounded-2xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer min-h-[48px] transition-all hover:border-white/20 shadow-lg shadow-black/20"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center' }}
           >
             {categories.map(cat => (
-              <option key={cat} value={cat}>{cat} {cat !== 'All' ? `(${concepts.filter(c => cat === 'All' || c.category === cat).length})` : `(${concepts.length})`}</option>
+              <option key={cat} value={cat} className="bg-[#111118] text-white">{cat} {cat !== 'All' ? `(${concepts.filter(c => cat === 'All' || c.category === cat).length})` : `(${concepts.length})`}</option>
             ))}
           </select>
         </div>
