@@ -13,6 +13,7 @@ import TheoryVault from './pages/TheoryVault';
 import Cybersecurity from './pages/Cybersecurity';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import TermsAndConditions from './pages/TermsAndConditions';
 import UserManagement from './pages/admin/UserManagement';
 import LoginPage from './auth/LoginPage';
 import RegisterPage from './auth/RegisterPage';
@@ -47,6 +48,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
 
         {/* Student Routes */}
         <Route 

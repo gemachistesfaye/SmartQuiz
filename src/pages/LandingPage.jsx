@@ -3,6 +3,8 @@ import Hero from '../components/Hero';
 import Stats from '../components/Stats';
 import Features from '../components/Features';
 import Testimonials from '../components/Testimonials';
+import HowItWorks from '../components/HowItWorks';
+import CallToAction from '../components/CallToAction';
 import Footer from '../components/Footer';
 
 function LandingPage() {
@@ -16,7 +18,9 @@ function LandingPage() {
         <Hero />
         <Stats />
         <Features />
+        <HowItWorks />
         <Testimonials />
+        <CallToAction />
       </main>
       <Footer />
     </div>
