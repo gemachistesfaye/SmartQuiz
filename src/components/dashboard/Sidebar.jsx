@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, onToggle }) {
   return (
     <>
       {/* Desktop: always-visible sidebar */}
-      <aside className="hidden lg:flex w-64 bg-primary/5 backdrop-blur-xl border-r border-primary/10 h-screen fixed top-0 left-0 flex-col shrink-0 z-30 shadow-[4px_0_24px_rgba(59,130,246,0.05)]">
+      <aside className="hidden lg:flex w-64 bg-[#0a0c10] border-r border-white/5 h-screen fixed top-0 left-0 flex-col shrink-0 z-30 shadow-2xl">
         <SidebarContent links={links} location={location} logout={logout} />
       </aside>
 
@@ -66,7 +66,7 @@ export default function Sidebar({ isOpen, onToggle }) {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed top-0 left-0 bottom-0 w-72 bg-primary/10 backdrop-blur-2xl border-r border-primary/20 z-[70] lg:hidden flex flex-col shadow-[4px_0_24px_rgba(59,130,246,0.1)]"
+              className="fixed top-0 left-0 bottom-0 w-72 bg-[#0a0c10] border-r border-white/5 z-[70] lg:hidden flex flex-col shadow-2xl"
             >
               <SidebarContent links={links} location={location} logout={logout} onClose={onClose} showClose />
             </motion.div>
@@ -116,7 +116,7 @@ function SidebarContent({ links, location, logout, onClose, showClose }) {
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 isActive
                   ? 'bg-primary/15 text-primary'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
               }`}
             >
               <Icon size={18} />
