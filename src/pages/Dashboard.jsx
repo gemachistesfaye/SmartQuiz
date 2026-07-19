@@ -7,7 +7,7 @@ import { db } from '../services/firebase';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import StatCards from '../components/dashboard/StatCards';
 import ProgressChart from '../components/dashboard/ProgressChart';
-import { Sparkles, Brain, Target, Zap, Trophy, ArrowRight, BookOpen, Code } from 'lucide-react';
+import { Brain, Target, Zap, Trophy, BookOpen, Code } from 'lucide-react';
 
 export default function Dashboard() {
   const { userData, currentUser } = useAuth();

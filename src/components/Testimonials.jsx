@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 const testimonials = [
   {

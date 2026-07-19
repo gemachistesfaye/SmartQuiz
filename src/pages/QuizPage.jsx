@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../hooks/useQuiz';
-import { Brain, Timer, Zap, Trophy, ArrowLeft, Check, X, ChevronRight, RotateCcw, BarChart3, AlertTriangle, Target, Globe, Palette, Atom, Shield, Clock, Unlock, Rocket, Code, Server, FileText, Folder, Database, Cloud, Cpu, Braces, Binary } from 'lucide-react';
+import { Brain, Timer, Zap, Trophy, ArrowLeft, Check, X, ChevronRight, RotateCcw, BarChart3, AlertTriangle, Target, Globe, Palette, Atom, Shield, Clock, Rocket, Code, Server, FileText, Folder, Database, Cloud, Cpu, Braces, Binary } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 
