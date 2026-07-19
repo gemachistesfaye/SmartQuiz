@@ -29,8 +29,17 @@ export default function PhoneLogin({ onBack }) {
       setConfirmationResult(result);
       setStep('otp');
       toast.success("OTP sent to your phone!");
-    } catch {
-      toast.error("Failed to send OTP");
+    } catch (error) {
+      console.error("Phone login error:", error);
+      if (error.code === 'auth/invalid-phone-number') {
+        toast.error("Invalid phone number format");
+      } else if (error.code === 'auth/too-many-requests') {
+        toast.error("Too many attempts. Please try again later");
+      } else if (error.code === 'auth/captcha-check-failed') {
+        toast.error("reCAPTCHA verification failed. Please refresh and try again");
+      } else {
+        toast.error(error.message || "Failed to send OTP");
+      }
     } finally {
       setLoading(false);
     }
@@ -43,8 +52,15 @@ export default function PhoneLogin({ onBack }) {
       await confirmationResult.confirm(otp);
       toast.success("Login successful!");
       navigate('/dashboard');
-    } catch {
-      toast.error("Invalid OTP code");
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      if (error.code === 'auth/invalid-verification-code') {
+        toast.error("Invalid OTP code. Please check and try again");
+      } else if (error.code === 'auth/session-expired') {
+        toast.error("Session expired. Please request a new OTP");
+      } else {
+        toast.error(error.message || "Failed to verify OTP");
+      }
     } finally {
       setLoading(false);
     }

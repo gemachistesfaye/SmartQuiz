@@ -33,7 +33,6 @@ export default function LoginPage() {
     e.preventDefault();
     if (!validateEmail(formData.email)) {
       toast.error("Please enter a valid email address");
-      setLoading(false);
       return;
     }
     try {
@@ -43,21 +42,45 @@ export default function LoginPage() {
       
       const dest = userDoc.role === 'admin' ? "/admin/dashboard" : "/dashboard";
       navigate(dest, { replace: true });
-    } catch {
-      toast.error("Invalid email or password");
+    } catch (error) {
+      console.error("Email login error:", error);
+      if (error.code === 'auth/user-not-found') {
+        toast.error("No account found with this email");
+      } else if (error.code === 'auth/wrong-password') {
+        toast.error("Incorrect password");
+      } else if (error.code === 'auth/invalid-email') {
+        toast.error("Invalid email address");
+      } else if (error.code === 'auth/too-many-requests') {
+        toast.error("Too many failed attempts. Please try again later");
+      } else if (error.code === 'auth/invalid-credential') {
+        toast.error("Invalid email or password");
+      } else {
+        toast.error(error.message || "Login failed. Please try again");
+      }
+    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
+      setLoading(true);
       const { userDoc } = await loginWithGoogle();
       toast.success("Logged in with Google!");
       
       const dest = userDoc.role === 'admin' ? "/admin/dashboard" : "/dashboard";
       navigate(dest, { replace: true });
-    } catch {
-      toast.error("Google login failed");
+    } catch (error) {
+      console.error("Google login error:", error);
+      if (error.code === 'auth/popup-closed-by-user') {
+        toast.error("Login cancelled. Please try again");
+      } else if (error.code === 'auth/popup-blocked') {
+        toast.error("Popup blocked. Please allow popups for this site");
+      } else {
+        toast.error(error.message || "Google login failed");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

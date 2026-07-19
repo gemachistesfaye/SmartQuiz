@@ -2530,4 +2530,2289 @@ function useLocalStorage(key) {
 // ESLint plugin enforces rules
 // npm install eslint-plugin-react-hooks`
   },
+
+  // ═══════════════════════════════════════════
+  // TYPESCRIPT — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'Type System',
+    category: 'TypeScript',
+    subcategory: 'Fundamentals',
+    description: 'Static typing that catches errors at compile time, not runtime.',
+    content: 'TypeScript adds a structural type system on top of JavaScript. Every variable, parameter, and return value can have a type. Types are checked at compile time and erased at runtime — no performance cost. TypeScript infers types automatically (type inference) but you can annotate explicitly. Key types: string, number, boolean, null, undefined, any, unknown, void, never, tuple, enum, union, intersection.',
+    example: `// Explicit annotations
+let name: string = "Alice";
+let age: number = 25;
+let active: boolean = true;
+
+// Type inference
+let city = "NYC"; // inferred as string
+
+// Union types
+let id: string | number = "abc";
+id = 123; // also valid
+
+// Function typing
+function add(a: number, b: number): number {
+  return a + b;
+}`
+  },
+  {
+    title: 'Interfaces vs Types',
+    category: 'TypeScript',
+    subcategory: 'Fundamentals',
+    description: 'Two ways to define object shapes — interfaces extend, types compose.',
+    content: 'Interfaces and types both define object shapes but differ in capabilities. Interfaces support declaration merging, extend other interfaces, and are ideal for object contracts and class implementations. Types support unions, intersections, mapped types, and conditional types — more flexible for complex type manipulation. Use interfaces for public APIs and object shapes; use types for unions, primitives, and computed types.',
+    example: `// Interface — extensible, declaration merging
+interface User {
+  name: string;
+  age: number;
+}
+interface Admin extends User {
+  role: string;
+}
+
+// Type — more flexible
+type Point = { x: number; y: number };
+type ID = string | number; // union
+type Named = User & { email: string }; // intersection
+
+// Declaration merging (only interfaces)
+interface Config {
+  debug: boolean;
+}
+interface Config {
+  verbose: boolean;
+}
+// Config now has both debug and verbose`
+  },
+  {
+    title: 'Generics',
+    category: 'TypeScript',
+    subcategory: 'Fundamentals',
+    description: 'Type parameters that make components reusable across multiple types.',
+    content: 'Generics allow you to write code that works with any type while preserving type safety. Instead of using "any", you define a type parameter (<T>) that gets resolved when the function is called. Generics are used in functions, interfaces, classes, and type aliases. Constraints (extends) limit which types can be passed. Default types provide fallback values.',
+    example: `// Generic function
+function identity<T>(value: T): T {
+  return value;
+}
+identity<string>("hello"); // explicitly "hello"
+identity(42);               // inferred as number
+
+// Generic interface
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+}
+
+// Constrained generic
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+  return obj[key];
+}
+const user = { name: "Alice", age: 25 };
+getProperty(user, "name"); // valid
+// getProperty(user, "email"); // error!`
+  },
+  {
+    title: 'Utility Types',
+    category: 'TypeScript',
+    subcategory: 'Fundamentals',
+    description: 'Built-in type transformations for common patterns.',
+    content: 'TypeScript provides utility types that transform existing types. Partial<T> makes all properties optional. Required<T> makes all properties required. Pick<T, K> selects specific keys. Omit<T, K> removes specific keys. Record<K, V> creates typed objects. Readonly<T> prevents mutation. ReturnType<T> extracts function return types. Parameters<T> extracts parameter types.',
+    example: `interface User {
+  name: string;
+  age: number;
+  email: string;
+}
+
+// Partial — all optional
+type UpdateUser = Partial<User>;
+
+// Pick — select keys
+type UserName = Pick<User, "name">;
+
+// Omit — remove keys
+type UserWithoutEmail = Omit<User, "email">;
+
+// Record — typed object
+type Roles = Record<string, string[]>;
+
+// Readonly — immutable
+const user: Readonly<User> = { name: "A", age: 25, email: "a@b.com" };
+// user.name = "B"; // error!`
+  },
+  {
+    title: 'Decorators',
+    category: 'TypeScript',
+    subcategory: 'Advanced',
+    description: 'Functions that modify classes, methods, properties, or parameters at declaration time.',
+    content: 'Decorators are special declarations that can be attached to class declarations, methods, properties, or parameters. They execute when the class is defined, not instantiated. Enable experimentalDecorators in tsconfig. Use cases: logging, memoization, validation, dependency injection, and AOP (aspect-oriented programming). Class decorators receive the constructor. Method decorators receive prototype, key, and descriptor.',
+    example: `// Method decorator — logging
+function Log(target: any, key: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(\`Calling \${key} with\`, args);
+    return original.apply(this, args);
+  };
+}
+
+class Calculator {
+  @Log
+  add(a: number, b: number) {
+    return a + b;
+  }
+}
+
+new Calculator().add(2, 3);
+// logs: Calling add with [2, 3]`
+  },
+  {
+    title: 'Type Narrowing',
+    category: 'TypeScript',
+    subcategory: 'Advanced',
+    description: 'Refining broad types to more specific ones through control flow analysis.',
+    content: 'TypeScript automatically narrows types within conditionals, type guards, and assertions. You can narrow using typeof, instanceof, in operator, custom type guards (x is Type), and discriminated unions (switch on a common literal property). Narrowing lets you safely access properties that only exist on specific types.',
+    example: `// Discriminated union
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "rectangle"; width: number; height: number };
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2; // narrowed
+    case "rectangle":
+      return shape.width * shape.height;   // narrowed
+  }
+}
+
+// typeof narrowing
+function format(value: string | number) {
+  if (typeof value === "string") {
+    return value.toUpperCase(); // narrowed to string
+  }
+  return value.toFixed(2);      // narrowed to number
+}`
+  },
+  {
+    title: 'Mapped Types',
+    category: 'TypeScript',
+    subcategory: 'Advanced',
+    description: 'Creating new types by transforming each property of an existing type.',
+    content: 'Mapped types iterate over keys of an existing type to produce a new type. Syntax: { [K in keyof T]: NewType }. Combined with modifiers, you can add/remove readonly and optional. Template literal types enable string manipulation. Mapped types power most utility types and enable powerful type-level programming.',
+    example: `// Basic mapped type
+type Optional<T> = {
+  [K in keyof T]?: T[K];
+};
+
+// Make all properties readonly
+type Immutable<T> = {
+  readonly [K in keyof T]: T[K];
+};
+
+// Remove nullability
+type NonNullable<T> = {
+  [K in keyof T]: Exclude<T[K], null>;
+};
+
+interface User { name: string; age: number; }
+type OptionalUser = Optional<User>;
+// { name?: string; age?: number; }
+
+// With template literals
+type Getters<T> = {
+  [K in keyof T as \`get\${Capitalize<string & K>}\`]: () => T[K];
+};`
+  },
+  {
+    title: 'Declaration Files',
+    category: 'TypeScript',
+    subcategory: 'Advanced',
+    description: '.d.ts files that provide type information for JavaScript libraries.',
+    content: 'Declaration files (.d.ts) describe the shape of JavaScript modules that lack TypeScript types. They use "declare" to describe runtime values without implementing them. DefinitelyTyped (@types/*) is the community repository for type definitions. You can generate .d.ts from your own code with "declaration: true" in tsconfig. Module augmentation extends existing type definitions.',
+    example: `// my-library.d.ts
+declare module "my-library" {
+  export function doSomething(input: string): number;
+  export interface Config {
+    debug: boolean;
+    timeout?: number;
+  }
+}
+
+// Ambient declarations
+declare const API_URL: string;
+declare function fetchJSON<T>(url: string): Promise<T>;
+
+// Module augmentation
+declare module "express" {
+  interface Request {
+    user?: { id: string; role: string };
+  }
+}`
+  },
+
+  // ═══════════════════════════════════════════
+  // PYTHON — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'Variables & Types',
+    category: 'Python',
+    subcategory: 'Fundamentals',
+    description: 'Dynamic typing with built-in types and type hinting.',
+    content: 'Python is dynamically typed — no type declarations needed. Variables are names bound to objects. Built-in types: int, float, str, bool, list, tuple, dict, set, None. Type hints (PEP 484) add optional annotations for documentation and tooling. Python uses duck typing — if it quacks like a duck, it\'s a duck. Multiple assignment and tuple unpacking are idiomatic.',
+    example: `# Multiple assignment
+x, y, z = 1, 2.5, "hello"
+a = b = c = 0
+
+# Type hints (not enforced at runtime)
+name: str = "Alice"
+age: int = 25
+scores: list[float] = [95.5, 87.3]
+
+# Tuple unpacking
+point = (3, 4)
+px, py = point
+
+# Walrus operator (Python 3.8+)
+if (n := len([1, 2, 3])) > 2:
+    print(f"Length is {n}")`
+  },
+  {
+    title: 'List Comprehensions',
+    category: 'Python',
+    subcategory: 'Fundamentals',
+    description: 'Concise syntax for creating lists from iterables with optional filtering.',
+    content: 'List comprehensions replace for-loops for list creation. Syntax: [expr for item in iterable if condition]. They\'re faster than equivalent for-loops because the iteration is optimized in C. You can nest comprehensions and use them for dicts ({k:v}) and sets. Keep them simple — if they\'re complex, use a regular loop.',
+    example: `# Basic
+squares = [x**2 for x in range(10)]
+
+# With condition
+evens = [x for x in range(20) if x % 2 == 0]
+
+# Nested
+matrix = [[i*j for j in range(3)] for i in range(3)]
+
+# Dict comprehension
+word_lengths = {w: len(w) for w in ["hello", "world"]}
+
+# Set comprehension
+unique_chars = {c for c in "mississippi"}
+
+# Generator expression (memory efficient)
+total = sum(x**2 for x in range(1000000))`
+  },
+  {
+    title: 'Decorators',
+    category: 'Python',
+    subcategory: 'Fundamentals',
+    description: 'Functions that modify other functions or classes — a form of metaprogramming.',
+    content: 'A decorator is a function that takes a function and returns a modified version. The @decorator syntax is syntactic sugar for func = decorator(func). Decorators are used for logging, authentication, caching, rate limiting, and more. They can take arguments using nested functions. Class decorators modify classes. functools.wraps preserves the original function\'s metadata.',
+    example: `import functools
+import time
+
+def timer(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} took {time.time()-start:.4f}s")
+        return result
+    return wrapper
+
+@timer
+def slow_function():
+    time.sleep(1)
+    return "done"
+
+# Decorator with arguments
+def retry(max_attempts=3):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if attempt == max_attempts - 1:
+                        raise
+        return wrapper
+    return decorator`
+  },
+  {
+    title: 'Generators',
+    category: 'Python',
+    subcategory: 'Fundamentals',
+    description: 'Functions that yield values lazily, producing one at a time.',
+    content: 'Generators use "yield" instead of "return" — they pause execution and resume on next call. They\'re memory efficient for large datasets since they produce values on-demand. Generator expressions (x**2 for x in range(1000000)) are lazy lists. send() and yield from provide advanced control flow. Generators implement the iterator protocol (__iter__, __next__).',
+    example: `# Generator function
+def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+fib = fibonacci()
+print(next(fib))  # 0
+print(next(fib))  # 1
+print(next(fib))  # 1
+
+# Yield from — delegating to sub-generator
+def flatten(nested):
+    for item in nested:
+        if isinstance(item, list):
+            yield from flatten(item)
+        else:
+            yield item
+
+list(flatten([1, [2, 3], [4, [5]]]))  # [1,2,3,4,5]
+
+# Generator expression
+total = sum(x**2 for x in range(1000000))`
+  },
+  {
+    title: 'Context Managers',
+    category: 'Python',
+    subcategory: 'Fundamentals',
+    description: 'Objects that manage resource allocation and cleanup with the "with" statement.',
+    content: 'Context managers ensure proper resource handling (files, connections, locks) by pairing setup and teardown. The "with" statement calls __enter__ on entry and __exit__ on exit, even if exceptions occur. Implement via class (__enter__/__exit__) or @contextmanager decorator. They prevent resource leaks and reduce boilerplate try/finally blocks.',
+    example: `from contextlib import contextmanager
+
+# File context manager
+with open("data.txt", "r") as f:
+    content = f.read()
+# File automatically closed
+
+# Custom context manager with decorator
+@contextmanager
+def database_connection(url):
+    conn = connect(url)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+with database_connection("postgres://...") as db:
+    db.execute("SELECT 1")
+
+# Suppress exceptions
+from contextlib import suppress
+with suppress(FileNotFoundError):
+    os.remove("maybe_exists.txt")`
+  },
+  {
+    title: 'Object-Oriented Programming',
+    category: 'Python',
+    subcategory: 'Fundamentals',
+    description: 'Classes, inheritance, and Python\'s data model.',
+    content: 'Python supports multiple inheritance, method resolution order (MRO), and dunder methods for operator overloading. Classes are first-class objects. Use @property for getters/setters, @classmethod for alternative constructors, @staticmethod for utility methods. Dataclasses (@dataclass) auto-generate __init__, __repr__, __eq__, etc. Python uses "composition over inheritance" as a guiding principle.',
+    example: `from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: float
+    y: float
+
+    def distance(self, other: "Point") -> float:
+        return ((self.x - other.x)**2 + (self.y - other.y)**2)**0.5
+
+class Animal:
+    def __init__(self, name: str):
+        self.name = name
+
+    def speak(self) -> str:
+        raise NotImplementedError
+
+class Dog(Animal):
+    def speak(self) -> str:
+        return f"{self.name} says Woof!"
+
+# Property decorator
+class Circle:
+    def __init__(self, radius: float):
+        self._radius = radius
+
+    @property
+    def area(self) -> float:
+        return 3.14159 * self._radius ** 2`
+  },
+  {
+    title: 'Type Hints',
+    category: 'Python',
+    subcategory: 'Advanced',
+    description: 'Optional annotations for static type checking and better IDE support.',
+    content: 'Type hints (PEP 484) add type information without runtime enforcement. They improve code documentation, enable static analysis with mypy/pyright, and provide better IDE autocompletion. Use typing module for complex types: List, Dict, Optional, Union, Callable, TypeVar, Generic, Protocol, Literal, Annotated. Type hints are optional but increasingly standard in production Python.',
+    example: `from typing import Optional, Union, Callable, TypeVar, Generic
+
+T = TypeVar("T")
+
+# Basic hints
+def greet(name: str) -> str:
+    return f"Hello, {name}"
+
+# Optional and Union
+def find_user(id: int) -> Optional[dict]:
+    return None  # could be dict or None
+
+# Generic class
+class Stack(Generic[T]):
+    def __init__(self) -> None:
+        self._items: list[T] = []
+
+    def push(self, item: T) -> None:
+        self._items.append(item)
+
+    def pop(self) -> T:
+        return self._items.pop()
+
+# Protocol (structural subtyping)
+from typing import Protocol
+
+class Drawable(Protocol):
+    def draw(self) -> None: ...`
+  },
+  {
+    title: 'Async Programming',
+    category: 'Python',
+    subcategory: 'Advanced',
+    description: 'Cooperative concurrency using asyncio for I/O-bound tasks.',
+    content: 'Python\'s asyncio provides single-threaded concurrency using an event loop. async/await syntax makes asynchronous code readable. Use for I/O-bound tasks (network, files, databases), not CPU-bound work. asyncio.gather() runs multiple coroutines concurrently. aiohttp, asyncpg, aioredis provide async libraries. asyncio.Semaphore controls concurrency limits.',
+    example: `import asyncio
+import aiohttp
+
+async def fetch(session, url):
+    async with session.get(url) as response:
+        return await response.text()
+
+async def main():
+    urls = ["https://api.example.com/1", "https://api.example.com/2"]
+
+    async with aiohttp.ClientSession() as session:
+        # Run concurrently
+        tasks = [fetch(session, url) for url in urls]
+        results = await asyncio.gather(*tasks)
+
+    for result in results:
+        print(result)
+
+# Semaphore for rate limiting
+sem = asyncio.Semaphore(10)
+
+async def limited_fetch(session, url):
+    async with sem:
+        return await fetch(session, url)
+
+asyncio.run(main())`
+  },
+
+  // ═══════════════════════════════════════════
+  // BACKEND — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'REST API Design',
+    category: 'Backend',
+    subcategory: 'Fundamentals',
+    description: 'Architectural constraints for building scalable web services.',
+    content: 'REST (Representational State Transfer) uses HTTP methods semantically: GET (read), POST (create), PUT (full update), PATCH (partial update), DELETE (remove). Resources are nouns at plural URLs (/users, /users/123). Use HTTP status codes correctly: 200 (OK), 201 (Created), 204 (No Content), 400 (Bad Request), 401 (Unauthorized), 404 (Not Found), 500 (Server Error). Stateless — each request contains all needed info.',
+    example: `// Resource-oriented URLs
+GET    /api/v1/users          # List users
+POST   /api/v1/users          # Create user
+GET    /api/v1/users/:id      # Get user
+PATCH  /api/v1/users/:id      # Update user
+DELETE /api/v1/users/:id      # Delete user
+
+// Status codes
+200 OK — successful GET
+201 Created — successful POST
+400 Bad Request — validation error
+401 Unauthorized — missing/invalid token
+404 Not Found — resource doesn't exist
+
+// Pagination
+GET /api/v1/users?page=2&limit=20
+
+// Filtering
+GET /api/v1/users?role=admin&status=active`
+  },
+  {
+    title: 'JWT Authentication',
+    category: 'Backend',
+    subcategory: 'Fundamentals',
+    description: 'JSON Web Tokens for stateless API authentication.',
+    content: 'JWT (JSON Web Tokens) encode user claims in a signed token. Three parts: header (algorithm), payload (claims), signature (verification). Server validates tokens without database lookup — making auth stateless. Store in httpOnly cookies (not localStorage). Tokens have expiration (exp claim). Use refresh tokens for long-lived sessions. Never store sensitive data in the payload (it\'s base64, not encrypted).',
+    example: `// JWT structure: header.payload.signature
+
+// Creating a token (server-side)
+const jwt = require("jsonwebtoken");
+
+const token = jwt.sign(
+  { userId: 123, role: "admin" },
+  process.env.JWT_SECRET,
+  { expiresIn: "1h" }
+);
+
+// Verifying (middleware)
+function authenticate(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "No token" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    res.status(401).json({ error: "Invalid token" });
+  }
+}`
+  },
+  {
+    title: 'Middleware Pattern',
+    category: 'Backend',
+    subcategory: 'Fundamentals',
+    description: 'Functions that process requests in a pipeline before reaching the handler.',
+    content: 'Middleware functions execute sequentially in a chain. Each middleware can modify the request/response, end the cycle, or pass control to the next middleware. Used for logging, authentication, CORS, body parsing, validation, error handling. Express, Fastify, and Koa all use this pattern. Middleware order matters — auth before route handlers, logging first.',
+    example: `// Express middleware pipeline
+const express = require("express");
+const app = express();
+
+// 1. Logging (first)
+app.use((req, res, next) => {
+  console.log(\`\${req.method} \${req.path}\`);
+  next();
+});
+
+// 2. Auth middleware
+function auth(req, res, next) {
+  const token = req.headers.authorization;
+  if (!token) return res.status(401).send("Unauthorized");
+  req.user = verifyToken(token);
+  next();
+}
+
+// 3. Route with auth
+app.get("/profile", auth, (req, res) => {
+  res.json(req.user);
+});
+
+// Error handler (last)
+app.use((err, req, res, next) => {
+  res.status(500).json({ error: err.message });
+});`
+  },
+  {
+    title: 'Database Connection Pooling',
+    category: 'Backend',
+    subcategory: 'Fundamentals',
+    description: 'Reusing database connections to avoid overhead of constant connection creation.',
+    content: 'Creating a new database connection for each request is expensive (TCP handshake, auth). Connection pooling maintains a pool of open connections that are reused. Configured with min/max connections, idle timeout, and connection lifetime. Libraries: pg-pool (PostgreSQL), mysql2 pools, Prisma, SQLAlchemy. Monitor pool usage — exhaustion causes request queuing and timeouts.',
+    example: `// PostgreSQL connection pool
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  host: "localhost",
+  port: 5432,
+  database: "myapp",
+  user: "admin",
+  password: "secret",
+  max: 20,           // max connections
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+// Use pool
+async function query(text, params) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(text, params);
+    return result.rows;
+  } finally {
+    client.release(); // return to pool
+  }
+}
+
+// Cleanup on shutdown
+process.on("SIGTERM", () => pool.end());`
+  },
+  {
+    title: 'Caching Strategies',
+    category: 'Backend',
+    subcategory: 'Architecture',
+    description: 'Storing frequently accessed data closer to the application.',
+    content: 'Caching reduces database load and response times. Strategies: Cache-aside (app checks cache first, then DB), Write-through (write to cache+DB simultaneously), Write-behind (write to cache, async to DB), Read-through (cache loads from DB on miss). Invalidation is the hardest problem — use TTL (time-to-live), event-based invalidation, or versioned keys. Redis is the most common cache store.',
+    example: `// Cache-aside pattern
+async function getUser(id) {
+  // 1. Check cache
+  const cached = await redis.get(\`user:\${id}\`);
+  if (cached) return JSON.parse(cached);
+
+  // 2. Cache miss — fetch from DB
+  const user = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+  if (!user) return null;
+
+  // 3. Populate cache with TTL
+  await redis.setex(\`user:\${id}\`, 3600, JSON.stringify(user));
+  return user;
+}
+
+// Cache invalidation on write
+async function updateUser(id, data) {
+  await db.query("UPDATE users SET ... WHERE id = $1", [id]);
+  await redis.del(\`user:\${id}\`); // invalidate
+}`
+  },
+  {
+    title: 'Message Queues',
+    category: 'Backend',
+    subcategory: 'Architecture',
+    description: 'Asynchronous communication between services via pub/sub or task queues.',
+    content: 'Message queues decouple services, enabling asynchronous processing. Producers publish messages; consumers process them. Use cases: background jobs (emails, reports), event-driven architectures, load leveling, fan-out. RabbitMQ (traditional), Kafka (event streaming), Redis Streams, Amazon SQS. Patterns: pub/sub, task queues, competing consumers, dead letter queues for failed messages.',
+    example: `// Bull queue (Redis-based)
+const Queue = require("bull");
+const emailQueue = new Queue("email");
+
+// Producer — add job
+await emailQueue.add("welcome", {
+  userId: 123,
+  email: "user@example.com"
+});
+
+// Consumer — process jobs
+emailQueue.process("welcome", async (job) => {
+  const { userId, email } = job.data;
+  await sendWelcomeEmail(email);
+  console.log(\`Email sent to \${email}\`);
+});
+
+// Retry failed jobs
+emailQueue.process("welcome", { attempts: 3 }, async (job) => {
+  try {
+    await sendEmail(job.data.email);
+  } catch (err) {
+    console.error("Failed:", err.message);
+    throw err; // Bull will retry
+  }
+});`
+  },
+  {
+    title: 'API Rate Limiting',
+    category: 'Backend',
+    subcategory: 'Architecture',
+    description: 'Controlling request frequency to protect services and ensure fair usage.',
+    content: 'Rate limiting restricts how many requests a client can make in a time window. Strategies: Fixed window (resets at interval), Sliding window (rolling), Token bucket (allows bursts), Leaky bucket (constant rate). Implement with Redis (atomic counters), nginx (limit_req), or API gateways. Return 429 Too Many Requests with Retry-After header. Apply per-user, per-IP, or per-API-key.',
+    example: `// Redis-based sliding window rate limiter
+async function rateLimit(key, limit, windowMs) {
+  const now = Date.now();
+  const windowStart = now - windowMs;
+
+  const pipe = redis.pipeline();
+  pipe.zremrangebyscore(key, 0, windowStart); // remove old
+  pipe.zadd(key, now, now);                   // add current
+  pipe.zcard(key);                            // count
+  pipe.pexpire(key, windowMs);                // set expiry
+
+  const results = await pipe.exec();
+  const count = results[2][1];
+
+  return {
+    allowed: count <= limit,
+    remaining: Math.max(0, limit - count),
+    resetAt: new Date(now + windowMs)
+  };
+}
+
+// Express middleware
+app.use("/api", async (req, res, next) => {
+  const result = await rateLimit(req.ip, 100, 60000);
+  res.set("X-RateLimit-Remaining", result.remaining);
+  if (!result.allowed) return res.status(429).json({ error: "Too many requests" });
+  next();
+});`
+  },
+  {
+    title: 'Graceful Shutdown',
+    category: 'Backend',
+    subcategory: 'Architecture',
+    description: 'Handling server shutdown cleanly — finishing in-flight requests and releasing resources.',
+    content: 'When deploying or scaling, servers receive SIGTERM. Graceful shutdown: stop accepting new connections, finish in-flight requests, close database pools, flush caches, close message consumers. Set a timeout (e.g., 30s) then force exit. Prevents data loss, dropped connections, and incomplete transactions. Essential for zero-downtime deployments with Kubernetes or Docker.',
+    example: `// Node.js graceful shutdown
+const server = app.listen(3000);
+
+function shutdown(signal) {
+  console.log(\`\${signal} received. Starting graceful shutdown...\`);
+
+  server.close(() => {
+    console.log("HTTP server closed");
+
+    // Close DB pool
+    pool.end().then(() => console.log("DB pool closed"));
+
+    // Close Redis
+    redis.quit().then(() => console.log("Redis closed"));
+
+    process.exit(0);
+  });
+
+  // Force shutdown after 30s
+  setTimeout(() => {
+    console.error("Forced shutdown after timeout");
+    process.exit(1);
+  }, 30000);
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));`
+  },
+
+  // ═══════════════════════════════════════════
+  // SQL — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'Joins',
+    category: 'SQL',
+    subcategory: 'Fundamentals',
+    description: 'Combining rows from two or more tables based on related columns.',
+    content: 'Joins combine tables using a related column. INNER JOIN returns only matching rows. LEFT JOIN returns all left rows + matching right (NULLs for unmatched). RIGHT JOIN is the opposite. FULL JOIN returns all rows from both tables. CROSS JOIN produces a cartesian product. Self-join joins a table to itself. Always specify the join type — implicit joins (comma-separated) are harder to read.',
+    example: `-- INNER JOIN: only matching rows
+SELECT u.name, o.total
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;
+
+-- LEFT JOIN: all users, even without orders
+SELECT u.name, COALESCE(o.total, 0) as total
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;
+
+-- Multiple joins
+SELECT u.name, o.id, p.name as product
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+LEFT JOIN order_products op ON o.id = op.order_id
+LEFT JOIN products p ON op.product_id = p.id;
+
+-- Self-join: find employees and their managers
+SELECT e.name, m.name as manager
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.id;`
+  },
+  {
+    title: 'Window Functions',
+    category: 'SQL',
+    subcategory: 'Fundamentals',
+    description: 'Calculations across sets of rows related to the current row.',
+    content: 'Window functions perform calculations without collapsing rows (unlike GROUP BY). Syntax: function() OVER (PARTITION BY ... ORDER BY ...). Functions: ROW_NUMBER(), RANK(), DENSE_RANK(), NTILE(), LAG(), LEAD(), SUM/AVG/COUNT OVER(). PARTITION BY creates groups (like GROUP BY but keeps rows). ORDER BY determines row order within partition.',
+    example: `-- Rank employees by salary within each department
+SELECT
+  name,
+  department,
+  salary,
+  ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) as rank,
+  RANK() OVER (PARTITION BY department ORDER BY salary DESC) as rank_ties,
+  salary - LAG(salary) OVER (PARTITION BY department ORDER BY salary) as diff_from_prev,
+  AVG(salary) OVER (PARTITION BY department) as dept_avg
+FROM employees;
+
+-- Running total
+SELECT
+  date,
+  amount,
+  SUM(amount) OVER (ORDER BY date) as running_total
+FROM sales;
+
+-- Percentile
+SELECT
+  name,
+  salary,
+  NTILE(4) OVER (ORDER BY salary DESC) as quartile
+FROM employees;`
+  },
+  {
+    title: 'Indexes',
+    category: 'SQL',
+    subcategory: 'Fundamentals',
+    description: 'Data structures that speed up data retrieval at the cost of storage and writes.',
+    content: 'Indexes create a sorted copy of specific columns for faster lookups. B-tree indexes (default) are best for equality and range queries. Composite indexes cover multiple columns — column order matters (leftmost prefix). Unique indexes enforce uniqueness. Partial indexes index only rows matching a condition. Over-indexing slows writes. Use EXPLAIN/EXPLAIN ANALYZE to check if indexes are used.',
+    example: `-- Single column index
+CREATE INDEX idx_users_email ON users(email);
+
+-- Composite index (order matters!)
+CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);
+
+-- Partial index
+CREATE INDEX idx_active_users ON users(email)
+WHERE status = 'active';
+
+-- Unique index
+CREATE UNIQUE INDEX idx_users_username ON users(username);
+
+-- Check index usage
+EXPLAIN ANALYZE
+SELECT * FROM users WHERE email = 'alice@example.com';
+-- Look for "Index Scan" vs "Seq Scan"
+
+-- Drop unused indexes
+DROP INDEX idx_unused;`
+  },
+  {
+    title: 'Common Table Expressions (CTEs)',
+    category: 'SQL',
+    subcategory: 'Fundamentals',
+    description: 'Temporary named result sets that simplify complex queries.',
+    content: 'CTEs (WITH clause) create temporary result sets readable within a single query. They break complex queries into readable steps. Recursive CEs handle hierarchical data (org charts, tree traversal). Non-recursive CTEs are syntactic sugar for subqueries. CTEs are not materialized by default — each reference re-executes (use MATERIALIZED hint in PostgreSQL for caching).',
+    example: `-- Non-recursive CTE
+WITH active_users AS (
+  SELECT id, name, email
+  FROM users
+  WHERE status = 'active'
+),
+user_orders AS (
+  SELECT user_id, COUNT(*) as order_count, SUM(total) as total_spent
+  FROM orders
+  GROUP BY user_id
+)
+SELECT au.name, uo.order_count, uo.total_spent
+FROM active_users au
+JOIN user_orders uo ON au.id = uo.user_id
+WHERE uo.total_spent > 100;
+
+-- Recursive CTE: org chart
+WITH RECURSIVE org AS (
+  SELECT id, name, manager_id, 1 as level
+  FROM employees WHERE manager_id IS NULL
+  UNION ALL
+  SELECT e.id, e.name, e.manager_id, o.level + 1
+  FROM employees e
+  JOIN org o ON e.manager_id = o.id
+)
+SELECT * FROM org ORDER BY level, name;`
+  },
+  {
+    title: 'Transactions & Isolation',
+    category: 'SQL',
+    subcategory: 'Advanced',
+    description: 'Ensuring data consistency with ACID properties and isolation levels.',
+    content: 'A transaction groups operations that succeed or fail together (ACID: Atomicity, Consistency, Isolation, Durability). BEGIN/COMMIT/ROLLBACK control transactions. Isolation levels control visibility between concurrent transactions: READ UNCOMMITTED (dirty reads), READ COMMITTED (no dirty reads), REPEATABLE READ (consistent reads), SERIALIZABLE (full isolation, lowest concurrency). Use SAVEPOINTS for partial rollbacks.',
+    example: `-- Basic transaction
+BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+COMMIT;
+
+-- On error
+BEGIN;
+  INSERT INTO orders (user_id, total) VALUES (1, 99.99);
+  SAVEPOINT order_created;
+  INSERT INTO order_items (order_id, product_id, qty) VALUES (1, 5, 2);
+  -- If this fails, rollback to savepoint
+COMMIT;
+
+-- Check isolation level
+SHOW transaction_isolation; -- PostgreSQL
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+-- Deadlock example: two transactions waiting on each other
+-- Use consistent lock ordering to prevent`
+  },
+  {
+    title: 'Normalization',
+    category: 'SQL',
+    subcategory: 'Advanced',
+    description: 'Organizing database tables to reduce redundancy and improve integrity.',
+    content: 'Normalization decomposes tables to minimize redundancy. 1NF: atomic values, no repeating groups. 2NF: no partial dependencies (all non-key columns depend on entire primary key). 3NF: no transitive dependencies (non-key columns don\'t depend on other non-keys). BCNF: stronger 3NF. Denormalization trades redundancy for read performance. Most systems aim for 3NF, then denormalize strategically.',
+    example: `-- UNNORMALIZED (1NF violations)
+CREATE TABLE orders_bad (
+  id INT,
+  customer_name VARCHAR(100),
+  products TEXT  -- "Widget,Gadget,Doohickey" (violates 1NF!)
+);
+
+-- 3NF normalized
+CREATE TABLE customers (
+  id INT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(255)
+);
+
+CREATE TABLE products (
+  id INT PRIMARY KEY,
+  name VARCHAR(100),
+  price DECIMAL(10,2),
+  category_id INT REFERENCES categories(id)
+);
+
+CREATE TABLE order_items (
+  id INT PRIMARY KEY,
+  order_id INT REFERENCES orders(id),
+  product_id INT REFERENCES products(id),
+  quantity INT,
+  unit_price DECIMAL(10,2)
+);`
+  },
+  {
+    title: 'Query Optimization',
+    category: 'SQL',
+    subcategory: 'Advanced',
+    description: 'Techniques to improve query performance using execution plans and indexing.',
+    content: 'Use EXPLAIN ANALYZE to inspect query plans. Key optimizations: add indexes on WHERE/JOIN columns, avoid SELECT *, limit result sets, use covering indexes, avoid functions on indexed columns (breaks index usage), prefer EXISTS over IN for subqueries, use appropriate JOIN types. Watch for sequential scans on large tables, sort operations, and nested loops with high row counts.',
+    example: `-- BAD: function on indexed column
+SELECT * FROM users WHERE LOWER(email) = 'alice@example.com';
+-- GOOD: index the expression or use case-insensitive collation
+CREATE INDEX idx_users_email_lower ON users(LOWER(email));
+
+-- BAD: SELECT * with large tables
+SELECT * FROM orders;
+
+-- GOOD: only needed columns
+SELECT id, total, created_at FROM orders WHERE user_id = 123;
+
+-- Check plan
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT o.id, p.name
+FROM orders o
+JOIN order_items oi ON o.id = oi.order_id
+JOIN products p ON oi.product_id = p.id
+WHERE o.created_at > '2024-01-01'
+ORDER BY o.total DESC
+LIMIT 10;`
+  },
+  {
+    title: 'Stored Procedures',
+    category: 'SQL',
+    subcategory: 'Advanced',
+    description: 'Precompiled SQL code stored in the database, callable by applications.',
+    content: 'Stored procedures encapsulate business logic in the database. They support parameters, variables, loops, conditionals, and error handling. Benefits: reduced network traffic, centralized logic, transaction control, security (grant EXECUTE permission). Drawbacks: harder to version control, test, and debug. Use for complex operations, not simple CRUD. PostgreSQL uses functions (CREATE FUNCTION), MySQL uses PROCEDURE.',
+    example: `-- PostgreSQL function (stored procedure)
+CREATE OR REPLACE FUNCTION transfer_funds(
+  from_id INT,
+  to_id INT,
+  amount DECIMAL
+)
+RETURNS void AS $$
+DECLARE
+  from_balance DECIMAL;
+BEGIN
+  SELECT balance INTO from_balance
+  FROM accounts WHERE id = from_id FOR UPDATE;
+
+  IF from_balance < amount THEN
+    RAISE EXCEPTION 'Insufficient funds';
+  END IF;
+
+  UPDATE accounts SET balance = balance - amount WHERE id = from_id;
+  UPDATE accounts SET balance = balance + amount WHERE id = to_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Call it
+SELECT transfer_funds(1, 2, 100.00);`
+  },
+
+  // ═══════════════════════════════════════════
+  // NOSQL — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'CAP Theorem',
+    category: 'NoSQL',
+    subcategory: 'Fundamentals',
+    description: 'A distributed system can only guarantee two of three: Consistency, Availability, Partition tolerance.',
+    content: 'CAP theorem states that during a network partition, a distributed database must choose between consistency (all nodes see same data) and availability (every request gets a response). CP systems (MongoDB, HBase) sacrifice availability for consistency. AP systems (Cassandra, DynamoDB) sacrifice consistency for availability. CA systems don\'t handle partitions (single-node databases). In practice, partition tolerance is mandatory — choose between CP and AP.',
+    example: `// CP: MongoDB with majority read concern
+// Read may fail during partition, but always consistent
+db.users.find({}).readConcern("majority");
+
+// AP: Cassandra with tunable consistency
+// Always available, but may return stale data
+SELECT * FROM users WHERE id = 1
+  USING CONSISTENCY ONE; // fastest, least consistent
+SELECT * FROM users WHERE id = 1
+  USING CONSISTENCY QUORUM; // balanced
+
+// BASE vs ACID
+// ACID: Atomicity, Consistency, Isolation, Durability
+// BASE: Basically Available, Soft state, Eventual consistency
+// NoSQL often trades ACID for BASE
+const dynamoConfig = {
+  readCapacityUnits: 5,
+  writeCapacityUnits: 5,
+  consistentRead: false // eventually consistent
+};`
+  },
+  {
+    title: 'MongoDB Aggregation',
+    category: 'NoSQL',
+    subcategory: 'Fundamentals',
+    description: 'Pipeline-based data transformation and analysis in MongoDB.',
+    content: 'The aggregation pipeline processes documents through a sequence of stages. Each stage transforms the data and passes it to the next. Common stages: $match (filter), $group (aggregate), $project (reshape), $sort, $limit, $lookup (join), $unwind (destructure arrays). Pipeline optimization uses indexes when $match is first. More efficient than MapReduce for most operations.',
+    example: `// Aggregation pipeline
+db.orders.aggregate([
+  // Stage 1: Filter
+  { $match: { status: "completed", created_at: { $gte: ISODate("2024-01-01") } } },
+
+  // Stage 2: Deconstruct array
+  { $unwind: "$items" },
+
+  // Stage 3: Group and calculate
+  { $group: {
+    _id: "$items.product_id",
+    totalQuantity: { $sum: "$items.quantity" },
+    totalRevenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+    orderCount: { $sum: 1 }
+  }},
+
+  // Stage 4: Sort by revenue
+  { $sort: { totalRevenue: -1 } },
+
+  // Stage 5: Limit top 10
+  { $limit: 10 },
+
+  // Stage 6: Reshape output
+  { $project: {
+    product_id: "$_id",
+    _id: 0,
+    totalRevenue: { $round: ["$totalRevenue", 2] },
+    totalQuantity: 1,
+    orderCount: 1
+  }}
+]);`
+  },
+  {
+    title: 'Redis Data Structures',
+    category: 'NoSQL',
+    subcategory: 'Fundamentals',
+    description: 'Beyond strings — lists, sets, sorted sets, hashes, and streams.',
+    content: 'Redis is an in-memory data store with rich data structures. Strings: simple key-value, counters, caches. Lists: queues, stacks, recent activity feeds (LPUSH, RPOP). Sets: unique items, intersections, unions. Sorted Sets: leaderboards, time-series (ranked by score). Hashes: object storage (HSET user:1 name "Alice"). Streams: event logs, message queues (XADD, XREAD). Use the right structure to avoid client-side processing.',
+    example: `// Strings
+SET user:1:name "Alice"
+INCR page:views:home
+
+// Lists — activity feed
+LPUSH feed:user1 "post:123"
+LRANGE feed:user1 0 9  // last 10 items
+
+// Sets — unique visitors
+SADD page:visitors:2024-01-15 "user1" "user2" "user3"
+SCARD page:visitors:2024-01-15  // count
+
+// Sorted Sets — leaderboard
+ZADD leaderboard 100 "player1"
+ZADD leaderboard 250 "player2"
+ZREVRANGE leaderboard 0 9  // top 10
+
+// Hashes — object storage
+HSET user:1 name "Alice" age 25 email "a@b.com"
+HGET user:1 name  // "Alice"
+HGETALL user:1    // all fields
+
+// Streams — event queue
+XADD events * type "order.created" id 123
+XREAD COUNT 10 STREAMS events 0`
+  },
+  {
+    title: 'Graph Databases',
+    category: 'NoSQL',
+    subcategory: 'Fundamentals',
+    description: 'Databases optimized for relationship-heavy queries using nodes and edges.',
+    content: 'Graph databases store entities as nodes and relationships as edges. Unlike relational JOINs, graph traversal follows edges directly — constant-time per hop. Ideal for social networks, recommendation engines, fraud detection, knowledge graphs. Neo4j (Cypher query language), ArangoDB (AQL), Amazon Neptune. Property graphs store key-value pairs on both nodes and edges.',
+    example: `// Neo4j Cypher queries
+// Create nodes and relationships
+CREATE (alice:Person {name: "Alice", age: 30})
+CREATE (bob:Person {name: "Bob", age: 25})
+CREATE (alice)-[:FRIENDS_WITH {since: 2020}]->(bob)
+
+// Find friends of friends
+MATCH (me:Person {name: "Alice"})-[:FRIENDS_WITH]->(friend)
+      -[:FRIENDS_WITH]->(fof)
+WHERE NOT (me)-[:FRIENDS_WITH]->(fof)
+      AND me <> fof
+RETURN fof.name, COUNT(*) as mutualFriends
+ORDER BY mutualFriends DESC
+
+// Shortest path
+MATCH path = shortestPath(
+  (a:Person {name: "Alice"})-[*]-(b:Person {name: "Dave"})
+)
+RETURN path
+
+// Recommendation: people who like similar things
+MATCH (me:Person)-[:LIKES]->(thing)<-[:LIKES]-(other:Person)
+WHERE me.name = "Alice" AND me <> other
+RETURN other.name, COUNT(thing) as shared
+ORDER BY shared DESC LIMIT 5`
+  },
+  {
+    title: 'DynamoDB Single-Table Design',
+    category: 'NoSQL',
+    subcategory: 'Advanced',
+    description: 'Modeling multiple entity types in one table using composite keys.',
+    content: 'DynamoDB single-table design puts all entities in one table using composite partition/sort keys. Pattern: PK = entity type + ID, SK = relationship + related entity ID. This enables efficient access patterns without JOINs. GSI (Global Secondary Indexes) enable additional query patterns. Design bottom-up: start with access patterns, then design the key schema. Trade complexity for performance and cost.',
+    example: `// Single-table design for social app
+// Access patterns:
+// 1. Get user profile
+// 2. Get user's posts
+// 3. Get post's comments
+
+// Table schema
+{
+  PK: "USER#123",        SK: "PROFILE#",
+  name: "Alice", email: "a@b.com"
+}
+{
+  PK: "USER#123",        SK: "POST#2024-01-15#abc",
+  title: "Hello World", content: "..."
+}
+{
+  PK: "POST#abc",        SK: "COMMENT#2024-01-15#def",
+  author: "Bob", text: "Nice post!"
+}
+
+// Queries
+// Get user posts
+dynamodb.query({
+  KeyConditionExpression: "PK = :pk AND begins_with(SK, :sk)",
+  ExpressionAttributeValues: {
+    ":pk": "USER#123",
+    ":sk": "POST#"
+  }
+});`
+  },
+  {
+    title: 'Sharding Strategies',
+    category: 'NoSQL',
+    subcategory: 'Advanced',
+    description: 'Distributing data across multiple database instances for horizontal scaling.',
+    content: 'Sharding splits data across multiple servers. Strategies: Hash-based (hash key % num_shards — even distribution, hard to reshard), Range-based (key ranges — supports range queries, risk of hotspots), Directory-based (lookup table — flexible, single point of failure). Resharding is expensive — use consistent hashing (virtual nodes) to minimize redistribution. Shard key selection is critical — poor choice causes hotspots.',
+    example: `// Consistent hashing
+class ConsistentHash {
+  constructor(nodes, virtualNodes = 150) {
+    this.ring = new Map();
+    this.sortedKeys = [];
+    for (const node of nodes) {
+      for (let i = 0; i < virtualNodes; i++) {
+        const key = this.hash(\`\${node}:\${i}\`);
+        this.ring.set(key, node);
+        this.sortedKeys.push(key);
+      }
+    }
+    this.sortedKeys.sort();
+  }
+
+  hash(key) {
+    let h = 0;
+    for (const c of key) h = ((h << 5) - h + c.charCodeAt(0)) | 0;
+    return h;
+  }
+
+  getNode(key) {
+    const h = this.hash(key);
+    for (const k of this.sortedKeys) {
+      if (k >= h) return this.ring.get(k);
+    }
+    return this.ring.get(this.sortedKeys[0]);
+  }
+}
+
+const hash = new ConsistentHash(["shard1", "shard2", "shard3"]);
+hash.getNode("user:123"); // consistent assignment`
+  },
+  {
+    title: 'Eventual Consistency',
+    category: 'NoSQL',
+    subcategory: 'Advanced',
+    description: 'A consistency model where all nodes converge to the same state over time.',
+    content: 'Eventual consistency means if no new updates are made, all replicas will eventually converge. Temporary inconsistencies are acceptable for higher availability and performance. CRDTs (Conflict-free Replicated Data Types) guarantee convergence without coordination. Used in DNS, Cassandra, DynamoDB (eventual read). Read-your-writes consistency requires session tokens or quorum reads. Design applications to tolerate stale reads.',
+    example: `// CRDT counter (PN-Counter)
+// Works without coordination — eventually consistent
+class PNCounter {
+  constructor() {
+    this.positive = new Map(); // increment counts
+    this.negative = new Map(); // decrement counts
+  }
+
+  increment(nodeId) {
+    this.positive.set(nodeId, (this.positive.get(nodeId) || 0) + 1);
+  }
+
+  decrement(nodeId) {
+    this.negative.set(nodeId, (this.negative.get(nodeId) || 0) + 1);
+  }
+
+  value() {
+    const pos = [...this.positive.values()].reduce((a, b) => a + b, 0);
+    const neg = [...this.negative.values()].reduce((a, b) => a + b, 0);
+    return pos - neg;
+  }
+
+  merge(other) {
+    for (const [k, v] of other.positive)
+      this.positive.set(k, Math.max(this.positive.get(k) || 0, v));
+    for (const [k, v] of other.negative)
+      this.negative.set(k, Math.max(this.negative.get(k) || 0, v));
+  }
+}`
+  },
+  {
+    title: 'Caching Patterns',
+    category: 'NoSQL',
+    subcategory: 'Advanced',
+    description: 'Patterns for using Redis/Memcached as a caching layer.',
+    content: 'Cache patterns optimize read performance and reduce database load. Cache-aside (lazy loading): check cache, miss → load from DB, populate cache. Write-through: write to cache and DB simultaneously. Write-behind (write-back): write to cache, async flush to DB. Read-through: cache loads from DB on miss (transparent to app). Cache warming pre-populates cache. Cache stampede (thundering herd) — use locks or probabilistic early expiration.',
+    example: `// Cache stampede prevention
+async function getWithLock(key, fetchFn, ttl = 3600) {
+  // Try cache first
+  const cached = await redis.get(key);
+  if (cached) return JSON.parse(cached);
+
+  // Try to acquire lock
+  const lockKey = \`lock:\${key}\`;
+  const acquired = await redis.set(lockKey, "1", "NX", "EX", 10);
+
+  if (!acquired) {
+    // Another process is loading — wait and retry
+    await new Promise(r => setTimeout(r, 100));
+    return getWithLock(key, fetchFn, ttl);
+  }
+
+  try {
+    const data = await fetchFn();
+    await redis.setex(key, ttl, JSON.stringify(data));
+    return data;
+  } finally {
+    await redis.del(lockKey);
+  }
+}
+
+// Probabilistic early expiration (PEE)
+async function getWithPEE(key, fetchFn, ttl) {
+  const cached = await redis.get(key);
+  if (cached) {
+    const data = JSON.parse(cached);
+    // Probabilistically refresh before expiry
+    if (Math.random() < 0.01) { // 1% chance
+      getWithLock(key, fetchFn, ttl); // background refresh
+    }
+    return data;
+  }
+  return getWithLock(key, fetchFn, ttl);
+}`
+  },
+
+  // ═══════════════════════════════════════════
+  // AI ENGINEERING — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'LLM Architecture',
+    category: 'AI Engineering',
+    subcategory: 'Fundamentals',
+    description: 'How large language models process and generate text using transformer architecture.',
+    content: 'LLMs use the transformer architecture with self-attention mechanisms. Input text is tokenized into subword tokens, embedded into vectors, then processed through attention layers that learn contextual relationships. Each token attends to all other tokens to understand context. GPT-style models are decoder-only (autoregressive — predict next token). Training uses massive text corpora with next-token prediction. Inference generates tokens one at a time.',
+    example: `# Tokenization and basic LLM usage
+import tiktoken
+
+encoder = tiktoken.get_encoding("cl100k_base")  # GPT-4 encoding
+tokens = encoder.encode("Hello, world!")
+print(f"Tokens: {tokens}")  # [9906, 11, 1917, 0]
+print(f"Decoded: {[encoder.decode([t]) for t in tokens]}")
+
+# LLM inference parameters
+import openai
+
+response = openai.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain transformers in 3 sentences."}
+    ],
+    temperature=0.7,    # creativity (0=deterministic, 1=random)
+    max_tokens=150,     # max response length
+    top_p=0.9           # nucleus sampling
+)`
+  },
+  {
+    title: 'Prompt Engineering',
+    category: 'AI Engineering',
+    subcategory: 'Fundamentals',
+    description: 'Designing inputs to guide LLMs toward desired outputs.',
+    content: 'Prompt engineering crafts inputs for optimal LLM responses. Techniques: zero-shot (no examples), few-shot (provide examples), chain-of-thought (step-by-step reasoning), role-playing (assign a persona), structured output (JSON mode). Temperature controls randomness. System prompts set behavior. Prompt injection is a security risk — never trust user input in prompts. Test prompts iteratively and version control them.',
+    example: `# Zero-shot prompt
+prompt = "Summarize this article in 3 bullet points:"
+
+# Few-shot prompt
+prompt = """
+Classify the sentiment of these reviews:
+
+Review: "Great product, love it!" → Positive
+Review: "Terrible quality, broke immediately" → Negative
+Review: "It's okay, nothing special" → Neutral
+
+Review: "Exceeded my expectations!" →
+"""
+
+# Chain-of-thought
+prompt = """
+Solve this step by step:
+A train travels 60 mph for 2.5 hours, then 80 mph for 1.5 hours.
+Total distance = ?
+
+Let me think step by step:
+1. First segment: 60 mph × 2.5 hours = 150 miles
+2. Second segment: 80 mph × 1.5 hours = 120 miles
+3. Total: 150 + 120 = 270 miles
+
+Answer: 270 miles
+"""`
+  },
+  {
+    title: 'RAG Pipeline',
+    category: 'AI Engineering',
+    subcategory: 'Applied',
+    description: 'Retrieval-Augmented Generation — grounding LLMs with external knowledge.',
+    content: 'RAG combines retrieval (search) with generation (LLM). Pipeline: (1) Split documents into chunks, (2) Generate embeddings for each chunk, (3) Store in vector database, (4) On query, find similar chunks, (5) Inject retrieved context into prompt, (6) LLM generates answer grounded in retrieved facts. Reduces hallucination, keeps knowledge current, no fine-tuning needed. Chunk size, overlap, and retrieval strategy affect quality.',
+    example: `# Simple RAG pipeline
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_community.vectorstores import FAISS
+from langchain.chains import RetrievalQA
+
+# 1. Load and split documents
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=50,
+    separators=["\\n\\n", "\\n", ". ", " "]
+)
+docs = splitter.split_documents(raw_docs)
+
+# 2. Create vector store
+embeddings = OpenAIEmbeddings()
+vectorstore = FAISS.from_documents(docs, embeddings)
+
+# 3. Create RAG chain
+llm = ChatOpenAI(model="gpt-4", temperature=0)
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    retriever=vectorstore.as_retriever(
+        search_kwargs={"k": 4}  # top 4 chunks
+    ),
+    return_source_documents=True
+)
+
+# 4. Query
+result = qa_chain.invoke({"query": "What is the refund policy?"})
+print(result["answer"])
+print(result["source_documents"])`
+  },
+  {
+    title: 'Vector Databases',
+    category: 'AI Engineering',
+    subcategory: 'Applied',
+    description: 'Databases optimized for storing and searching high-dimensional embeddings.',
+    content: 'Vector databases store embeddings (high-dimensional vectors) and enable similarity search. Unlike traditional databases that use exact matching, they find nearest neighbors using distance metrics (cosine similarity, L2 distance, dot product). Used for semantic search, recommendation systems, RAG, and anomaly detection. Popular options: Pinecone, Weaviate, Qdrant, ChromaDB, pgvector. Index types: HNSW, IVF, PQ for approximate nearest neighbor (ANN) search.',
+    example: `# Using ChromaDB for vector storage
+import chromadb
+from chromadb.utils import embedding_functions
+
+# Initialize
+client = chromadb.Client()
+ef = embedding_functions.OpenAIEmbeddingFunction(
+    api_key="sk-...",
+    model_name="text-embedding-3-small"
+)
+
+# Create collection
+collection = client.create_collection(
+    name="documents",
+    embedding_function=ef,
+    metadata={"hnsw:space": "cosine"}
+)
+
+# Add documents
+collection.add(
+    documents=["Python is great for ML", "JavaScript runs in browsers"],
+    metadatas=[{"source": "tutorial"}, {"source": "guide"}],
+    ids=["doc1", "doc2"]
+)
+
+# Query
+results = collection.query(
+    query_texts=["programming for data science"],
+    n_results=2
+)
+print(results["documents"])  # ["Python is great for ML", ...]`
+  },
+  {
+    title: 'Fine-Tuning',
+    category: 'AI Engineering',
+    subcategory: 'Applied',
+    description: 'Customizing pre-trained LLMs on domain-specific data.',
+    content: 'Fine-tuning adapts a pre-trained model to specific tasks or domains. Methods: Full fine-tuning (update all parameters — expensive), LoRA/QLoRA (update low-rank adapters — efficient), Prompt tuning (learn soft prompts). Prepare high-quality training data (100-1000+ examples). Evaluate with held-out test set. Watch for overfitting and catastrophic forgetting. Fine-tuning is better when prompts alone aren\'t enough — for style, format, or domain knowledge.',
+    example: `# LoRA fine-tuning with Hugging Face
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import LoraConfig, get_peft_model
+
+# Load base model
+model = AutoModelForCausalLM.from_pretrained(
+    "meta-llama/Llama-3.1-8B",
+    torch_dtype="auto",
+    device_map="auto"
+)
+
+# Configure LoRA
+lora_config = LoraConfig(
+    r=16,                    # rank
+    lora_alpha=32,           # scaling
+    target_modules=["q_proj", "v_proj"],  # attention layers
+    lora_dropout=0.05,
+    bias="none",
+    task_type="CAUSAL_LM"
+)
+
+# Apply LoRA
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+
+# Training
+from trl import SFTTrainer
+trainer = SFTTrainer(
+    model=model,
+    train_dataset=dataset,
+    max_seq_length=2048,
+    args=TrainingArguments(
+        output_dir="./output",
+        num_train_epochs=3,
+        per_device_train_batch_size=4,
+        learning_rate=2e-4,
+    ),
+)
+trainer.train()`
+  },
+  {
+    title: 'AI Agents',
+    category: 'AI Engineering',
+    subcategory: 'Applied',
+    description: 'Autonomous systems that use LLMs with tools to accomplish multi-step tasks.',
+    content: 'AI agents combine LLMs with tool use, memory, and planning. Architecture: Observe (read input/tools), Think (reason about next step), Act (call tools/APIs), Observe (process result). Tools: web search, code execution, file operations, API calls. Frameworks: LangGraph, CrewAI, AutoGen. Key challenges: planning reliability, error recovery, tool selection. Agents loop until task completion or budget limit.',
+    example: `# Simple agent with LangGraph
+from langgraph.prebuilt import create_react_agent
+from langchain_openai import ChatOpenAI
+from langchain_core.tools import tool
+
+@tool
+def calculator(expression: str) -> str:
+    """Evaluate a math expression."""
+    return str(eval(expression))
+
+@tool
+def search(query: str) -> str:
+    """Search the web."""
+    # Simplified - real implementation calls API
+    return f"Results for: {query}"
+
+# Create agent
+llm = ChatOpenAI(model="gpt-4")
+agent = create_react_agent(
+    model=llm,
+    tools=[calculator, search],
+    state_modifier="You are a helpful assistant with access to tools."
+)
+
+# Run agent
+result = agent.invoke({
+    "messages": [("user", "What's 15% of 847? And what's the weather?")]
+})
+# Agent decides: call calculator(847 * 0.15) then search("weather")`
+  },
+  {
+    title: 'MLOps',
+    category: 'AI Engineering',
+    subcategory: 'Applied',
+    description: 'Practices for deploying, monitoring, and maintaining ML models in production.',
+    content: 'MLOps bridges ML development and operations. Key practices: version control (data, code, models), CI/CD for ML pipelines, experiment tracking (MLflow, Weights & Biases), model registry, A/B testing, shadow deployment, monitoring (data drift, model performance, latency), retraining triggers. Challenges: model decay (performance degrades over time), reproducibility, feature store management.',
+    example: `# MLflow experiment tracking
+import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+mlflow.set_experiment("customer-churn")
+
+with mlflow.start_run():
+    # Log parameters
+    mlflow.log_params({
+        "n_estimators": 100,
+        "max_depth": 10,
+        "model_type": "RandomForest"
+    })
+
+    # Train model
+    model = RandomForestClassifier(n_estimators=100, max_depth=10)
+    model.fit(X_train, y_train)
+
+    # Log metrics
+    preds = model.predict(X_test)
+    accuracy = accuracy_score(y_test, preds)
+    mlflow.log_metric("accuracy", accuracy)
+
+    # Log model
+    mlflow.sklearn.log_model(model, "model")
+
+    print(f"Accuracy: {accuracy:.4f}")
+
+# Load model later
+loaded_model = mlflow.sklearn.load_model("runs:/<run_id>/model")`
+  },
+  {
+    title: 'Embeddings',
+    category: 'AI Engineering',
+    subcategory: 'Fundamentals',
+    description: 'Dense vector representations that capture semantic meaning of text.',
+    content: 'Embeddings convert text into fixed-size numerical vectors where similar meanings are close in vector space. Generated by models like text-embedding-3-small (1536 dims) or sentence-transformers (384-768 dims). Used for semantic search, clustering, classification, and anomaly detection. Cosine similarity measures distance: 1.0 = identical, 0.0 = unrelated, -1.0 = opposite. Batch API calls reduce costs for large datasets.',
+    example: `# OpenAI embeddings
+from openai import OpenAI
+import numpy as np
+
+client = OpenAI()
+
+# Single embedding
+response = client.embeddings.create(
+    model="text-embedding-3-small",
+    input="The quick brown fox jumps over the lazy dog"
+)
+embedding = response.data[0].embedding
+print(f"Dimensions: {len(embedding)}")  # 1536
+
+# Batch embeddings
+texts = ["Machine learning", "Deep learning", "Cooking recipes"]
+response = client.embeddings.create(
+    model="text-embedding-3-small",
+    input=texts
+)
+embeddings = [e.embedding for e in response.data]
+
+# Similarity
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+# ML vs DL = high similarity
+# ML vs cooking = low similarity
+print(cosine_similarity(embeddings[0], embeddings[1]))  # ~0.85
+print(cosine_similarity(embeddings[0], embeddings[2]))  # ~0.20`
+  },
+
+  // ═══════════════════════════════════════════
+  // ARTIFICIAL INTELLIGENCE — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'Machine Learning Pipeline',
+    category: 'Artificial Intelligence',
+    subcategory: 'Fundamentals',
+    description: 'End-to-end workflow from data collection to model deployment.',
+    content: 'ML pipeline: (1) Data collection → (2) Data cleaning → (3) Feature engineering → (4) Train/validation/test split → (5) Model selection → (6) Training → (7) Evaluation → (8) Hyperparameter tuning → (9) Deployment → (10) Monitoring. Use pipelines (scikit-learn Pipeline, TFX) for reproducibility. Data leakage (using test data in training) is a common pitfall. Cross-validation provides robust evaluation estimates.',
+    example: `# scikit-learn pipeline
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+
+# Build pipeline (prevents data leakage)
+pipe = Pipeline([
+    ("scaler", StandardScaler()),      # Step 1: scale features
+    ("pca", PCA(n_components=10)),     # Step 2: reduce dimensions
+    ("classifier", RandomForestClassifier(n_estimators=100))
+])
+
+# Cross-validate entire pipeline
+scores = cross_val_score(pipe, X, y, cv=5, scoring="accuracy")
+print(f"Accuracy: {scores.mean():.3f} (+/- {scores.std():.3f})")
+
+# Fit and predict
+pipe.fit(X_train, y_train)
+predictions = pipe.predict(X_test)
+
+# Tune hyperparameters
+from sklearn.model_selection import GridSearchCV
+param_grid = {
+    "pca__n_components": [5, 10, 20],
+    "classifier__n_estimators": [50, 100, 200]
+}
+grid = GridSearchCV(pipe, param_grid, cv=5)
+grid.fit(X_train, y_train)`
+  },
+  {
+    title: 'Neural Networks',
+    category: 'Artificial Intelligence',
+    subcategory: 'Fundamentals',
+    description: 'Computational models inspired by biological neurons.',
+    content: 'Neural networks consist of layers of interconnected nodes (neurons). Input layer receives data, hidden layers transform it, output layer produces predictions. Each connection has a weight, each neuron applies an activation function (ReLU, sigmoid, tanh). Training adjusts weights via backpropagation and gradient descent to minimize a loss function. Hyperparameters: learning rate, batch size, epochs, layer sizes, regularization.',
+    example: `# Simple neural network with PyTorch
+import torch
+import torch.nn as nn
+
+class NeuralNet(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.Linear(input_size, hidden_size),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, output_size)
+        )
+
+    def forward(self, x):
+        return self.network(x)
+
+model = NeuralNet(784, 256, 10)
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+# Training loop
+for epoch in range(10):
+    for batch_x, batch_y in dataloader:
+        outputs = model(batch_x)
+        loss = criterion(outputs, batch_y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()`
+  },
+  {
+    title: 'CNNs',
+    category: 'Artificial Intelligence',
+    subcategory: 'Advanced',
+    description: 'Convolutional Neural Networks for spatial data like images.',
+    content: 'CNNs use convolutional layers that slide filters over input to detect features (edges, textures, objects). Key layers: Conv2d (feature extraction), Pooling (downsampling), Flatten, Dense (classification). Filters learn hierarchical features: early layers detect edges, deeper layers detect shapes/objects. architectures: LeNet, AlexNet, VGG, ResNet (skip connections), EfficientNet. Transfer learning from pretrained models is standard practice.',
+    example: `# CNN for image classification
+import torch.nn as nn
+
+class CNN(nn.Module):
+    def __init__(self, num_classes=10):
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.AdaptiveAvgPool2d((1, 1))
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        return self.classifier(x)
+
+# Transfer learning with pretrained model
+import torchvision.models as models
+model = models.resnet18(pretrained=True)
+model.fc = nn.Linear(model.fc.in_features, 10)  # new classifier`
+  },
+  {
+    title: 'RNNs & LSTMs',
+    category: 'Artificial Intelligence',
+    subcategory: 'Advanced',
+    description: 'Recurrent networks for sequential data with memory.',
+    content: 'RNNs process sequences by maintaining hidden state — each step depends on previous steps. Standard RNNs suffer from vanishing gradients (can\'t learn long-range dependencies). LSTMs add gates (forget, input, output) to control information flow. GRUs are simplified LSTMs. Used for time series, NLP, music generation. Transformers have largely replaced RNNs for NLP, but RNNs still useful for streaming/real-time data.',
+    example: `# LSTM for sequence prediction
+import torch.nn as nn
+
+class LSTMModel(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers, output_size):
+        super().__init__()
+        self.lstm = nn.LSTM(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            batch_first=True,
+            dropout=0.2
+        )
+        self.fc = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x):
+        # x shape: (batch, seq_len, features)
+        lstm_out, (h_n, c_n) = self.lstm(x)
+        # Use last hidden state
+        last_hidden = lstm_out[:, -1, :]
+        return self.fc(last_hidden)
+
+model = LSTMModel(input_size=1, hidden_size=64, num_layers=2, output_size=1)
+
+# Time series: predict next value
+# Input: 30 days of prices → Output: day 31 price`
+  },
+  {
+    title: 'Reinforcement Learning',
+    category: 'Artificial Intelligence',
+    subcategory: 'Advanced',
+    description: 'Learning optimal actions through trial and error with rewards.',
+    content: 'RL learns a policy (state → action mapping) that maximizes cumulative reward. Agent interacts with environment, observes state, takes action, receives reward. Key concepts: exploration vs exploitation, discount factor (gamma), Q-value (expected return), policy gradient. Algorithms: Q-learning, DQN, PPO, A3C. Applications: game playing (AlphaGo), robotics, autonomous driving, recommendation systems.',
+    example: `# Simple Q-learning
+import numpy as np
+
+class QLearningAgent:
+    def __init__(self, n_states, n_actions, lr=0.1, gamma=0.99, epsilon=0.1):
+        self.q_table = np.zeros((n_states, n_actions))
+        self.lr = lr
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.n_actions = n_actions
+
+    def choose_action(self, state):
+        if np.random.random() < self.epsilon:
+            return np.random.randint(self.n_actions)  # explore
+        return np.argmax(self.q_table[state])  # exploit
+
+    def update(self, state, action, reward, next_state, done):
+        if done:
+            target = reward
+        else:
+            target = reward + self.gamma * np.max(self.q_table[next_state])
+
+        self.q_table[state, action] += self.lr * (target - self.q_table[state, action])
+
+# Training loop
+agent = QLearningAgent(n_states=16, n_actions=4)
+for episode in range(1000):
+    state = env.reset()
+    total_reward = 0
+    while True:
+        action = agent.choose_action(state)
+        next_state, reward, done, _ = env.step(action)
+        agent.update(state, action, reward, next_state, done)
+        state = next_state
+        total_reward += reward
+        if done:
+            break`
+  },
+  {
+    title: 'NLP',
+    category: 'Artificial Intelligence',
+    subcategory: 'Applied',
+    description: 'Natural Language Processing — enabling machines to understand human language.',
+    content: 'NLP combines linguistics and ML for text processing. Tasks: tokenization (split text), POS tagging, named entity recognition, sentiment analysis, text classification, machine translation, summarization, question answering. Traditional: TF-IDF, bag-of-words. Modern: word embeddings (Word2Vec, GloVe), transformer models (BERT, GPT). Pre-trained models with fine-tuning dominate modern NLP.',
+    example: `# NLP with Hugging Face transformers
+from transformers import pipeline
+
+# Sentiment analysis
+classifier = pipeline("sentiment-analysis")
+result = classifier("I love this product! It's amazing!")
+print(result)  # [{'label': 'POSITIVE', 'score': 0.9998}]
+
+# Named entity recognition
+ner = pipeline("ner", grouped_entities=True)
+entities = ner("Elon Musk founded SpaceX in California")
+print(entities)
+# [{'entity_group': 'PER', 'word': 'Elon Musk'},
+#  {'entity_group': 'ORG', 'word': 'SpaceX'},
+#  {'entity_group': 'LOC', 'word': 'California'}]
+
+# Text generation
+generator = pipeline("text-generation", model="gpt2")
+output = generator("The future of AI is", max_length=50, num_return_sequences=3)
+
+# Summarization
+summarizer = pipeline("summarization")
+summary = summarizer(long_article, max_length=150, min_length=50)`
+  },
+  {
+    title: 'GANs',
+    category: 'Artificial Intelligence',
+    subcategory: 'Advanced',
+    description: 'Generative Adversarial Networks — two networks competing to generate realistic data.',
+    content: 'GANs consist of a Generator (creates fake data) and Discriminator (distinguishes real from fake). They train adversarially — generator improves at fooling discriminator, discriminator improves at detecting fakes. Applications: image generation, style transfer, data augmentation, deepfakes. Training is unstable (mode collapse, vanishing gradients). Variants: DCGAN (convolutional), StyleGAN (high-quality faces), CycleGAN (unpaired translation), Pix2Pix (paired translation).',
+    example: `# Simplified GAN architecture
+import torch.nn as nn
+
+class Generator(nn.Module):
+    def __init__(self, latent_dim=100, img_dim=784):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(latent_dim, 256),
+            nn.LeakyReLU(0.2),
+            nn.Linear(256, 512),
+            nn.LeakyReLU(0.2),
+            nn.Linear(512, img_dim),
+            nn.Tanh()
+        )
+
+    def forward(self, z):
+        return self.net(z)
+
+class Discriminator(nn.Module):
+    def __init__(self, img_dim=784):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(img_dim, 512),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.3),
+            nn.Linear(512, 256),
+            nn.LeakyReLU(0.2),
+            nn.Dropout(0.3),
+            nn.Linear(256, 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, img):
+        return self.net(img)
+
+# Training: alternate between D and G
+criterion = nn.BCELoss()
+for epoch in range(epochs):
+    # Train Discriminator
+    real_loss = criterion(D(real_images), real_labels)
+    fake_loss = criterion(D(G(noise)), fake_labels)
+    d_loss = real_loss + fake_loss
+
+    # Train Generator
+    g_loss = criterion(D(G(noise)), real_labels)  # fool D`
+  },
+  {
+    title: 'Transfer Learning',
+    category: 'Artificial Intelligence',
+    subcategory: 'Advanced',
+    description: 'Leveraging pre-trained models to solve new but related problems.',
+    content: 'Transfer learning reuses a model trained on one task for a different but related task. Benefits: less data needed, faster training, better performance. Strategies: Feature extraction (freeze base model, train new head), Fine-tuning (unfreeze some layers, low learning rate). Choose pre-trained model similar to your domain. NLP: BERT, GPT. Vision: ResNet, EfficientNet. Audio: Whisper. Always check the model\'s license for commercial use.',
+    example: `# Transfer learning with PyTorch
+import torch
+import torch.nn as nn
+import torchvision.models as models
+
+# Load pretrained ResNet
+model = models.resnet50(pretrained=True)
+
+# Freeze all layers
+for param in model.parameters():
+    param.requires_grad = False
+
+# Replace classifier for your task
+num_classes = 5
+model.fc = nn.Sequential(
+    nn.Linear(model.fc.in_features, 256),
+    nn.ReLU(),
+    nn.Dropout(0.3),
+    nn.Linear(256, num_classes)
+)
+
+# Only train new layers
+optimizer = torch.optim.Adam(
+    filter(lambda p: p.requires_grad, model.parameters()),
+    lr=0.001
+)
+
+# Fine-tune later: unfreeze top layers
+for param in model.layer4.parameters():
+    param.requires_grad = True
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+
+# Hugging Face approach
+from transformers import AutoModelForImageClassification
+model = AutoModelForImageClassification.from_pretrained(
+    "microsoft/resnet-50",
+    num_labels=5,
+    ignore_mismatched_sizes=True
+)`
+  },
+
+  // ═══════════════════════════════════════════
+  // DSA — Fundamentals
+  // ═══════════════════════════════════════════
+  {
+    title: 'Big-O Notation',
+    category: 'DSA',
+    subcategory: 'Fundamentals',
+    description: 'Measuring algorithm efficiency in terms of time and space complexity.',
+    content: 'Big-O describes upper bound of growth rate. O(1) = constant, O(log n) = logarithmic, O(n) = linear, O(n log n) = linearithmic, O(n²) = quadratic, O(2ⁿ) = exponential, O(n!) = factorial. Always consider worst case. Drop constants and lower-order terms. Space complexity measures extra memory. Multiple variables: O(n + m). Amortized analysis (e.g., dynamic array push) averages over operations.',
+    example: `// O(1) — constant
+function getFirst(arr) { return arr[0]; }
+
+// O(log n) — logarithmic
+function binarySearch(arr, target) {
+  let lo = 0, hi = arr.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (arr[mid] === target) return mid;
+    arr[mid] < target ? lo = mid + 1 : hi = mid - 1;
+  }
+  return -1;
+}
+
+// O(n) — linear
+function findMax(arr) {
+  let max = arr[0];
+  for (const val of arr) max = Math.max(max, val);
+  return max;
+}
+
+// O(n²) — quadratic
+function bubbleSort(arr) {
+  for (let i = 0; i < arr.length; i++)
+    for (let j = 0; j < arr.length - i - 1; j++)
+      if (arr[j] > arr[j+1]) [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+}
+
+// O(n log n) — linearithmic (merge sort, JS sort)`
+  },
+  {
+    title: 'Hash Tables',
+    category: 'DSA',
+    subcategory: 'Fundamentals',
+    description: 'Key-value storage with O(1) average lookup using hash functions.',
+    content: 'Hash tables map keys to values via a hash function that computes an index into an array of buckets. Collisions handled by chaining (linked lists) or open addressing (linear/quadratic probing). Load factor (n/capacity) determines when to resize. Amortized O(1) for get/set/delete. Worst case O(n) with many collisions. JavaScript Objects and Maps, Python dicts, Java HashMaps all use hash tables.',
+    example: `// Hash table implementation (simplified)
+class HashTable {
+  constructor(size = 53) {
+    this.buckets = Array.from({ length: size }, () => []);
+  }
+
+  _hash(key) {
+    let total = 0;
+    for (let i = 0; i < key.length; i++) {
+      total = (total * 31 + key.charCodeAt(i)) % this.buckets.length;
+    }
+    return total;
+  }
+
+  set(key, value) {
+    const idx = this._hash(key);
+    const bucket = this.buckets[idx];
+    const existing = bucket.find(([k]) => k === key);
+    if (existing) existing[1] = value;
+    else bucket.push([key, value]);
+  }
+
+  get(key) {
+    const bucket = this.buckets[this._hash(key)];
+    const pair = bucket.find(([k]) => k === key);
+    return pair ? pair[1] : undefined;
+  }
+
+  delete(key) {
+    const idx = this._hash(key);
+    this.buckets[idx] = this.buckets[idx].filter(([k]) => k !== key);
+  }
+}`
+  },
+  {
+    title: 'Binary Search Trees',
+    category: 'DSA',
+    subcategory: 'Fundamentals',
+    description: 'Ordered tree structure with O(log n) average operations.',
+    content: 'BST property: left child < parent < right child. Enables O(log n) search, insert, delete (average). In-order traversal yields sorted order. Balanced BSTs (AVL, Red-Black) guarantee O(log n) worst case. Unbalanced BSTs degrade to linked list O(n). Used as building blocks for maps, sets, and priority queues. Self-balancing trees maintain height balance automatically.',
+    example: `class TreeNode {
+  constructor(val) {
+    this.val = val;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class BST {
+  constructor() { this.root = null; }
+
+  insert(val) {
+    const node = new TreeNode(val);
+    if (!this.root) { this.root = node; return; }
+    let curr = this.root;
+    while (true) {
+      if (val < curr.val) {
+        if (!curr.left) { curr.left = node; return; }
+        curr = curr.left;
+      } else {
+        if (!curr.right) { curr.right = node; return; }
+        curr = curr.right;
+      }
+    }
+  }
+
+  search(val) {
+    let curr = this.root;
+    while (curr) {
+      if (val === curr.val) return true;
+      curr = val < curr.val ? curr.left : curr.right;
+    }
+    return false;
+  }
+
+  // In-order: left, root, right (sorted)
+  inorder(node = this.root, result = []) {
+    if (node) {
+      this.inorder(node.left, result);
+      result.push(node.val);
+      this.inorder(node.right, result);
+    }
+    return result;
+  }
+}`
+  },
+  {
+    title: 'Graph Algorithms',
+    category: 'DSA',
+    subcategory: 'Fundamentals',
+    description: 'Traversing and analyzing networks of nodes and edges.',
+    content: 'Graphs model relationships. Representations: adjacency matrix O(V²) space, adjacency list O(V+E) space. BFS explores level by level (shortest path in unweighted graphs). DFS explores depth-first (cycle detection, topological sort). Dijkstra finds shortest paths (non-negative weights). A* uses heuristics for faster search. Topological sort orders directed acyclic graphs. Connected components identify separate groups.',
+    example: `// Adjacency list representation
+const graph = {
+  A: ["B", "C"],
+  B: ["A", "D", "E"],
+  C: ["A", "F"],
+  D: ["B"],
+  E: ["B", "F"],
+  F: ["C", "E"]
+};
+
+// BFS — shortest path (unweighted)
+function bfs(graph, start) {
+  const visited = new Set([start]);
+  const queue = [start];
+  const order = [];
+
+  while (queue.length) {
+    const node = queue.shift();
+    order.push(node);
+    for (const neighbor of graph[node]) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        queue.push(neighbor);
+      }
+    }
+  }
+  return order;
+}
+
+// DFS — cycle detection
+function hasCycle(graph) {
+  const visited = new Set();
+  const recStack = new Set();
+
+  function dfs(node) {
+    visited.add(node);
+    recStack.add(node);
+    for (const neighbor of graph[node]) {
+      if (!visited.has(neighbor)) {
+        if (dfs(neighbor)) return true;
+      } else if (recStack.has(neighbor)) return true;
+    }
+    recStack.delete(node);
+    return false;
+  }
+
+  return Object.keys(graph).some(n => !visited.has(n) && dfs(n));
+}`
+  },
+  {
+    title: 'Dynamic Programming',
+    category: 'DSA',
+    subcategory: 'Advanced',
+    description: 'Breaking complex problems into overlapping subproblems with optimal substructure.',
+    content: 'DP solves problems by combining solutions to subproblems. Two approaches: Top-down (memoization — recursive with cache), Bottom-up (tabulation — iterative with table). Key properties: overlapping subproblems (same subproblems solved repeatedly), optimal substructure (optimal solution contains optimal sub-solutions). Common patterns: knapsack, longest common subsequence, edit distance, coin change, rod cutting.',
+    example: `// Fibonacci — memoization (top-down)
+function fibMemo(n, memo = {}) {
+  if (n <= 1) return n;
+  if (memo[n]) return memo[n];
+  memo[n] = fibMemo(n-1, memo) + fibMemo(n-2, memo);
+  return memo[n];
+}
+
+// Fibonacci — tabulation (bottom-up)
+function fibTab(n) {
+  if (n <= 1) return n;
+  const dp = [0, 1];
+  for (let i = 2; i <= n; i++) {
+    dp[i] = dp[i-1] + dp[i-2];
+  }
+  return dp[n];
+}
+
+// 0/1 Knapsack
+function knapsack(weights, values, capacity) {
+  const n = weights.length;
+  const dp = Array.from({ length: n + 1 }, () => Array(capacity + 1).fill(0));
+
+  for (let i = 1; i <= n; i++) {
+    for (let w = 0; w <= capacity; w++) {
+      dp[i][w] = dp[i-1][w]; // don't take item i
+      if (weights[i-1] <= w) {
+        dp[i][w] = Math.max(
+          dp[i][w],
+          dp[i-1][w - weights[i-1]] + values[i-1]
+        );
+      }
+    }
+  }
+  return dp[n][capacity];
+}`
+  },
+  {
+    title: 'Sorting Algorithms',
+    category: 'DSA',
+    subcategory: 'Advanced',
+    description: 'Different strategies for ordering data with varying time-space tradeoffs.',
+    content: 'Comparison sorts: Bubble O(n²), Selection O(n²), Insertion O(n²) but O(n) nearly sorted. Merge sort O(n log n) stable, uses O(n) space. Quick sort O(n log n) average, O(n²) worst (mitigated by randomization). Heap sort O(n log n) in-place. Non-comparison: Counting sort O(n+k), Radix sort O(d·n). JavaScript uses TimSort (merge + insertion). Choose based on data size, constraints, and stability needs.',
+    example: `// Quick Sort
+function quickSort(arr, lo = 0, hi = arr.length - 1) {
+  if (lo < hi) {
+    const pivot = arr[hi];
+    let i = lo - 1;
+    for (let j = lo; j < hi; j++) {
+      if (arr[j] <= pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+    [arr[i + 1], arr[hi]] = [arr[hi], arr[i + 1]];
+    const pivotIdx = i + 1;
+    quickSort(arr, lo, pivotIdx - 1);
+    quickSort(arr, pivotIdx + 1, hi);
+  }
+  return arr;
+}
+
+// Merge Sort
+function mergeSort(arr) {
+  if (arr.length <= 1) return arr;
+  const mid = arr.length >> 1;
+  const left = mergeSort(arr.slice(0, mid));
+  const right = mergeSort(arr.slice(mid));
+  return merge(left, right);
+}
+
+function merge(left, right) {
+  const result = [];
+  let i = 0, j = 0;
+  while (i < left.length && j < right.length) {
+    result.push(left[i] <= right[j] ? left[i++] : right[j++]);
+  }
+  return result.concat(left.slice(i), right.slice(j));
+}
+
+// Counting Sort (non-comparison)
+function countingSort(arr) {
+  const max = Math.max(...arr);
+  const count = Array(max + 1).fill(0);
+  for (const num of arr) count[num]++;
+  const sorted = [];
+  for (let i = 0; i < count.length; i++) {
+    while (count[i]-- > 0) sorted.push(i);
+  }
+  return sorted;
+}`
+  },
+  {
+    title: 'Trie',
+    category: 'DSA',
+    subcategory: 'Advanced',
+    description: 'Prefix tree for efficient string storage and retrieval.',
+    content: 'A Trie stores strings character-by-character in a tree. Each node represents a character, paths form words. Common prefix = shared path. Operations: insert O(m), search O(m), startsWith O(m) where m = word length. Used for autocomplete, spell checking, IP routing, word games. Space-efficient for shared prefixes. Can be augmented with frequency counts for ranking suggestions.',
+    example: `class TrieNode {
+  constructor() {
+    this.children = {};
+    this.isEnd = false;
+  }
+}
+
+class Trie {
+  constructor() { this.root = new TrieNode(); }
+
+  insert(word) {
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children[char]) {
+        node.children[char] = new TrieNode();
+      }
+      node = node.children[char];
+    }
+    node.isEnd = true;
+  }
+
+  search(word) {
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children[char]) return false;
+      node = node.children[char];
+    }
+    return node.isEnd;
+  }
+
+  startsWith(prefix) {
+    let node = this.root;
+    for (const char of prefix) {
+      if (!node.children[char]) return false;
+      node = node.children[char];
+    }
+    return true;
+  }
+}
+
+// Usage
+const trie = new Trie();
+trie.insert("apple");
+trie.insert("app");
+trie.search("apple");    // true
+trie.search("app");      // true
+trie.startsWith("ap");   // true
+trie.search("apl");      // false`
+  },
+  {
+    title: 'Union-Find',
+    category: 'DSA',
+    subcategory: 'Advanced',
+    description: 'Disjoint set data structure for tracking connected components.',
+    content: 'Union-Find (Disjoint Set Union) manages partitions of elements into disjoint sets. Two operations: Find (which set does element belong to?), Union (merge two sets). Optimizations: Path compression (flatten tree during find), Union by rank (attach smaller tree to larger). With both optimizations, amortized O(α(n)) ≈ O(1) per operation. Used in Kruskal\'s MST, cycle detection, connected components, social network analysis.',
+    example: `class UnionFind {
+  constructor(n) {
+    this.parent = Array.from({ length: n }, (_, i) => i);
+    this.rank = Array(n).fill(0);
+    this.components = n;
+  }
+
+  find(x) {
+    if (this.parent[x] !== x) {
+      this.parent[x] = this.find(this.parent[x]); // path compression
+    }
+    return this.parent[x];
+  }
+
+  union(x, y) {
+    const px = this.find(x);
+    const py = this.find(y);
+    if (px === py) return false; // already connected
+
+    // Union by rank
+    if (this.rank[px] < this.rank[py]) {
+      this.parent[px] = py;
+    } else if (this.rank[px] > this.rank[py]) {
+      this.parent[py] = px;
+    } else {
+      this.parent[py] = px;
+      this.rank[px]++;
+    }
+    this.components--;
+    return true;
+  }
+
+  connected(x, y) {
+    return this.find(x) === this.find(y);
+  }
+}
+
+// Kruskal's MST
+function kruskal(n, edges) {
+  edges.sort((a, b) => a[2] - b[2]); // sort by weight
+  const uf = new UnionFind(n);
+  const mst = [];
+
+  for (const [u, v, weight] of edges) {
+    if (uf.union(u, v)) {
+      mst.push([u, v, weight]);
+      if (mst.length === n - 1) break;
+    }
+  }
+  return mst;
+}`
+  },
 ];
