@@ -30,7 +30,7 @@ export default function AIAssistant() {
   const { currentUser } = useAuth();
   const [quizHistory, setQuizHistory] = useState([]);
   const [messages, setMessages] = useState([
-    { role: 'bot', content: "Hello! I'm your SmartQuiz AI Tutor. I can help you understand programming concepts, debug code, or suggest topics to study. What's on your mind today?" }
+    { role: 'bot', content: "Hello! I'm your SmartQuiz AI Tutor. I can help you with programming, HTML, CSS, math, science, history, and more. What would you like to learn about today?" }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -100,11 +100,38 @@ export default function AIAssistant() {
             messages: [
               {
                 role: "system",
-                content: `You are a specialized "Pro Programming Tutor" for the SmartQuiz app. 
-                       STRICT RULES:
-                       1. Answer questions related to programming, computer science, software engineering, and related technologies.
-                       2. If a user asks about anything completely unrelated (history, cooking, politics, etc.), politely decline and remind them you are here for programming mastery.
-                       3. Provide code snippets in the appropriate language based on the user's question.`
+                content: `You are SmartQuiz AI Tutor — a friendly, knowledgeable assistant built into the SmartQuiz platform.
+
+                       ABOUT SMARTQUIZ:
+                       SmartQuiz is a multi-language educational platform for mastering programming through AI-powered quizzes, interactive code labs, theory guides, and personalized learning. Built with React, Firebase, and OpenAI.
+
+                       PLATFORM FEATURES:
+                       1. **Quiz Arena**: 13 categories (JavaScript, HTML, CSS, React, TypeScript, Python, Cybersecurity, Backend, SQL, NoSQL, AI Engineering, AI, DSA) with 125 questions each. Modes: Daily Challenge (5 questions, timed) and Full Quiz. Difficulty levels: Easy, Medium, Hard. Earn 50 XP per correct answer + streak bonuses.
+                       2. **Code Lab**: 79+ interactive code snippets across 13 categories. Run code in-browser with a custom console. Categories include JavaScript (21 snippets), HTML, CSS, React, Python, TypeScript, Cybersecurity, Backend, SQL, NoSQL, AI Engineering, AI, DSA.
+                       3. **Theory Vault**: 100+ searchable programming concepts with detailed explanations, code examples, and bookmark system. Filter by category.
+                       4. **Cybersecurity Academy**: Interactive learning tracks (XSS Prevention, Secure Authentication, API Security) with lab challenges and XP rewards.
+                       5. **AI Tutor (You!)**: Chat-based assistant for programming help, general knowledge, and study tips. Works in Simulation Mode (no key) or Live API Mode (OpenAI key).
+                       6. **Analytics**: Score history charts, category breakdown, quiz history, best streak tracking.
+                       7. **Leaderboard**: Global rankings by XP with top 3 podium display.
+                       8. **Dashboard**: Stats overview, quick start grid, performance chart, study streak tracker, daily challenge progress.
+                       9. **Profile**: Edit name/username, view XP/streak, role badge (Student/Admin).
+                       10. **Settings**: Notifications, appearance (dark mode), quiz defaults, account security.
+                       11. **Gamification**: XP system, streaks, 6 achievement badges (First Flight, Quick Learner, Fire Streak, Secure Coder, Top Tier, JS Master).
+                       12. **Admin Panel**: User management, question bank management, platform stats, security status.
+
+                       YOUR CAPABILITIES:
+                       - Answer questions about programming, HTML, CSS, math, science, history.
+                       - Explain how to use any SmartQuiz feature (quiz, codelab, theory, etc.).
+                       - Help users navigate the platform and understand their options.
+                       - Provide study tips and learning guidance.
+
+                       RULES:
+                       - Be helpful, clear, and concise. Use simple language.
+                       - When asked about SmartQuiz, explain features clearly and guide users.
+                       - Provide code snippets when relevant (HTML, CSS, JS, Python, etc.).
+                       - Use markdown formatting for readability (headers, lists, code blocks).
+                       - If you don't know something, say so honestly rather than guessing.
+                       - Always be encouraging and supportive.`
               },
               {
                 role: "user",
@@ -144,84 +171,424 @@ export default function AIAssistant() {
       return;
     }
 
-    // Pro Intelligence Simulation (Fallback)
+    // Simulation (Fallback)
     setTimeout(() => {
       let response = "";
       const lowerInput = input.toLowerCase();
       
       if (lowerInput.includes('how can you help') || lowerInput.includes('what can you do')) {
-        response = "As a **Pro AI Assistant**, I provide: \n\n" +
-                   "• **Deep Dives**: Explanations of programming concepts and algorithms.\n" +
-                   "• **Code Audit**: Paste your snippets for optimization suggestions.\n" +
-                   "• **Architecture**: Advice on Design Patterns and System Design.\n" +
-                   "• **Language Support**: Help with Python, Java, JavaScript, C++, and more.";
+        response = "I'm your **SmartQuiz AI Tutor**! Here's what I can help with:\n\n" +
+                   "• **SmartQuiz Features**: Quiz Arena, Code Lab, Theory Vault, Analytics, Leaderboard, and more.\n" +
+                   "• **Programming**: JavaScript, Python, Java, C++, React, and more.\n" +
+                   "• **Web Dev**: HTML, CSS, Flexbox, Grid, responsive design.\n" +
+                   "• **CS Concepts**: Data structures, algorithms, databases.\n" +
+                   "• **General Knowledge**: Math, science, history, everyday questions.\n" +
+                   "• **Study Tips**: Time management, exam prep, note-taking.\n\n" +
+                   "Ask me anything about the platform or any topic you're learning!";
       } else if (lowerInput.includes('review my code') || lowerInput.includes('code review')) {
-        response = "### 🔍 Code Review Simulation\n\n" +
-                   "I see you want a code review! Since I am currently in **Simulation Mode**, here are the top things I look for in code:\n\n" +
-                   "1. **Readability**: Are variable names clear and descriptive?\n" +
-                   "2. **Efficiency**: Are there any unnecessary loops or redundant operations?\n" +
-                   "3. **Error Handling**: Are edge cases and potential exceptions handled gracefully?\n\n" +
-                   "If you paste a specific small snippet, I can try to give you more targeted feedback!";
-      } else if (lowerInput.includes('closure')) {
-        response = "### 🔒 JavaScript Closures\n\n" +
-                   "A closure is the combination of a function and the **lexical environment** within which that function was declared. \n\n" +
-                   "**Key Use Case:** Data Privacy.\n" +
+        response = "### Code Review\n\n" +
+                   "Paste your code and I'll review it! Here's what I check:\n\n" +
+                   "1. **Readability**: Clear variable names and structure.\n" +
+                   "2. **Efficiency**: No unnecessary operations.\n" +
+                   "3. **Error Handling**: Edge cases covered.\n" +
+                   "4. **Best Practices**: Following language conventions.\n\n" +
+                   "Go ahead and share your code snippet!";
+      }
+      // SmartQuiz - What is it
+      else if (lowerInput.includes('what is smartquiz') || lowerInput.includes('what is this app') || lowerInput.includes('about smartquiz') || lowerInput.includes('tell me about this platform')) {
+        response = "### About SmartQuiz\n\n" +
+                   "**SmartQuiz** is an AI-powered educational platform for mastering programming through interactive quizzes, code labs, theory guides, and personalized learning.\n\n" +
+                   "**Key Features:**\n" +
+                   "• **Quiz Arena**: 13 categories, 125+ questions each, timed challenges\n" +
+                   "• **Code Lab**: 79+ runnable code snippets across 13 topics\n" +
+                   "• **Theory Vault**: 100+ searchable concepts with code examples\n" +
+                   "• **Cybersecurity Academy**: Interactive security learning tracks\n" +
+                   "• **AI Tutor**: Chat-based assistant (that's me!)\n" +
+                   "• **Leaderboard**: Compete with other learners\n" +
+                   "• **Analytics**: Track your progress and weak areas\n\n" +
+                   "Start by taking a quiz or exploring the Code Lab!";
+      }
+      // SmartQuiz - Quiz
+      else if ((lowerInput.includes('smartquiz') || lowerInput.includes('this app') || lowerInput.includes('platform')) && (lowerInput.includes('quiz') || lowerInput.includes('question'))) {
+        response = "### Quiz Arena\n\n" +
+                   "The Quiz Arena has **13 categories** with **125 questions each** (1,625+ total!):\n\n" +
+                   "JavaScript, HTML, CSS, React, TypeScript, Python, Cybersecurity, Backend, SQL, NoSQL, AI Engineering, AI, DSA\n\n" +
+                   "**How to Start:**\n" +
+                   "1. Go to **Quiz Arena** from the sidebar\n" +
+                   "2. Pick a category (or \"All\" for mixed)\n" +
+                   "3. Choose difficulty: Easy, Medium, Hard, or All\n" +
+                   "4. Select mode: **Daily Challenge** (5 timed questions) or **Full Quiz** (all 125)\n\n" +
+                   "**Scoring:** 50 XP per correct answer + 10 XP streak bonus per consecutive correct!";
+      }
+      // SmartQuiz - Code Lab
+      else if (lowerInput.includes('code lab') || lowerInput.includes('codelab') || lowerInput.includes('code snippets') || lowerInput.includes('run code')) {
+        response = "### Code Lab\n\n" +
+                   "The Code Lab has **79+ interactive code snippets** you can run in-browser!\n\n" +
+                   "**Categories:**\n" +
+                   "JavaScript (21), HTML (5), CSS (6), React (4), TypeScript (5), Python (5), Cybersecurity (4), Backend (5), SQL (5), NoSQL (5), AI Engineering (4), AI (5), DSA (5)\n\n" +
+                   "**How to Use:**\n" +
+                   "1. Go to **Code Lab** from the sidebar\n" +
+                   "2. Filter by category and difficulty\n" +
+                   "3. Choose how many snippets (5, 10, or All)\n" +
+                   "4. Click **Run** or press **Ctrl+Enter** to execute code\n" +
+                   "5. See output in the custom console below\n\n" +
+                   "Great for learning by example!";
+      }
+      // SmartQuiz - Theory
+      else if (lowerInput.includes('theory') || lowerInput.includes('theory vault') || lowerInput.includes('concepts') || lowerInput.includes('learn concepts')) {
+        response = "### Theory Vault\n\n" +
+                   "The Theory Vault has **100+ programming concepts** organized by category.\n\n" +
+                   "**Features:**\n" +
+                   "• Search by keyword (title, description, subcategory)\n" +
+                   "• Filter by category (all 13 categories)\n" +
+                   "• Bookmark concepts for later review\n" +
+                   "• Each concept has: overview, key points, code examples\n" +
+                   "• Direct link to take a quiz on that category\n\n" +
+                   "Access it from the sidebar under **Theory Vault**!";
+      }
+      // SmartQuiz - Leaderboard
+      else if (lowerInput.includes('leaderboard') || lowerInput.includes('ranking') || lowerInput.includes('top users') || lowerInput.includes('compete')) {
+        response = "### Leaderboard\n\n" +
+                   "The Leaderboard shows the **top 20 learners** ranked by XP.\n\n" +
+                   "**Features:**\n" +
+                   "• Top 3 podium with medals (Crown, Gold, Silver, Bronze)\n" +
+                   "• Shows rank, name, role (Student/Admin), XP, and streak\n" +
+                   "• Real-time updates as users earn XP\n\n" +
+                   "**How to Climb:**\n" +
+                   "• Earn XP by taking quizzes (50 XP per correct answer)\n" +
+                   "• Get streak bonuses (+10 XP per consecutive correct)\n" +
+                   "• Complete Code Lab challenges\n" +
+                   "• Finish Cybersecurity tracks (+1000 XP each)\n\n" +
+                   "Check your rank from the sidebar!";
+      }
+      // SmartQuiz - Analytics
+      else if (lowerInput.includes('analytics') || lowerInput.includes('stats') || lowerInput.includes('progress') || lowerInput.includes('my scores')) {
+        response = "### Analytics\n\n" +
+                   "Track your learning progress with detailed analytics!\n\n" +
+                   "**What You See:**\n" +
+                   "• **Total XP** earned across all activities\n" +
+                   "• **Average Quiz Score** percentage\n" +
+                   "• **Quizzes Taken** count\n" +
+                   "• **Best Streak** (consecutive days)\n" +
+                   "• **Score History Chart**: Visual graph of your last 14 quiz scores\n" +
+                   "• **Category Breakdown**: Per-category accuracy with color-coded bars\n" +
+                   "• **Recent Quizzes**: Your last 5 attempts with details\n\n" +
+                   "Access from the sidebar under **Analytics**!";
+      }
+      // SmartQuiz - Cybersecurity
+      else if (lowerInput.includes('cybersecurity') || lowerInput.includes('security academy') || lowerInput.includes('security track')) {
+        response = "### Cybersecurity Academy\n\n" +
+                   "Interactive security learning with **3 tracks** and **lab challenges**:\n\n" +
+                   "1. **XSS Prevention** (Advanced): Sanitize input to prevent Cross-Site Scripting\n" +
+                   "2. **Secure Authentication** (Expert): JWTs, sessions, MFA, secure cookies\n" +
+                   "3. **API Security** (Intermediate): Rate limiting, brute force protection\n\n" +
+                   "**Features:**\n" +
+                   "• Code examples with syntax highlighting\n" +
+                   "• Interactive lab challenges\n" +
+                   "• Secure practice guidelines\n" +
+                   "• **+1000 XP** reward per completed track\n\n" +
+                   "Find it in the sidebar under **Cybersecurity**!";
+      }
+      // SmartQuiz - Badges
+      else if (lowerInput.includes('badge') || lowerInput.includes('achievement') || lowerInput.includes('unlock')) {
+        response = "### Achievement Badges\n\n" +
+                   "Earn **6 badges** as you progress:\n\n" +
+                   "1. **First Flight** - Complete your first quiz\n" +
+                   "2. **Quick Learner** - Finish a quiz in under 2 minutes\n" +
+                   "3. **Fire Streak** - Maintain a 3-day study streak\n" +
+                   "4. **Secure Coder** - Complete a Cybersecurity Track\n" +
+                   "5. **Top Tier** - Reach the Top 10 on the Leaderboard\n" +
+                   "6. **JS Master** - Solve 10 Hard JavaScript questions\n\n" +
+                   "Badges appear on your profile as you earn them!";
+      }
+      // SmartQuiz - How to earn XP
+      else if (lowerInput.includes('earn xp') || lowerInput.includes('how to get xp') || lowerInput.includes('xp') || lowerInput.includes('experience points')) {
+        response = "### Earning XP (Experience Points)\n\n" +
+                   "**Ways to Earn:**\n" +
+                   "• **Quiz Correct Answer**: +50 XP\n" +
+                   "• **Streak Bonus**: +10 XP per consecutive correct answer\n" +
+                   "• **Cybersecurity Track**: +1000 XP per completed track\n\n" +
+                   "**What XP Unlocks:**\n" +
+                   "• Higher ranking on the Leaderboard\n" +
+                   "• Profile stats and progress tracking\n" +
+                   "• Badge eligibility (e.g., Top Tier = Top 10)\n\n" +
+                   "XP accumulates across all activities. Check your total on the Dashboard or Profile!";
+      }
+      // SmartQuiz - Daily Challenge
+      else if (lowerInput.includes('daily challenge') || lowerInput.includes('daily quiz') || lowerInput.includes('today challenge')) {
+        response = "### Daily Challenge\n\n" +
+                   "A quick daily quiz to keep your skills sharp!\n\n" +
+                   "**Details:**\n" +
+                   "• **5 questions** from your chosen category\n" +
+                   "• **Timed**: Easy (30s), Medium (20s), Hard (15s), All (25s) per question\n" +
+                   "• Earn **50 XP** per correct answer + streak bonuses\n\n" +
+                   "**Goal**: Complete 3 quizzes today for bonus progress!\n\n" +
+                   "Find it on your **Dashboard** or in the **Quiz Arena**!";
+      }
+      // SmartQuiz - How to use / navigate
+      else if (lowerInput.includes('how to use') || lowerInput.includes('how do i') || lowerInput.includes('where can i') || lowerInput.includes('navigate') || lowerInput.includes('getting started')) {
+        response = "### Getting Started with SmartQuiz\n\n" +
+                   "**Quick Guide:**\n\n" +
+                   "1. **Dashboard** - Your home base with stats, quick start, and daily challenge\n" +
+                   "2. **Quiz Arena** - Take quizzes in 13 categories\n" +
+                   "3. **Code Lab** - Run and learn from 79+ code snippets\n" +
+                   "4. **Theory Vault** - Read 100+ programming concepts\n" +
+                   "5. **AI Tutor** - Chat with me for help!\n" +
+                   "6. **Analytics** - Track your scores and progress\n" +
+                   "7. **Leaderboard** - See how you rank against others\n" +
+                   "8. **Cybersecurity** - Learn security with hands-on labs\n\n" +
+                   "Use the **sidebar** on the left to navigate. What would you like to try?";
+      }
+      // HTML
+      else if (lowerInput.includes('html')) {
+        response = "### HTML (HyperText Markup Language)\n\n" +
+                   "HTML is the standard language for creating web pages. It describes the structure of a web page using **elements** represented by **tags**.\n\n" +
+                   "**Basic Structure:**\n" +
+                   "```html\n" +
+                   "<!DOCTYPE html>\n" +
+                   "<html>\n" +
+                   "<head>\n" +
+                   "  <title>My Page</title>\n" +
+                   "</head>\n" +
+                   "<body>\n" +
+                   "  <h1>Hello World!</h1>\n" +
+                   "  <p>This is a paragraph.</p>\n" +
+                   "</body>\n" +
+                   "</html>\n" +
+                   "```\n\n" +
+                   "**Common Tags:**\n" +
+                   "• `<h1>` to `<h6>` — Headings\n" +
+                   "• `<p>` — Paragraph\n" +
+                   "• `<a>` — Link\n" +
+                   "• `<img>` — Image\n" +
+                   "• `<div>` — Container\n" +
+                   "• `<ul>`, `<ol>`, `<li>` — Lists";
+      }
+      // CSS Flexbox
+      else if (lowerInput.includes('flexbox') || lowerInput.includes('flex box')) {
+        response = "### CSS Flexbox\n\n" +
+                   "Flexbox is a one-dimensional layout method for arranging items in rows or columns.\n\n" +
+                   "**Key Properties:**\n" +
+                   "• `display: flex` — Enables flexbox\n" +
+                   "• `flex-direction: row | column` — Main axis direction\n" +
+                   "• `justify-content: center | space-between` — Horizontal alignment\n" +
+                   "• `align-items: center | stretch` — Vertical alignment\n" +
+                   "• `flex-wrap: wrap` — Allow items to wrap\n\n" +
+                   "**Example:**\n" +
+                   "```css\n" +
+                   ".container {\n" +
+                   "  display: flex;\n" +
+                   "  justify-content: center;\n" +
+                   "  align-items: center;\n" +
+                   "  gap: 1rem;\n" +
+                   "}\n" +
+                   "```";
+      }
+      // CSS Grid
+      else if (lowerInput.includes('css grid') || lowerInput.includes('grid layout')) {
+        response = "### CSS Grid\n\n" +
+                   "Grid is a two-dimensional layout system for complex page layouts.\n\n" +
+                   "**Key Properties:**\n" +
+                   "• `display: grid` — Enables grid\n" +
+                   "• `grid-template-columns` — Define columns\n" +
+                   "• `grid-template-rows` — Define rows\n" +
+                   "• `gap` — Spacing between items\n\n" +
+                   "**Example:**\n" +
+                   "```css\n" +
+                   ".grid {\n" +
+                   "  display: grid;\n" +
+                   "  grid-template-columns: repeat(3, 1fr);\n" +
+                   "  gap: 1rem;\n" +
+                   "}\n" +
+                   "```";
+      }
+      // Math
+      else if (lowerInput.includes('math') || lowerInput.includes('calculate') || lowerInput.includes('equation') || lowerInput.includes('formula')) {
+        response = "### Math Help\n\n" +
+                   "I can help with math! Here are some common formulas:\n\n" +
+                   "• **Area of Circle**: A = πr²\n" +
+                   "• **Pythagorean Theorem**: a² + b² = c²\n" +
+                   "• **Quadratic Formula**: x = (-b ± √(b²-4ac)) / 2a\n" +
+                   "• **Slope**: m = (y₂ - y₁) / (x₂ - x₁)\n" +
+                   "• **Distance**: d = √((x₂-x₁)² + (y₂-y₁)²)\n\n" +
+                   "What specific math topic do you need help with?";
+      }
+      // Science
+      else if (lowerInput.includes('science') || lowerInput.includes('physics') || lowerInput.includes('chemistry') || lowerInput.includes('biology')) {
+        response = "### Science\n\n" +
+                   "I can help with science topics!\n\n" +
+                   "• **Physics**: Forces, energy, electricity, waves, motion.\n" +
+                   "• **Chemistry**: Atoms, elements, reactions, periodic table.\n" +
+                   "• **Biology**: Cells, genetics, evolution, human body.\n\n" +
+                   "Which area interests you? Ask a specific question and I'll explain!";
+      }
+      // History
+      else if (lowerInput.includes('history') || lowerInput.includes('historical')) {
+        response = "### History\n\n" +
+                   "I can help with history! Some major periods:\n\n" +
+                   "• **Ancient**: Egypt, Greece, Rome, Mesopotamia\n" +
+                   "• **Medieval**: Feudalism, Crusades, Renaissance\n" +
+                   "• **Modern**: Industrial Revolution, World Wars, Cold War\n\n" +
+                   "What historical topic or event would you like to learn about?";
+      }
+      // Closure
+      else if (lowerInput.includes('closure')) {
+        response = "### JavaScript Closures\n\n" +
+                   "A closure is a function that remembers the variables from its outer scope, even after the outer function has finished executing.\n\n" +
+                   "**Example:**\n" +
                    "```javascript\n" +
                    "function createCounter() {\n" +
                    "  let count = 0;\n" +
                    "  return () => ++count;\n" +
                    "}\n" +
-                   "const count = createCounter();\n" +
-                   "console.log(count()); // 1\n" +
-                   "```";
-      } else if (lowerInput.includes('event loop')) {
-        response = "### 🔄 The Event Loop\n\n" +
-                   "JavaScript is single-threaded but handles concurrency via the **Event Loop**. \n\n" +
+                   "const counter = createCounter();\n" +
+                   "console.log(counter()); // 1\n" +
+                   "console.log(counter()); // 2\n" +
+                   "```\n\n" +
+                   "**Use Cases:** Data privacy, function factories, callback patterns.";
+      }
+      // Event Loop
+      else if (lowerInput.includes('event loop')) {
+        response = "### The Event Loop\n\n" +
+                   "JavaScript is single-threaded but handles concurrency via the **Event Loop**.\n\n" +
                    "1. **Call Stack**: Executes synchronous code.\n" +
-                   "2. **Web APIs**: Handles timers, DOM events, and fetch.\n" +
-                   "3. **Microtask Queue**: Where **Promises** (.then) go. Highest priority!\n" +
-                   "4. **Task Queue**: Where setTimeout/setInterval go.\n\n" +
-                   "*Tip: Microtasks always run before the next render or macrotask.*";
-      } else if (lowerInput.includes('javascript') || lowerInput.includes('js')) {
-        response = "### 🚀 What is JavaScript?\n\n" +
-                   "**JavaScript** is a lightweight, interpreted, object-oriented language with first-class functions. While most known as the scripting language for Web pages, many non-browser environments also use it, such as **Node.js**.\n\n" +
-                   "It is a **multi-paradigm** language, supporting event-driven, functional, and imperative programming styles.";
-      } else if (lowerInput.includes('loop')) {
-        response = "### 🔁 JavaScript Loops\n\n" +
-                   "Loops are used to execute a block of code multiple times. Common types include:\n\n" +
-                   "• **for**: Standard iteration.\n" +
-                   "• **while**: Continues as long as a condition is true.\n" +
-                   "• **for...of**: Best for iterating over arrays.\n" +
-                   "• **for...in**: Best for iterating over object properties.";
-      } else if (lowerInput.includes('typescript')) {
-        response = "### 🟦 TypeScript\n\n" +
-                   "TypeScript is a strongly typed superset of JavaScript that adds **static types**.\n\n" +
-                   "It helps you catch errors early in your editor and makes large codebases much easier to maintain. All valid JavaScript is also valid TypeScript!";
-      } else if (lowerInput.includes('react')) {
-        response = "### ⚛️ React\n\n" +
-                   "React is a component-based JavaScript library for building user interfaces.\n\n" +
-                   "• **Virtual DOM**: React updates the actual DOM efficiently by comparing it with a virtual memory representation.\n" +
-                   "• **State**: Data that can change over time and affects what is rendered.";
-      } else if (lowerInput.includes('css')) {
-        response = "### 🎨 CSS\n\n" +
-                   "Cascading Style Sheets (CSS) is used to style the structure created by HTML.\n\n" +
-                   "Modern CSS features like **Flexbox**, **Grid**, and **Custom Properties (Variables)** make it extremely powerful for creating responsive layouts.";
-      } else if (lowerInput.includes('python') || lowerInput.includes('java')) {
-        response = "### 🐍☕ Python & Java\n\n" +
-                   "I am a general programming tutor and can help with these languages!\n\n" +
-                   "• **Python**: Great for backend, AI, and data science. Known for its clean, readable syntax.\n" +
-                   "• **Java**: A strictly typed, object-oriented language used heavily in enterprise environments.";
-      } else if (lowerInput.includes('how') || lowerInput.includes('what') || lowerInput.includes('code') || lowerInput.includes('function') || lowerInput.includes('variable')) {
-        response = "### 💻 General Programming Assistant\n\n" +
-                   "I see you are asking a general programming question! Since I am currently in **Simulation Mode**, here is a quick guide on best practices:\n\n" +
-                   "• **Variables**: Use meaningful names and appropriate scoping.\n" +
-                   "• **Functions**: Break your code into small, reusable functions. A function should ideally do one thing well.\n" +
-                   "• **Debugging**: Use logging to check variable values, or use a debugger to step through code.\n\n" +
-                   "Try asking me about specific concepts like **Closures**, **Object-Oriented Programming**, **Promises**, or **React** for a more detailed specific response!";
-      } else if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
-        response = "Welcome! I'm ready to assist with your programming or debugging tasks. What's on the roadmap today?";
-      } else {
-        response = "That's a solid inquiry. While I specialize in programming concepts, I can discuss **Data Structures**, **Algorithms**, **System Design**, or **Web Frameworks**. \n\nWould you like a deep dive into any of these?";
+                   "2. **Web APIs**: Handles timers, DOM events, fetch.\n" +
+                   "3. **Microtask Queue**: Promises (.then) — highest priority.\n" +
+                   "4. **Task Queue**: setTimeout/setInterval.\n\n" +
+                   "*Microtasks always run before macrotasks.*";
+      }
+      // JavaScript
+      else if (lowerInput.includes('javascript') || lowerInput.includes('js')) {
+        response = "### JavaScript\n\n" +
+                   "JavaScript is a lightweight, interpreted language for web development and beyond.\n\n" +
+                   "**Key Features:**\n" +
+                   "• **Dynamic Typing**: Variables can hold any type.\n" +
+                   "• **First-Class Functions**: Functions are values.\n" +
+                   "• **Event-Driven**: Responds to user actions.\n" +
+                   "• **Multi-Paradigm**: OOP, functional, imperative.\n\n" +
+                   "What aspect of JavaScript would you like to learn about?";
+      }
+      // Loops
+      else if (lowerInput.includes('loop')) {
+        response = "### Loops\n\n" +
+                   "Loops execute code repeatedly. Common types:\n\n" +
+                   "```javascript\n" +
+                   "// for loop\n" +
+                   "for (let i = 0; i < 5; i++) { console.log(i); }\n\n" +
+                   "// while loop\n" +
+                   "while (condition) { /* ... */ }\n\n" +
+                   "// for...of (arrays)\n" +
+                   "for (const item of arr) { console.log(item); }\n\n" +
+                   "// for...in (objects)\n" +
+                   "for (const key in obj) { console.log(key); }\n" +
+                   "```";
+      }
+      // TypeScript
+      else if (lowerInput.includes('typescript')) {
+        response = "### TypeScript\n\n" +
+                   "TypeScript is a superset of JavaScript that adds **static typing**.\n\n" +
+                   "**Benefits:**\n" +
+                   "• Catch errors at compile time\n" +
+                   "• Better IDE support and autocomplete\n" +
+                   "• Clearer code documentation\n\n" +
+                   "**Example:**\n" +
+                   "```typescript\n" +
+                   "function greet(name: string): string {\n" +
+                   "  return `Hello, ${name}!`;\n" +
+                   "}\n" +
+                   "```";
+      }
+      // React
+      else if (lowerInput.includes('react')) {
+        response = "### React\n\n" +
+                   "React is a JavaScript library for building user interfaces.\n\n" +
+                   "**Core Concepts:**\n" +
+                   "• **Components**: Reusable UI pieces\n" +
+                   "• **JSX**: HTML-like syntax in JavaScript\n" +
+                   "• **State**: Data that changes over time\n" +
+                   "• **Props**: Data passed to components\n" +
+                   "• **Virtual DOM**: Efficient rendering\n\n" +
+                   "What would you like to learn about React?";
+      }
+      // CSS
+      else if (lowerInput.includes('css')) {
+        response = "### CSS (Cascading Style Sheets)\n\n" +
+                   "CSS styles HTML elements. Modern CSS is very powerful!\n\n" +
+                   "**Key Concepts:**\n" +
+                   "• **Flexbox**: 1D layout (rows or columns)\n" +
+                   "• **Grid**: 2D layout (rows AND columns)\n" +
+                   "• **Variables**: `--primary: #3b82f6;`\n" +
+                   "• **Media Queries**: Responsive design\n\n" +
+                   "What CSS topic do you need help with?";
+      }
+      // Python
+      else if (lowerInput.includes('python')) {
+        response = "### Python\n\n" +
+                   "Python is a beginner-friendly, versatile language.\n\n" +
+                   "**Example:**\n" +
+                   "```python\n" +
+                   "# Variables\n" +
+                   "name = 'World'\n" +
+                   "age = 25\n\n" +
+                   "# Function\n" +
+                   "def greet(name):\n" +
+                   "    return f'Hello, {name}!'\n\n" +
+                   "# List comprehension\n" +
+                   "squares = [x**2 for x in range(10)]\n" +
+                   "```\n\n" +
+                   "What would you like to learn in Python?";
+      }
+      // Java
+      else if (lowerInput.includes('java')) {
+        response = "### Java\n\n" +
+                   "Java is a strongly-typed, object-oriented language used in enterprise, Android, and backend development.\n\n" +
+                   "**Example:**\n" +
+                   "```java\n" +
+                   "public class Main {\n" +
+                   "    public static void main(String[] args) {\n" +
+                   "        System.out.println(\"Hello, World!\");\n" +
+                   "    }\n" +
+                   "}\n" +
+                   "```\n\n" +
+                   "What Java topic would you like to explore?";
+      }
+      // Data structures
+      else if (lowerInput.includes('data structure') || lowerInput.includes('algorithm')) {
+        response = "### Data Structures & Algorithms\n\n" +
+                   "**Common Data Structures:**\n" +
+                   "• **Array**: Indexed collection, O(1) access\n" +
+                   "• **Linked List**: Sequential, O(1) insert\n" +
+                   "• **Stack**: LIFO (Last In, First Out)\n" +
+                   "• **Queue**: FIFO (First In, First Out)\n" +
+                   "• **Hash Map**: Key-value pairs, O(1) lookup\n" +
+                   "• **Tree**: Hierarchical, e.g., Binary Search Tree\n\n" +
+                   "**Common Algorithms:**\n" +
+                   "• Binary Search, Sorting (Quick, Merge), BFS, DFS\n\n" +
+                   "Which data structure or algorithm would you like to learn?";
+      }
+      // Greetings
+      else if (lowerInput.match(/\b(hello|hi|hey|greetings|good morning|good evening)\b/)) {
+        response = "Hello! Welcome to SmartQuiz AI Tutor. I can help with programming, web development, math, science, history, and more. What would you like to learn about?";
+      }
+      // Thanks
+      else if (lowerInput.match(/\b(thank|thanks|thx)\b/)) {
+        response = "You're welcome! Feel free to ask me anything else. I'm here to help!";
+      }
+      // Who are you
+      else if (lowerInput.includes('who are you') || lowerInput.includes('what are you')) {
+        response = "I'm your **SmartQuiz AI Tutor** — a friendly assistant that can help you learn about programming, web development, math, science, history, and more. Whether you're debugging code or studying for an exam, I'm here to help!";
+      }
+      // General fallback
+      else {
+        response = "Great question! I can help with:\n\n" +
+                   "• **SmartQuiz**: Quiz Arena, Code Lab, Theory Vault, Analytics, Leaderboard, Cybersecurity Academy\n" +
+                   "• **Programming**: JavaScript, Python, Java, C++, and more\n" +
+                   "• **Web Development**: HTML, CSS, responsive design\n" +
+                   "• **Math**: Algebra, geometry, calculus, statistics\n" +
+                   "• **Science**: Physics, chemistry, biology\n" +
+                   "• **History**: World history, major events\n" +
+                   "• **Study Tips**: How to learn effectively\n\n" +
+                   "Try asking me a specific question about any of these topics!";
       }
 
       setMessages(prev => [...prev, { role: 'bot', content: response }]);
@@ -238,7 +605,7 @@ export default function AIAssistant() {
             <h1 className="text-xl md:text-3xl font-bold text-white flex items-center gap-3">
               <Sparkles className="text-primary" size={28} /> AI Study Assistant
             </h1>
-            <p className="text-gray-400 mt-1 text-sm hidden md:block">Your personal programming tutor, available 24/7.</p>
+            <p className="text-gray-400 mt-1 text-sm hidden md:block">Your personal tutor for programming, web dev, math, science, and more.</p>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <button 
@@ -307,10 +674,10 @@ export default function AIAssistant() {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8 flex-1 min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8 flex-1 min-h-0 overflow-hidden">
           {/* Chat Window */}
-          <div className="lg:col-span-3 flex flex-col glass-card overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-6 custom-scrollbar">
+          <div className="lg:col-span-3 flex flex-col glass-card overflow-hidden min-h-0 max-h-[calc(100vh-220px)]">
+            <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-6 custom-scrollbar scroll-smooth">
               <AnimatePresence>
                 {messages.map((msg, i) => (
                   <motion.div
@@ -375,17 +742,38 @@ export default function AIAssistant() {
             <div className="px-3 md:px-6 py-2 md:py-3 border-t border-white/5 flex gap-2 overflow-x-auto bg-white/[0.01] scrollbar-hide">
               <button 
                 type="button"
-                onClick={() => setInput("Review my code: ")}
+                onClick={() => setInput("What is SmartQuiz and how do I use it?")}
                 className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
               >
-                <span aria-hidden="true">🔍</span> Code Review
+                <span aria-hidden="true">ℹ️</span> What is SmartQuiz?
               </button>
               <button 
                 type="button"
-                onClick={() => setInput("Explain the Event Loop")}
+                onClick={() => setInput("How does the Quiz Arena work?")}
                 className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
               >
-                <span aria-hidden="true">🔄</span> Event Loop
+                <span aria-hidden="true">📝</span> Quiz Arena
+              </button>
+              <button 
+                type="button"
+                onClick={() => setInput("Explain HTML basics")}
+                className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
+              >
+                <span aria-hidden="true">📄</span> HTML Basics
+              </button>
+              <button 
+                type="button"
+                onClick={() => setInput("How does CSS Flexbox work?")}
+                className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
+              >
+                <span aria-hidden="true">🎨</span> CSS Flexbox
+              </button>
+              <button 
+                type="button"
+                onClick={() => setInput("How do I earn XP?")}
+                className="text-[11px] font-bold text-gray-300 hover:text-white bg-white/5 px-3 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors shrink-0 flex items-center gap-1 min-h-[36px]"
+              >
+                <span aria-hidden="true">⭐</span> Earn XP
               </button>
               <button 
                 type="button"
@@ -403,7 +791,7 @@ export default function AIAssistant() {
                   type="text" 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about programming..."
+                  placeholder="Ask me anything — programming, math, science, history..."
                   className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 md:py-4 pl-5 md:pl-6 pr-14 md:pr-16 text-white focus:outline-none focus:border-primary/50 transition-colors text-sm"
                 />
                 <button 

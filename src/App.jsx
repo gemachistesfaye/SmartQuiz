@@ -41,7 +41,7 @@ function App() {
 
   return (
     <AuthProvider>
-      <ToastContainer theme="dark" position="top-right" />
+      {/* Toast notifications removed per user request */}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />

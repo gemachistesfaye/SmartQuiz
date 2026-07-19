@@ -33,7 +33,8 @@ export default function RegisterPage() {
     } catch (error) {
       console.error("Google login error:", error);
       if (error.code === 'auth/popup-closed-by-user') {
-        toast.error("Login cancelled. Please try again");
+        // User closed the popup intentionally — no error needed
+        return;
       } else {
         toast.error(error.message || "Google login failed");
       }
@@ -100,22 +101,22 @@ export default function RegisterPage() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card max-w-md w-full p-8 relative z-10"
+        className="glass-card max-w-md w-full p-6 relative z-10"
       >
         <Link to="/" className="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
           <ArrowLeft size={16} /> Back to Home
         </Link>
         
-        <div className="text-center mb-8 mt-6">
-          <div className="bg-primary/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Brain className="text-primary" size={32} />
+        <div className="text-center mb-5 mt-4">
+          <div className="bg-primary/20 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <Brain className="text-primary" size={28} />
           </div>
           <h1 className="text-2xl font-bold text-white">Join SmartQuiz</h1>
           <p className="text-gray-400 text-sm mt-1">Start your journey to mastery</p>
         </div>
 
         {registerMode === 'email' ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="relative">
             <label htmlFor="reg-fullname" className="sr-only">Full Name</label>
             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -225,7 +226,7 @@ export default function RegisterPage() {
 
           <button 
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Create Account"}
           </button>
@@ -234,7 +235,7 @@ export default function RegisterPage() {
           <PhoneLogin onBack={() => setRegisterMode('email')} />
         )}
 
-        <div className="relative my-8">
+        <div className="relative my-5">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10"></div></div>
           <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-4 text-gray-400 font-bold tracking-widest">Or continue with</span></div>
         </div>
@@ -242,7 +243,7 @@ export default function RegisterPage() {
         <div className="flex gap-4">
           <button 
             onClick={handleGoogleLogin}
-            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 min-h-[48px] whitespace-nowrap"
+            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 min-h-[44px] whitespace-nowrap"
           >
             <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -256,17 +257,14 @@ export default function RegisterPage() {
           <button 
             type="button"
             onClick={() => setRegisterMode('phone')}
-            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 min-h-[48px] whitespace-nowrap"
+            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 min-h-[44px] whitespace-nowrap"
           >
             <Phone size={20} className="text-gray-300 shrink-0" />
             Phone
           </button>
         </div>
-        <p className="text-xs text-gray-500 text-center mt-3">
-          Note: If you click mobile phone, enter 000000 after entering your phone number.
-        </p>
 
-        <p className="text-center text-gray-400 text-sm mt-8">
+        <p className="text-center text-gray-400 text-sm mt-5">
           Already have an account? <Link to="/login" className="text-primary font-bold hover:underline">Log In</Link>
         </p>
       </motion.div>
