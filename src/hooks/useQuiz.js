@@ -168,12 +168,7 @@ export const useQuiz = (settings) => {
     return () => clearInterval(timer);
   }, [quizState.isActive, quizState.timeLeft]);
 
-  useEffect(() => {
-    if (quizState.timeLeft === 0 && quizState.isActive) {
-      const timeout = setTimeout(() => submitAnswer(-1), 0);
-      return () => clearTimeout(timeout);
-    }
-  }, [quizState.timeLeft, quizState.isActive, submitAnswer]);
+  // Time out handling moved to component level so it can show feedback before advancing
 
   return {
     ...quizState,

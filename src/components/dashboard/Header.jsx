@@ -7,7 +7,7 @@ export default function Header({ onMenuClick }) {
   const { isAdmin } = useAuth();
 
   return (
-    <header className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-white/5 bg-[#0a0a10]/80 backdrop-blur-xl sticky top-0 z-30">
+    <header className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-primary/10 bg-primary/5 backdrop-blur-xl sticky top-0 z-30 shadow-[0_4px_24px_rgba(59,130,246,0.05)]">
       {/* Mobile: Hamburger only */}
       <div className="flex items-center lg:hidden">
         <button

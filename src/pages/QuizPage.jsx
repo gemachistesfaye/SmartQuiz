@@ -235,6 +235,13 @@ function ActiveQuiz({ quiz, settings }) {
     setSelected(null);
   };
 
+  useEffect(() => {
+    if (timeLeft === 0 && !showFeedback && quiz.isActive) {
+      setSelected(-1); // Set to -1 to indicate timeout
+      setShowFeedback(true);
+    }
+  }, [timeLeft, showFeedback, quiz.isActive]);
+
   const isCorrect = selected === currentQuestion?.correct;
 
   return (
@@ -302,7 +309,7 @@ function ActiveQuiz({ quiz, settings }) {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 mb-4 md:mb-6">
-            {currentQuestion?.options.map((option, index) => {
+            {currentQuestion?.options?.map((option, index) => {
               const isOptionCorrect = index === currentQuestion.correct;
               const isSelected = selected === index;
               let classes = "w-full text-left p-3 md:p-4 rounded-xl border transition-all duration-300 ";
@@ -349,11 +356,13 @@ function ActiveQuiz({ quiz, settings }) {
                   <div className="flex items-center gap-2 mb-1.5 md:mb-2">
                     {isCorrect ? (
                       <Check size={14} className="text-green-400" />
+                    ) : timeLeft === 0 && selected === -1 ? (
+                      <Clock size={14} className="text-red-400" />
                     ) : (
                       <X size={14} className="text-red-400" />
                     )}
                     <span className={`font-bold text-xs md:text-sm ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
-                      {isCorrect ? 'Correct!' : 'Not quite right'}
+                      {isCorrect ? 'Correct!' : timeLeft === 0 && selected === -1 ? "Time's Up!" : 'Not quite right'}
                     </span>
                   </div>
                   <p className="text-gray-300 leading-relaxed text-[11px] md:text-sm">{currentQuestion?.explanation}</p>
@@ -498,7 +507,7 @@ function ResultsScreen({ quiz, onRestart }) {
                   </div>
                   <p className="text-white font-medium text-sm mb-3">{r.question}</p>
                   <div className="space-y-1.5 mb-3">
-                    {r.options.map((opt, j) => (
+                    {r.options?.map((opt, j) => (
                       <div key={j} className={`text-xs px-3 py-2 rounded-lg flex items-center gap-2 ${
                         j === r.correct ? 'bg-green-500/10 text-green-300' :
                         j === r.answerIndex && !r.isCorrect ? 'bg-red-500/10 text-red-300' :
