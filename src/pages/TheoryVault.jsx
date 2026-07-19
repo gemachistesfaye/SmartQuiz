@@ -44,6 +44,14 @@ export default function TheoryVault() {
     CSS: 'text-blue-400',
     Cybersecurity: 'text-red-400',
     React: 'text-cyan-400',
+    TypeScript: 'text-blue-300',
+    Python: 'text-green-400',
+    Backend: 'text-purple-400',
+    SQL: 'text-amber-400',
+    NoSQL: 'text-emerald-400',
+    'AI Engineering': 'text-fuchsia-400',
+    'Artificial Intelligence': 'text-rose-400',
+    DSA: 'text-teal-400',
   };
 
   return (
@@ -81,21 +89,18 @@ export default function TheoryVault() {
           </button>
         </div>
 
-        {/* Categories - horizontal scroll on mobile */}
-        <div className="flex gap-2 md:gap-3 mb-6 md:mb-10 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 md:px-6 py-2 rounded-xl text-xs font-bold transition-all border shrink-0 ${
-                activeCategory === cat
-                  ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
-                  : 'bg-white/5 border-white/5 text-gray-500 hover:text-white hover:border-white/10'
-              }`}
-            >
-              {cat} {cat !== 'All' && <span className="ml-1 opacity-60">({concepts.filter(c => cat === 'All' || c.category === cat).length})</span>}
-            </button>
-          ))}
+        {/* Category Dropdown */}
+        <div className="mb-6 md:mb-10">
+          <select
+            value={activeCategory}
+            onChange={(e) => setActiveCategory(e.target.value)}
+            className="w-full md:w-72 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-primary/50 appearance-none cursor-pointer min-h-[44px]"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{cat} {cat !== 'All' ? `(${concepts.filter(c => cat === 'All' || c.category === cat).length})` : `(${concepts.length})`}</option>
+            ))}
+          </select>
         </div>
 
         {/* Subcategory groups */}
@@ -172,26 +177,17 @@ export default function TheoryVault() {
                     <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-4 flex items-center gap-2">
                       <Terminal size={16} className="text-primary" /> Concept Overview
                     </h4>
-                    <p className="text-gray-400 leading-relaxed">
+                    <p className="text-gray-400 leading-relaxed whitespace-pre-line">
                       {selectedConcept.content}
                     </p>
                   </section>
 
-                  <section>
-                    <h4 className="text-sm font-bold text-gray-300 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <Code size={16} className="text-primary" /> Practical Example
-                    </h4>
-                    <pre className="bg-black/50 border border-white/5 rounded-2xl p-6 text-sm font-mono text-primary-200 overflow-x-auto whitespace-pre-wrap">
-                      {selectedConcept.example}
-                    </pre>
-                  </section>
-
                   <div className="flex gap-4 pt-4">
                     <button
-                      onClick={() => { setSelectedConcept(null); navigate('/quiz'); }}
+                      onClick={() => { setSelectedConcept(null); navigate(`/quiz?category=${encodeURIComponent(selectedConcept.category)}`); }}
                       className="flex-1 bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
                     >
-                      Take {selectedConcept.title} Quiz
+                      Take {selectedConcept.category} Quiz
                     </button>
                     <button
                       onClick={async () => {
@@ -233,6 +229,14 @@ function ConceptCard({ concept, index, onClick, isBookmarked }) {
     CSS: 'bg-blue-400/20 text-blue-400',
     Cybersecurity: 'bg-red-400/20 text-red-400',
     React: 'bg-cyan-400/20 text-cyan-400',
+    TypeScript: 'bg-blue-300/20 text-blue-300',
+    Python: 'bg-green-400/20 text-green-400',
+    Backend: 'bg-purple-400/20 text-purple-400',
+    SQL: 'bg-amber-400/20 text-amber-400',
+    NoSQL: 'bg-emerald-400/20 text-emerald-400',
+    'AI Engineering': 'bg-fuchsia-400/20 text-fuchsia-400',
+    'Artificial Intelligence': 'bg-rose-400/20 text-rose-400',
+    DSA: 'bg-teal-400/20 text-teal-400',
   };
 
   return (

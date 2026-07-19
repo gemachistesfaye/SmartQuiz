@@ -25,9 +25,9 @@ export const useQuiz = (settings) => {
   const [currentQuestions, setCurrentQuestions] = useState([]);
 
   const getTimerForDifficulty = useCallback((diff) => {
-    if (!settings.timerMode) return null;
+    if (!settings.timerMode || settings.mode === 'full') return null;
     return TIMER_BY_DIFFICULTY[diff] || 25;
-  }, [settings.timerMode]);
+  }, [settings.timerMode, settings.mode]);
 
   const startQuiz = useCallback(async () => {
     setQuizState(prev => ({ ...prev, isLaunching: true }));
@@ -43,7 +43,7 @@ export const useQuiz = (settings) => {
       }
 
       const shuffled = [...fetchedQuestions].sort(() => Math.random() - 0.5);
-      const finalQuestions = settings.mode === 'marathon' ? shuffled : shuffled.slice(0, 5);
+      const finalQuestions = settings.mode === 'full' ? shuffled : shuffled.slice(0, 5);
 
       if (finalQuestions.length === 0) {
         setQuizState(prev => ({ ...prev, isLaunching: false }));

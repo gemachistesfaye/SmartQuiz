@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../hooks/useQuiz';
 import { Brain, Timer, Zap, Trophy, ArrowLeft, Check, X, ChevronRight, RotateCcw, BarChart3, AlertTriangle, Target, Globe, Palette, Atom, Shield, Clock, Unlock, Rocket, Code, Server, FileText, Folder, Database, Cloud, Cpu, Braces, Binary } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 
 function ExitConfirm({ isOpen, onStay, onExit }) {
@@ -64,24 +64,24 @@ const DIFF_META = [
 
 const MODE_META = [
   { value: 'daily', label: 'Daily Challenge', desc: '5 questions, timed', icon: <Clock size={20} className="text-primary" /> },
-  { value: 'free', label: 'Free Practice', desc: 'Choose your count, no timer', icon: <Unlock size={20} className="text-green-400" /> },
+  { value: 'full', label: 'Full Quiz', desc: 'All 125 questions, no timer', icon: <Trophy size={20} className="text-yellow-400" /> },
 ];
 
 function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
   return (
-    <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 md:py-8">
+    <div className="px-4 md:px-6 py-2 md:py-4">
       {/* Hero */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 md:mb-10">
-        <div className="relative inline-block mb-3 md:mb-5">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-4 md:mb-8">
+        <div className="relative inline-block mb-2 md:mb-4">
           <div className="absolute inset-0 bg-primary/30 rounded-3xl blur-2xl animate-pulse" />
-          <div className="relative bg-gradient-to-br from-primary/30 to-primary/10 w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center border border-primary/30">
-            <Brain className="text-primary" size={32} />
+          <div className="relative bg-gradient-to-br from-primary/30 to-primary/10 w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center border border-primary/30">
+            <Brain className="text-primary" size={28} />
           </div>
         </div>
-        <h1 className="text-2xl md:text-4xl font-bold text-white mb-2">
-          {settings.category !== 'all' ? `${settings.category} Quiz` : 'JS Mastery Quiz'}
+        <h1 className="text-xl md:text-3xl font-bold text-white mb-1">
+          {settings.category !== 'all' ? `${settings.category} Quiz` : 'SmartQuiz'}
         </h1>
-        <p className="text-gray-400 text-sm md:text-base">
+        <p className="text-gray-400 text-xs md:text-sm">
           Test your knowledge. Choose your settings and aim for a perfect streak!
         </p>
         <div className="flex items-center justify-center gap-3 md:gap-4 mt-3 text-[10px] md:text-xs text-gray-500">
@@ -96,21 +96,20 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
       {/* Category Tiles */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-5 md:mb-8">
         <p className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Category</p>
-        {/* Mobile: compact 3-col grid with smaller cards */}
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5 md:gap-2.5">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-1.5 md:gap-2.5">
           {CATEGORY_META.map(cat => (
             <button
               key={cat.value}
               onClick={() => setSettings({...settings, category: cat.value})}
-              className={`relative p-2 md:p-4 rounded-xl md:rounded-2xl border text-left transition-all bg-gradient-to-br ${cat.color} ${
+              className={`relative p-2 md:p-3 rounded-xl md:rounded-2xl border text-left transition-all bg-gradient-to-br ${cat.color} ${
                 settings.category === cat.value
                   ? 'ring-2 ring-primary shadow-lg shadow-primary/10 scale-[1.02]'
                   : 'hover:scale-[1.01] opacity-70 hover:opacity-100'
               }`}
             >
               <div className="mb-1 hidden md:block">{cat.icon}</div>
-              <p className="text-[10px] md:text-sm font-bold text-white truncate">{cat.label}</p>
-              <p className="text-[8px] md:text-[10px] text-gray-400 mt-0.5">{cat.count} Q</p>
+              <p className="text-[10px] md:text-xs font-bold text-white truncate">{cat.label}</p>
+              <p className="text-[8px] md:text-[9px] text-gray-400 mt-0.5">{cat.count} Q</p>
               {settings.category === cat.value && (
                 <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary" />
               )}
@@ -142,11 +141,11 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
       {/* Mode Cards */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-6 md:mb-8">
         <p className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Mode</p>
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-2 md:gap-3">
+        <div className="grid grid-cols-2 gap-2 md:gap-3">
           {MODE_META.map(m => (
             <button
               key={m.value}
-              onClick={() => setSettings({...settings, mode: m.value})}
+              onClick={() => setSettings({...settings, mode: m.value, timerMode: m.value === 'daily'})}
               className={`p-3 md:p-4 rounded-xl md:rounded-2xl border text-left transition-all ${
                 settings.mode === m.value
                   ? 'bg-primary/10 border-primary/30 ring-2 ring-primary shadow-lg shadow-primary/10'
@@ -524,12 +523,21 @@ function ResultsScreen({ quiz, onRestart }) {
 }
 
 export default function QuizPage() {
+  const [searchParams] = useSearchParams();
+  const urlCategory = searchParams.get('category') || 'all';
+
   const [settings, setSettings] = useState({
     difficulty: 'all',
-    category: 'all',
+    category: urlCategory,
     timerMode: true,
     mode: 'daily'
   });
+
+  useEffect(() => {
+    if (urlCategory !== 'all') {
+      setSettings(prev => ({ ...prev, category: urlCategory }));
+    }
+  }, [urlCategory]);
 
   const quiz = useQuiz(settings);
 
