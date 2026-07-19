@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { 
   LayoutDashboard, BookOpen, Zap, Code, Sparkles, BarChart3, 
-  Trophy, Settings, LogOut, X, Brain, Shield, ChevronRight, AlertTriangle
+  Trophy, LogOut, X, Brain, Shield, ChevronRight, AlertTriangle
 } from 'lucide-react';
 
 const studentLinks = [
@@ -128,19 +128,6 @@ function SidebarContent({ links, location, logout, onClose, showClose }) {
       </nav>
 
       <div className="p-3 border-t border-white/5">
-        <Link
-          to="/settings"
-          onClick={onClose}
-          className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-            location.pathname === '/settings'
-              ? 'bg-primary/15 text-primary'
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          <Settings size={18} />
-          <span className="flex-1">Settings</span>
-          {location.pathname === '/settings' && <ChevronRight size={16} className="text-primary" />}
-        </Link>
         <button
           onClick={() => setShowLogoutConfirm(true)}
           className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"

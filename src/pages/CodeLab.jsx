@@ -191,29 +191,19 @@ function ChallengeSettings({ settings, setSettings, onStart, isLaunching }) {
         </div>
       </motion.div>
 
-      {/* Category Tiles */}
+      {/* Category Dropdown */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-5 md:mb-8">
         <p className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Category</p>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+        <select
+          value={settings.category}
+          onChange={(e) => setSettings({...settings, category: e.target.value})}
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-primary/50 appearance-none cursor-pointer min-h-[48px]"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+        >
           {CODE_CAT_META.map(cat => (
-            <button
-              key={cat.value}
-              onClick={() => setSettings({...settings, category: cat.value})}
-              className={`relative p-3 md:p-4 rounded-xl md:rounded-2xl border text-left transition-all bg-gradient-to-br ${cat.color} ${
-                settings.category === cat.value
-                  ? 'ring-2 ring-primary shadow-lg shadow-primary/10 scale-[1.02]'
-                  : 'hover:scale-[1.01] opacity-70 hover:opacity-100'
-              }`}
-            >
-              <div className="mb-1.5">{cat.icon}</div>
-              <p className="text-xs md:text-sm font-bold text-white">{cat.label}</p>
-              <p className="text-[9px] md:text-[10px] text-gray-400 mt-0.5">{cat.count} snippets</p>
-              {settings.category === cat.value && (
-                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
-              )}
-            </button>
+            <option key={cat.value} value={cat.value}>{cat.label} ({cat.count})</option>
           ))}
-        </div>
+        </select>
       </motion.div>
 
       {/* Difficulty Pills */}
@@ -264,18 +254,18 @@ function ChallengeSettings({ settings, setSettings, onStart, isLaunching }) {
         transition={{ delay: 0.4 }}
         onClick={onStart}
         disabled={isLaunching}
-        className="w-full relative group bg-gradient-to-r from-primary to-primary/80 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg md:text-xl hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 overflow-hidden"
+        className="w-full md:w-auto md:min-w-[280px] mx-auto relative group bg-gradient-to-r from-primary to-primary/80 text-white py-3 md:py-5 rounded-xl md:rounded-2xl font-bold text-sm md:text-xl hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 md:gap-3 overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-        <span className="relative flex items-center gap-3">
+        <span className="relative flex items-center gap-2 md:gap-3">
           {isLaunching ? (
             <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               Loading...
             </>
           ) : (
             <>
-              <Play size={20} className="fill-current" /> Start Challenge
+              <span className="hidden md:inline"><Play size={20} className="fill-current" /></span> Start Challenge
             </>
           )}
         </span>
@@ -662,18 +652,18 @@ export default function CodeLab() {
         {mode === 'sandbox' && (
           <>
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex flex-wrap gap-2">
+              <select
+                value={sandboxCategory}
+                onChange={(e) => setSandboxCategory(e.target.value)}
+                className="flex-1 md:flex-none bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-primary/50 appearance-none cursor-pointer min-h-[44px]"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+              >
                 {CATEGORIES.map(c => {
                   const count = c === 'All' ? SNIPPETS.length : (snippetCounts[c] || 0);
-                  return (
-                    <button key={c} onClick={() => setSandboxCategory(c)}
-                      className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${sandboxCategory === c ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'}`}>
-                      {c} ({count})
-                    </button>
-                  );
+                  return <option key={c} value={c}>{c} ({count})</option>;
                 })}
-              </div>
-              <button onClick={sandboxRun} className="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 min-h-[44px] rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
+              </select>
+              <button onClick={sandboxRun} className="bg-primary hover:bg-primary/90 text-white px-4 md:px-6 py-2.5 min-h-[44px] rounded-xl font-bold transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
                 <Play size={16} className="fill-current" /> Run
               </button>
             </div>

@@ -96,22 +96,23 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
       {/* Category Tiles */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-5 md:mb-8">
         <p className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Category</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-2.5">
+        {/* Mobile: compact 3-col grid with smaller cards */}
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1.5 md:gap-2.5">
           {CATEGORY_META.map(cat => (
             <button
               key={cat.value}
               onClick={() => setSettings({...settings, category: cat.value})}
-              className={`relative p-3 md:p-4 rounded-xl md:rounded-2xl border text-left transition-all bg-gradient-to-br ${cat.color} ${
+              className={`relative p-2 md:p-4 rounded-xl md:rounded-2xl border text-left transition-all bg-gradient-to-br ${cat.color} ${
                 settings.category === cat.value
                   ? 'ring-2 ring-primary shadow-lg shadow-primary/10 scale-[1.02]'
                   : 'hover:scale-[1.01] opacity-70 hover:opacity-100'
               }`}
             >
-              <div className="mb-1.5">{cat.icon}</div>
-              <p className="text-xs md:text-sm font-bold text-white">{cat.label}</p>
-              <p className="text-[9px] md:text-[10px] text-gray-400 mt-0.5">{cat.count} questions</p>
+              <div className="mb-1 hidden md:block">{cat.icon}</div>
+              <p className="text-[10px] md:text-sm font-bold text-white truncate">{cat.label}</p>
+              <p className="text-[8px] md:text-[10px] text-gray-400 mt-0.5">{cat.count} Q</p>
               {settings.category === cat.value && (
-                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary" />
+                <div className="absolute top-1.5 right-1.5 md:top-2 md:right-2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary" />
               )}
             </button>
           ))}
@@ -141,22 +142,22 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
       {/* Mode Cards */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-6 md:mb-8">
         <p className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Mode</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-2 md:gap-3">
           {MODE_META.map(m => (
             <button
               key={m.value}
               onClick={() => setSettings({...settings, mode: m.value})}
-              className={`p-4 rounded-xl md:rounded-2xl border text-left transition-all ${
+              className={`p-3 md:p-4 rounded-xl md:rounded-2xl border text-left transition-all ${
                 settings.mode === m.value
                   ? 'bg-primary/10 border-primary/30 ring-2 ring-primary shadow-lg shadow-primary/10'
                   : 'bg-white/5 border-white/10 hover:bg-white/10'
               }`}
             >
-              <div className="flex items-center gap-2.5 mb-0.5">
-                {m.icon}
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="hidden md:inline">{m.icon}</span>
                 <span className="text-xs md:text-sm font-bold text-white">{m.label}</span>
               </div>
-              <p className="text-[10px] md:text-[11px] text-gray-400 ml-8">{m.desc}</p>
+              <p className="text-[9px] md:text-[11px] text-gray-400 md:ml-8">{m.desc}</p>
             </button>
           ))}
         </div>
@@ -169,18 +170,18 @@ function SettingsScreen({ settings, setSettings, startQuiz, isLaunching }) {
         transition={{ delay: 0.4 }}
         onClick={startQuiz}
         disabled={isLaunching}
-        className="w-full relative group bg-gradient-to-r from-primary to-primary/80 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-lg md:text-xl hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 overflow-hidden"
+        className="w-full md:w-auto md:min-w-[280px] mx-auto relative group bg-gradient-to-r from-primary to-primary/80 text-white py-3 md:py-5 rounded-xl md:rounded-2xl font-bold text-sm md:text-xl hover:shadow-xl hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 md:gap-3 overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-        <span className="relative flex items-center gap-3">
+        <span className="relative flex items-center gap-2 md:gap-3">
           {isLaunching ? (
             <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Loading Questions...
+              <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Loading...
             </>
           ) : (
             <>
-              <Rocket size={20} /> Launch Quiz
+              <span className="hidden md:inline"><Rocket size={20} /></span> Launch Quiz
             </>
           )}
         </span>
