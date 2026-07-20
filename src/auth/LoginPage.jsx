@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  const { login, loginWithGoogle, userData } = useAuth();
+  const { login, loginWithGoogle, userData, logout } = useAuth();
   const navigate = useNavigate();
 
   // If already logged in and we have user data, redirect immediately
@@ -37,7 +37,15 @@ export default function LoginPage() {
     }
     try {
       setLoading(true);
-      const { userDoc } = await login(formData.email, formData.password);
+      const { user: loggedInUser, userDoc } = await login(formData.email, formData.password);
+      
+      if (!loggedInUser.emailVerified) {
+        toast.error("Please verify your email first. Check your inbox.");
+        await logout();
+        setLoading(false);
+        return;
+      }
+      
       toast.success("Welcome back!");
       
       const dest = userDoc.role === 'admin' ? "/admin/dashboard" : "/dashboard";
