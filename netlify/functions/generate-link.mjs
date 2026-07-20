@@ -1,11 +1,9 @@
-const adminModule = require("firebase-admin");
-const admin = adminModule.default || adminModule;
+import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { generateEmailVerificationLink, generatePasswordResetLink } from "firebase-admin/auth";
 
-// Initialize Firebase Admin
-const apps = admin.apps || [];
-if (!apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
+if (!getApps().length) {
+  initializeApp({
+    credential: cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
@@ -13,15 +11,13 @@ if (!apps.length) {
   });
 }
 
-exports.handler = async (event) => {
-  // CORS headers
+export default async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
 
-  // Handle preflight
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers, body: "" };
   }
@@ -40,11 +36,11 @@ exports.handler = async (event) => {
     let link;
 
     if (type === "verifyEmail") {
-      link = await admin.auth().generateEmailVerificationLink(email, {
+      link = await generateEmailVerificationLink(email, {
         url: "https://smartquiz-app-59260.web.app",
       });
     } else if (type === "resetPassword") {
-      link = await admin.auth().generatePasswordResetLink(email, {
+      link = await generatePasswordResetLink(email, {
         url: "https://smartquiz-app-59260.web.app",
       });
     } else {
