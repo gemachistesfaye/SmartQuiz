@@ -1,9 +1,9 @@
-import { initializeApp, cert, getApps } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
+const admin = require("firebase-admin");
 
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
+// Initialize Firebase Admin
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
@@ -11,7 +11,7 @@ if (!getApps().length) {
   });
 }
 
-export default async (event) => {
+exports.handler = async (event) => {
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
@@ -33,15 +33,14 @@ export default async (event) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Email and type are required" }) };
     }
 
-    const auth = getAuth();
     let link;
 
     if (type === "verifyEmail") {
-      link = await auth.generateEmailVerificationLink(email, {
+      link = await admin.auth().generateEmailVerificationLink(email, {
         url: "https://smartquiz-app-59260.web.app",
       });
     } else if (type === "resetPassword") {
-      link = await auth.generatePasswordResetLink(email, {
+      link = await admin.auth().generatePasswordResetLink(email, {
         url: "https://smartquiz-app-59260.web.app",
       });
     } else {

@@ -5,3 +5,4 @@
 [functions]
   node_bundler = "esbuild"
   included_files = []
+  external_node_modules = ["firebase-admin"]
