@@ -1,5 +1,5 @@
 import { initializeApp, cert, getApps } from "firebase-admin/app";
-import { generateEmailVerificationLink, generatePasswordResetLink } from "firebase-admin/auth";
+import { getAuth } from "firebase-admin/auth";
 
 if (!getApps().length) {
   initializeApp({
@@ -33,14 +33,15 @@ export default async (event) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Email and type are required" }) };
     }
 
+    const auth = getAuth();
     let link;
 
     if (type === "verifyEmail") {
-      link = await generateEmailVerificationLink(email, {
+      link = await auth.generateEmailVerificationLink(email, {
         url: "https://smartquiz-app-59260.web.app",
       });
     } else if (type === "resetPassword") {
-      link = await generatePasswordResetLink(email, {
+      link = await auth.generatePasswordResetLink(email, {
         url: "https://smartquiz-app-59260.web.app",
       });
     } else {
