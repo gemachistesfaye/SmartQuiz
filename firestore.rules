@@ -1,0 +1,122 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if the requester is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: Get the caller's user document role
+    function getCallerRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    // Helper: Check if the caller is an admin
+    function isAdmin() {
+      return isAuthenticated() && getCallerRole() == 'admin';
+    }
+
+    // Helper: Check if the caller owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper: Validate user document fields on write
+    function isValidUserDoc() {
+      let input = request.resource.data;
+      return input.keys().hasAll(['uid', 'fullName', 'username', 'email', 'role', 'createdAt', 'xp', 'streak', 'achievements'])
+        && input.role in ['student', 'admin']
+        && input.xp is number
+        && input.streak is number
+        && input.achievements is list
+        && input.fullName is string
+        && input.username is string
+        && input.email is string;
+    }
+
+    // Helper: Validate question document fields on write
+    function isValidQuestion() {
+      let input = request.resource.data;
+      return input.keys().hasAll(['question', 'options', 'correct', 'difficulty', 'category'])
+        && input.options is list
+        && input.options.size() == 4
+        && input.correct is number
+        && input.correct >= 0
+        && input.correct <= 3
+        && input.difficulty in ['easy', 'medium', 'hard']
+        && input.question is string
+        && input.question.size() > 0;
+    }
+
+    // ==================== USERS ====================
+    match /users/{userId} {
+      // Any authenticated user can read any user profile (for leaderboard, etc.)
+      allow read: if isAuthenticated();
+
+      // Users can create their own profile on registration
+      // Admins can create any profile
+      allow create: if isOwner(userId) || isAdmin();
+
+      // Users can update their own profile
+      // Admins can update any profile
+      // Fields are validated on write
+      allow update: if (isOwner(userId) || isAdmin())
+        && request.resource.data.diff(old.data, 
+          {'role': old.data.role, 'uid': old.data.uid, 'email': old.data.email}
+        ).hasOnly([]);
+
+      // Only admins can delete users
+      allow delete: if isAdmin();
+
+      // ==================== QUIZ HISTORY (subcollection) ====================
+      match /quizHistory/{attemptId} {
+        // Users can read their own quiz history
+        // Admins can read any user's quiz history
+        allow read: if isOwner(userId) || isAdmin();
+
+        // Users can create quiz history entries for themselves
+        // (Cloud Functions should validate and write, but client can write for now)
+        allow create: if isOwner(userId)
+          && request.resource.data.keys().hasAll(['score', 'total', 'xp', 'streak', 'percentage', 'category', 'createdAt'])
+          && request.resource.data.score is number
+          && request.resource.data.total is number
+          && request.resource.data.xp is number
+          && request.resource.data.percentage is number;
+
+        // No updates or deletes on quiz history (immutable log)
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+
+      // ==================== BOOKMARKS (subcollection) ====================
+      match /bookmarks/{bookmarkId} {
+        // Users can read their own bookmarks
+        allow read: if isOwner(userId);
+
+        // Users can create bookmarks for themselves
+        allow create: if isOwner(userId)
+          && request.resource.data.keys().hasAll(['type', 'title', 'createdAt'])
+          && request.resource.data.type is string
+          && request.resource.data.title is string;
+
+        // Users can delete their own bookmarks
+        allow delete: if isOwner(userId);
+
+        // No updates on bookmarks
+        allow update: if false;
+      }
+    }
+
+    // ==================== QUESTIONS ====================
+    match /questions/{questionId} {
+      // Any authenticated user can read questions
+      allow read: if isAuthenticated();
+
+      // Only admins can create, update, or delete questions
+      allow create: if isAdmin() && isValidQuestion();
+      allow update: if isAdmin() && isValidQuestion();
+      allow delete: if isAdmin();
+    }
+  }
+}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../services/firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { Settings as SettingsIcon, Bell, Moon, Shield, Save, RotateCcw } from 'lucide-react';
@@ -39,38 +39,57 @@ export default function Settings() {
   const { currentUser, resetPassword } = useAuth();
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [lastSavedSettings, setLastSavedSettings] = useState(DEFAULT_SETTINGS);
 
   useEffect(() => {
     if (!currentUser) return;
-    const fetchSettings = async () => {
-      try {
-        const docSnap = await getDoc(doc(db, "users", currentUser.uid));
+
+    // Use real-time listener for settings to prevent race conditions
+    const unsubscribe = onSnapshot(
+      doc(db, 'users', currentUser.uid),
+      (docSnap) => {
         if (docSnap.exists() && docSnap.data().settings) {
           const s = docSnap.data().settings;
-          setSettings({
+          const loadedSettings = {
             notifications: s.notifications ?? DEFAULT_SETTINGS.notifications,
             emailUpdates: s.emailUpdates ?? DEFAULT_SETTINGS.emailUpdates,
             darkMode: s.darkMode ?? DEFAULT_SETTINGS.darkMode,
             soundEffects: s.soundEffects ?? DEFAULT_SETTINGS.soundEffects,
             difficulty: s.difficulty ?? DEFAULT_SETTINGS.difficulty,
-          });
+          };
+          setSettings(loadedSettings);
+          setLastSavedSettings(loadedSettings);
         }
-      } catch (err) {
-        console.error("Failed to load settings:", err);
+      },
+      (error) => {
+        console.error('Settings listener error:', error);
       }
-    };
-    fetchSettings();
+    );
+
+    return () => unsubscribe();
   }, [currentUser]);
 
   const handleSave = async () => {
     if (!currentUser) return;
+
+    // Check if settings actually changed
+    const hasChanges = JSON.stringify(settings) !== JSON.stringify(lastSavedSettings);
+    if (!hasChanges) {
+      toast.info('No changes to save');
+      return;
+    }
+
     try {
       setLoading(true);
-      await updateDoc(doc(db, "users", currentUser.uid), { settings });
-      toast.success("Settings saved!");
+      // Use merge: true to prevent overwriting other user fields
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        settings: { ...settings }
+      });
+      setLastSavedSettings(settings);
+      toast.success('Settings saved!');
     } catch (err) {
-      console.error("Save error:", err);
-      toast.error("Failed to save settings");
+      console.error('Save error:', err);
+      toast.error('Failed to save settings');
     } finally {
       setLoading(false);
     }
@@ -80,12 +99,14 @@ export default function Settings() {
     if (!currentUser?.email) return;
     try {
       await resetPassword(currentUser.email);
-      toast.success("Password reset email sent!");
+      toast.success('Password reset email sent!');
     } catch (err) {
-      console.error("Reset error:", err);
-      toast.error("Failed to send reset email");
+      console.error('Reset error:', err);
+      toast.error('Failed to send reset email');
     }
   };
+
+  const hasChanges = JSON.stringify(settings) !== JSON.stringify(lastSavedSettings);
 
   return (
     <DashboardLayout>
@@ -155,7 +176,11 @@ export default function Settings() {
                   <p className="text-sm font-bold text-white">Email</p>
                   <p className="text-[10px] text-gray-500">{currentUser?.email}</p>
                 </div>
-                <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-lg">Verified</span>
+                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${
+                  currentUser?.emailVerified ? 'text-green-400 bg-green-500/10' : 'text-yellow-400 bg-yellow-500/10'
+                }`}>
+                  {currentUser?.emailVerified ? 'Verified' : 'Unverified'}
+                </span>
               </div>
               <button onClick={handleResetPassword} className="w-full p-4 rounded-xl bg-white/5 border border-white/5 text-left hover:bg-white/10 transition-all">
                 <p className="text-sm font-bold text-white">Change Password</p>
@@ -167,11 +192,15 @@ export default function Settings() {
           {/* Save */}
           <button
             onClick={handleSave}
-            disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-bold transition-all shadow-xl shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            disabled={loading || !hasChanges}
+            className={`w-full py-4 rounded-2xl font-bold transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-50 ${
+              hasChanges
+                ? 'bg-primary hover:bg-primary/90 text-white shadow-primary/20'
+                : 'bg-white/5 text-gray-500 cursor-not-allowed'
+            }`}
           >
             <Save size={18} />
-            {loading ? 'Saving...' : 'Save Settings'}
+            {loading ? 'Saving...' : hasChanges ? 'Save Settings' : 'No Changes'}
           </button>
         </div>
       </div>

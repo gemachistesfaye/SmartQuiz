@@ -1,52 +1,17 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../services/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { useUserStats } from '../hooks/useFirestore';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Target, TrendingUp, Award, Zap, Clock, Brain } from 'lucide-react';
 
 export default function Analytics() {
-  const { userData, currentUser } = useAuth();
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { userData } = useAuth();
+  const { stats, loading } = useUserStats();
 
-  useEffect(() => {
-    if (!currentUser) return;
-    const q = query(
-      collection(db, "users", currentUser.uid, "quizHistory"),
-      orderBy("createdAt", "desc"),
-      limit(50)
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(d => d.data());
-      setHistory(data);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, [currentUser]);
-
-  const totalQuizzes = history.length;
-  const avgScore = totalQuizzes > 0
-    ? Math.round(history.reduce((s, h) => s + (h.percentage || 0), 0) / totalQuizzes)
-    : 0;
-  const bestStreak = userData?.streak || 0;
-  const totalXP = userData?.xp || 0;
-
-  const chartData = [...history].reverse().slice(-14).map((h, i) => ({
-    name: `Quiz ${i + 1}`,
-    score: h.percentage || 0,
-    xp: h.xp || 0,
-  }));
-
-  const categoryBreakdown = history.reduce((acc, h) => {
-    const cat = h.category || 'General';
-    if (!acc[cat]) acc[cat] = { total: 0, correct: 0 };
-    acc[cat].total += h.total || 0;
-    acc[cat].correct += h.score || 0;
-    return acc;
-  }, {});
+  const chartData = stats.chartData;
+  const categoryBreakdown = stats.categoryBreakdown;
+  const recentQuizzes = stats.recentQuizzes;
 
   return (
     <DashboardLayout>
@@ -63,10 +28,10 @@ export default function Analytics() {
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
-            { label: 'Total XP', value: totalXP.toLocaleString(), icon: <Zap className="text-yellow-400" />, bg: 'bg-yellow-400/10' },
-            { label: 'Avg. Score', value: totalQuizzes > 0 ? `${avgScore}%` : '—', icon: <Target className="text-blue-400" />, bg: 'bg-blue-400/10' },
-            { label: 'Quizzes Taken', value: totalQuizzes, icon: <Award className="text-purple-400" />, bg: 'bg-purple-400/10' },
-            { label: 'Best Streak', value: `${bestStreak} days`, icon: <TrendingUp className="text-green-400" />, bg: 'bg-green-400/10' },
+            { label: 'Total XP', value: (userData?.xp || 0).toLocaleString(), icon: <Zap className="text-yellow-400" />, bg: 'bg-yellow-400/10' },
+            { label: 'Avg. Score', value: stats.totalQuizzes > 0 ? `${stats.avgScore}%` : '—', icon: <Target className="text-blue-400" />, bg: 'bg-blue-400/10' },
+            { label: 'Quizzes Taken', value: stats.totalQuizzes, icon: <Award className="text-purple-400" />, bg: 'bg-purple-400/10' },
+            { label: 'Best Streak', value: `${userData?.streak || 0} days`, icon: <TrendingUp className="text-green-400" />, bg: 'bg-green-400/10' },
           ].map((stat, i) => (
             <motion.div
               key={i}
@@ -154,7 +119,7 @@ export default function Analytics() {
         )}
 
         {/* Recent quiz history */}
-        {history.length > 0 && (
+        {recentQuizzes.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -164,7 +129,7 @@ export default function Analytics() {
               <Clock size={20} className="text-primary" /> Recent Quizzes
             </h3>
             <div className="space-y-2 md:space-y-3">
-              {history.slice(0, 5).map((h, i) => (
+              {recentQuizzes.map((h, i) => (
                 <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
                   <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${(h.percentage || 0) >= 80 ? 'bg-green-400' : (h.percentage || 0) >= 50 ? 'bg-yellow-400' : 'bg-red-400'}`} />

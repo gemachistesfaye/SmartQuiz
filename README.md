@@ -59,6 +59,7 @@ Here is a preview of the SmartQuiz interface:
 | :--- | :--- |
 | **Frontend** | React 19, Vite, Tailwind CSS |
 | **Backend/Auth** | Firebase (Auth, Firestore) |
+| **Email Service** | EmailJS (Custom branded emails) |
 | **Animations** | Framer Motion |
 | **AI Engine** | OpenAI API (`gpt-4o-mini`) & Google Gemini |
 | **Icons** | Lucide React |
@@ -71,6 +72,7 @@ Here is a preview of the SmartQuiz interface:
 ### Prerequisites
 *   Node.js (v18+)
 *   Firebase Project
+*   EmailJS Account (free)
 *   Google AI Studio API Key (Optional for AI)
 
 ### Installation
@@ -83,10 +85,20 @@ Here is a preview of the SmartQuiz interface:
     ```bash
     npm install
     ```
-3.  **Setup Firebase**:
-    *   Create a `.env` file (or update `src/services/firebase.js`).
-    *   Add your Firebase configuration.
-4.  **Run locally**:
+3.  **Setup EmailJS**:
+    *   Create free account at https://www.emailjs.com/
+    *   Create an Email Service (Gmail, Outlook, etc.)
+    *   Create 2 Email Templates (Verification & Password Reset)
+    *   Add your keys to `.env`:
+        ```
+        VITE_EMAILJS_PUBLIC_KEY=your_public_key
+        VITE_EMAILJS_SERVICE_ID=your_service_id
+        VITE_EMAILJS_TEMPLATE_VERIFICATION=your_template_id
+        VITE_EMAILJS_TEMPLATE_PASSWORD_RESET=your_template_id
+        ```
+4.  **Setup Firebase**:
+    *   Update `src/services/firebase.js` with your Firebase config.
+5.  **Run locally**:
     ```bash
     npm run dev
     ```

@@ -1,46 +1,17 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Target, Zap, Clock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { db } from '../../services/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { useUserStats } from '../../hooks/useFirestore';
 
 export default function StatCards() {
-  const { userData, currentUser } = useAuth();
-  const [stats, setStats] = useState({
-    avgScore: 0,
-    totalTime: 0,
-    quizzesTaken: 0,
-  });
-
-  useEffect(() => {
-    if (!currentUser) return;
-    const q = query(
-      collection(db, "users", currentUser.uid, "quizHistory"),
-      orderBy("createdAt", "desc"),
-      limit(50)
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const history = snapshot.docs.map(d => d.data());
-      if (history.length === 0) {
-        setStats({ avgScore: 0, totalTime: 0, quizzesTaken: 0 });
-        return;
-      }
-      const avgScore = Math.round(history.reduce((sum, h) => sum + (h.percentage || 0), 0) / history.length);
-      setStats({
-        avgScore,
-        totalTime: history.length,
-        quizzesTaken: history.length,
-      });
-    });
-    return () => unsubscribe();
-  }, [currentUser]);
+  const { userData } = useAuth();
+  const { stats } = useUserStats();
 
   const displayStats = [
     { label: 'Total XP', value: (userData?.xp || 0).toLocaleString(), icon: <Trophy />, color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
-    { label: 'Avg. Quiz Score', value: stats.quizzesTaken > 0 ? `${stats.avgScore}%` : '—', icon: <Target />, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+    { label: 'Avg. Quiz Score', value: stats.totalQuizzes > 0 ? `${stats.avgScore}%` : '—', icon: <Target />, color: 'text-blue-400', bg: 'bg-blue-400/10' },
     { label: 'Current Streak', value: `${userData?.streak || 0} Days`, icon: <Zap />, color: 'text-orange-400', bg: 'bg-orange-400/10' },
-    { label: 'Quizzes Taken', value: stats.quizzesTaken || '0', icon: <Clock />, color: 'text-green-400', bg: 'bg-green-400/10' },
+    { label: 'Quizzes Taken', value: stats.totalQuizzes || '0', icon: <Clock />, color: 'text-green-400', bg: 'bg-green-400/10' },
   ];
 
   return (

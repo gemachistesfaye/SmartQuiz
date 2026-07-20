@@ -10,16 +10,23 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "users"), orderBy("xp", "desc"), limit(20));
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const users = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setTopUsers(users);
-      setLoading(false);
-    });
+    const q = query(collection(db, 'users'), orderBy('xp', 'desc'), limit(20));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const users = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTopUsers(users);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Leaderboard error:', error);
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
@@ -41,7 +48,7 @@ export default function Leaderboard() {
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto pb-24 px-4 md:px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6 md:mb-10"
@@ -81,15 +88,15 @@ export default function Leaderboard() {
                       }`}>
                         {getMedal(rank)}
                       </div>
-                      <img 
-                        src={`https://ui-avatars.com/api/?name=${user.fullName}&background=random&size=48`}
+                      <img
+                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName || 'User')}&background=random&size=48`}
                         alt={user.fullName}
                         className={`w-10 h-10 md:w-14 md:h-14 rounded-full mx-auto mb-2 border-2 ${
                           isTop ? 'border-yellow-500/30' : 'border-white/10'
                         }`}
                       />
                       <p className="text-xs md:text-sm font-bold text-white truncate">{user.fullName}</p>
-                      <p className="text-[10px] md:text-xs font-bold text-primary mt-1">⭐ {user.xp || 0} XP</p>
+                      <p className="text-[10px] md:text-xs font-bold text-primary mt-1">{user.xp || 0} XP</p>
                     </motion.div>
                   );
                 })}
@@ -109,9 +116,9 @@ export default function Leaderboard() {
                   <div className="w-8 text-center font-bold text-gray-500">
                     #{index + 4}
                   </div>
-                  
-                  <img 
-                    src={`https://ui-avatars.com/api/?name=${user.fullName}&background=random&size=40`}
+
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName || 'User')}&background=random&size=40`}
                     alt={user.fullName}
                     className="w-9 h-9 rounded-lg border border-white/10"
                   />

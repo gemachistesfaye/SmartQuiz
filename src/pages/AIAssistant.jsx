@@ -4,8 +4,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { Send, Sparkles, Brain, Lightbulb, User, Bot, Loader2, Settings, Target, Trophy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../services/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { useQuizHistory } from '../hooks/useFirestore';
 
 const TIPS = [
   "Use console.table() to visualize large arrays and objects more clearly.",
@@ -27,8 +26,8 @@ const TIPS = [
 
 
 export default function AIAssistant() {
-  const { currentUser } = useAuth();
-  const [quizHistory, setQuizHistory] = useState([]);
+  useAuth(); // Ensure auth context is available
+  const { history: quizHistory } = useQuizHistory(10);
   const [messages, setMessages] = useState([
     { role: 'bot', content: "Hello! I'm your SmartQuiz AI Tutor. I can help you with programming, HTML, CSS, math, science, history, and more. What would you like to learn about today?" }
   ]);
@@ -59,18 +58,7 @@ export default function AIAssistant() {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    if (!currentUser) return;
-    const q = query(
-      collection(db, "users", currentUser.uid, "quizHistory"),
-      orderBy("createdAt", "desc"),
-      limit(10)
-    );
-    const unsub = onSnapshot(q, (snap) => {
-      setQuizHistory(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
-    return () => unsub();
-  }, [currentUser]);
+  // Quiz history is now provided by the shared useQuizHistory hook
 
   const saveApiKey = (key) => {
     setApiKey(key);

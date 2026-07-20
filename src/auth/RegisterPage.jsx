@@ -19,24 +19,24 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: '', color: '' });
-  
-  const { register, loginWithGoogle } = useAuth();
+  const [usernameStatus, setUsernameStatus] = useState({ checking: false, valid: null, message: '' });
+
+  const { register, loginWithGoogle, checkUsernameUnique } = useAuth();
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
       const { userDoc } = await loginWithGoogle();
-      toast.success("Logged in with Google!");
-      const dest = userDoc.role === 'admin' ? "/admin/dashboard" : "/dashboard";
+      toast.success('Logged in with Google!');
+      const dest = userDoc.role === 'admin' ? '/admin/dashboard' : '/dashboard';
       navigate(dest, { replace: true });
     } catch (error) {
-      console.error("Google login error:", error);
+      console.error('Google login error:', error);
       if (error.code === 'auth/popup-closed-by-user') {
-        // User closed the popup intentionally — no error needed
         return;
       } else {
-        toast.error(error.message || "Google login failed");
+        toast.error(error.message || 'Google login failed');
       }
     } finally {
       setLoading(false);
@@ -56,21 +56,43 @@ export default function RegisterPage() {
     return { score, label: 'Strong', color: 'bg-green-500' };
   };
 
+  const validateUsername = async (username) => {
+    if (!username || username.length < 3) {
+      setUsernameStatus({ checking: false, valid: false, message: 'Username must be at least 3 characters' });
+      return false;
+    }
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      setUsernameStatus({ checking: false, valid: false, message: '3-20 chars, letters/numbers/underscores only' });
+      return false;
+    }
+
+    setUsernameStatus({ checking: true, valid: null, message: 'Checking availability...' });
+    const isUnique = await checkUsernameUnique(username);
+
+    if (isUnique) {
+      setUsernameStatus({ checking: false, valid: true, message: 'Username is available!' });
+      return true;
+    } else {
+      setUsernameStatus({ checking: false, valid: false, message: 'Username is already taken' });
+      return false;
+    }
+  };
+
   const validate = () => {
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error('Passwords do not match');
       return false;
     }
     if (formData.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error('Password must be at least 6 characters');
       return false;
     }
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(formData.username)) {
-      toast.error("Username must be 3-20 characters, letters/numbers/underscores only");
+    if (!usernameStatus.valid) {
+      toast.error('Please choose a valid, unique username');
       return false;
     }
     if (!formData.agree) {
-      toast.error("You must agree to the Terms & Conditions");
+      toast.error('You must agree to the Terms & Conditions');
       return false;
     }
     return true;
@@ -83,10 +105,15 @@ export default function RegisterPage() {
     try {
       setLoading(true);
       await register(formData.email, formData.password, formData.fullName, formData.username);
-      toast.success("Account created successfully!");
+      toast.success('Account created successfully! Check your email for verification.');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.message);
+      if (error.message === 'auth/username-already-taken') {
+        toast.error('Username is already taken');
+        setUsernameStatus({ checking: false, valid: false, message: 'Username is already taken' });
+      } else {
+        toast.error(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -98,7 +125,7 @@ export default function RegisterPage() {
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[120px] rounded-full" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 blur-[120px] rounded-full" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass-card max-w-md w-full p-6 relative z-10"
@@ -106,7 +133,7 @@ export default function RegisterPage() {
         <Link to="/" className="absolute top-6 left-6 text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
           <ArrowLeft size={16} /> Back to Home
         </Link>
-        
+
         <div className="text-center mb-5 mt-4">
           <div className="bg-primary/20 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3">
             <Brain className="text-primary" size={28} />
@@ -120,10 +147,10 @@ export default function RegisterPage() {
           <div className="relative">
             <label htmlFor="reg-fullname" className="sr-only">Full Name</label>
             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
+            <input
               id="reg-fullname"
-              type="text" 
-              placeholder="Full Name" 
+              type="text"
+              placeholder="Full Name"
               required
               className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
@@ -133,23 +160,39 @@ export default function RegisterPage() {
           <div className="relative">
             <label htmlFor="reg-username" className="sr-only">Username</label>
             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
+            <input
               id="reg-username"
-              type="text" 
-              placeholder="Username" 
+              type="text"
+              placeholder="Username"
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              value={formData.username}
+              className={`w-full bg-white/5 border rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all ${
+                usernameStatus.valid === false ? 'border-red-500/50' :
+                usernameStatus.valid === true ? 'border-green-500/50' : 'border-white/10'
+              }`}
+              onChange={(e) => {
+                setFormData({...formData, username: e.target.value});
+                setUsernameStatus({ checking: false, valid: null, message: '' });
+              }}
+              onBlur={() => validateUsername(formData.username)}
             />
+            {usernameStatus.message && (
+              <p className={`text-[11px] mt-1 ml-1 ${
+                usernameStatus.valid === true ? 'text-green-400' :
+                usernameStatus.valid === false ? 'text-red-400' : 'text-gray-400'
+              }`}>
+                {usernameStatus.checking ? '...' : ''} {usernameStatus.message}
+              </p>
+            )}
           </div>
 
           <div className="relative">
             <label htmlFor="reg-email" className="sr-only">Email Address</label>
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
+            <input
               id="reg-email"
-              type="email" 
-              placeholder="Email Address" 
+              type="email"
+              placeholder="Email Address"
               required
               autoFocus
               className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
@@ -160,10 +203,10 @@ export default function RegisterPage() {
           <div className="relative">
             <label htmlFor="reg-password" className="sr-only">Password</label>
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
+            <input
               id="reg-password"
-              type={showPassword ? "text" : "password"} 
-              placeholder="Password" 
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
               required
               className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               onChange={(e) => {
@@ -171,7 +214,7 @@ export default function RegisterPage() {
                 setPasswordStrength(checkPasswordStrength(e.target.value));
               }}
             />
-            <button 
+            <button
               type="button"
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
               onClick={() => setShowPassword(!showPassword)}
@@ -191,7 +234,7 @@ export default function RegisterPage() {
                 ))}
               </div>
               <p className={`text-xs font-medium ${
-                passwordStrength.score <= 1 ? 'text-red-400' : 
+                passwordStrength.score <= 1 ? 'text-red-400' :
                 passwordStrength.score <= 3 ? 'text-yellow-400' : 'text-green-400'
               }`}>
                 {passwordStrength.label}
@@ -202,10 +245,10 @@ export default function RegisterPage() {
           <div className="relative">
             <label htmlFor="reg-confirm" className="sr-only">Confirm Password</label>
             <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
+            <input
               id="reg-confirm"
-              type="password" 
-              placeholder="Confirm Password" 
+              type="password"
+              placeholder="Confirm Password"
               required
               className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
@@ -213,8 +256,8 @@ export default function RegisterPage() {
           </div>
 
           <div className="flex items-center gap-3 py-2">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="agree"
               className="w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/20"
               onChange={(e) => setFormData({...formData, agree: e.target.checked})}
@@ -224,8 +267,8 @@ export default function RegisterPage() {
             </label>
           </div>
 
-          <button 
-            disabled={loading}
+          <button
+            disabled={loading || usernameStatus.checking}
             className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "Create Account"}
@@ -241,7 +284,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="flex gap-4">
-          <button 
+          <button
             onClick={handleGoogleLogin}
             className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 min-h-[44px] whitespace-nowrap"
           >
@@ -253,8 +296,8 @@ export default function RegisterPage() {
             </svg>
             Google
           </button>
-          
-          <button 
+
+          <button
             type="button"
             onClick={() => setRegisterMode('phone')}
             className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 min-h-[44px] whitespace-nowrap"

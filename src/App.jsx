@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
@@ -20,28 +19,24 @@ import RegisterPage from './auth/RegisterPage';
 import ForgotPassword from './auth/ForgotPassword';
 import ProtectedRoute from './auth/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
-import { db } from './services/firebase';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import INITIAL_QUESTIONS from './data/questions';
 
 function App() {
-  React.useEffect(() => {
-    const seedQuestions = async () => {
-      const querySnapshot = await getDocs(collection(db, "questions"));
-      const existingTexts = new Set(querySnapshot.docs.map(doc => doc.data().question));
-      const missing = INITIAL_QUESTIONS.filter(q => !existingTexts.has(q.question));
-      for (const q of missing) {
-        await addDoc(collection(db, "questions"), q);
-      }
-    };
-    seedQuestions();
-  }, []);
-
   return (
     <AuthProvider>
-      {/* Toast notifications removed per user request */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -51,76 +46,21 @@ function App() {
         <Route path="/terms" element={<TermsAndConditions />} />
 
         {/* Student Routes */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/quiz" 
-          element={<ProtectedRoute><QuizPage /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/profile" 
-          element={<ProtectedRoute><Profile /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/leaderboard" 
-          element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/codelab" 
-          element={<ProtectedRoute><CodeLab /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/ai-assistant" 
-          element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/theory" 
-          element={<ProtectedRoute><TheoryVault /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/cybersecurity" 
-          element={<ProtectedRoute><Cybersecurity /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/analytics" 
-          element={<ProtectedRoute><Analytics /></ProtectedRoute>} 
-        />
-        <Route 
-          path="/settings" 
-          element={<ProtectedRoute><Settings /></ProtectedRoute>} 
-        />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/quiz" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+        <Route path="/codelab" element={<ProtectedRoute><CodeLab /></ProtectedRoute>} />
+        <Route path="/ai-assistant" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
+        <Route path="/theory" element={<ProtectedRoute><TheoryVault /></ProtectedRoute>} />
+        <Route path="/cybersecurity" element={<ProtectedRoute><Cybersecurity /></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
         {/* Admin Routes (Strictly Protected) */}
-        <Route 
-          path="/admin/dashboard" 
-          element={
-            <ProtectedRoute requireAdmin={true}>
-              <SuperAdminDashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/users" 
-          element={
-            <ProtectedRoute requireAdmin={true}>
-              <UserManagement />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/admin/questions" 
-          element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminPanel />
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin={true}><SuperAdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute requireAdmin={true}><UserManagement /></ProtectedRoute>} />
+        <Route path="/admin/questions" element={<ProtectedRoute requireAdmin={true}><AdminPanel /></ProtectedRoute>} />
 
         {/* Catch-all Redirect */}
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />

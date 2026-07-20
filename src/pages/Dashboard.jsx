@@ -1,30 +1,15 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../layouts/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../services/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { useQuizHistory } from '../hooks/useFirestore';
 import StatCards from '../components/dashboard/StatCards';
 import ProgressChart from '../components/dashboard/ProgressChart';
 import { Brain, Target, Zap, Trophy, BookOpen, Code } from 'lucide-react';
 
 export default function Dashboard() {
-  const { userData, currentUser } = useAuth();
-  const [recentQuizzes, setRecentQuizzes] = useState([]);
-
-  useEffect(() => {
-    if (!currentUser) return;
-    const q = query(
-      collection(db, "users", currentUser.uid, "quizHistory"),
-      orderBy("createdAt", "desc"),
-      limit(5)
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setRecentQuizzes(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
-    return () => unsubscribe();
-  }, [currentUser]);
+  const { userData } = useAuth();
+  const { history: recentQuizzes } = useQuizHistory(5);
 
   return (
     <DashboardLayout>
@@ -32,7 +17,7 @@ export default function Dashboard() {
         {/* Welcome */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-lg md:text-2xl font-bold text-white">
-            Welcome back, {userData?.fullName?.split(' ')[0] || 'Learner'} 👋
+            Welcome back, {userData?.fullName?.split(' ')[0] || 'Learner'}
           </h1>
           <p className="text-gray-400 text-xs md:text-sm mt-1">Pick up where you left off</p>
         </motion.div>
@@ -134,7 +119,7 @@ export default function Dashboard() {
               </div>
               <p className="text-[11px] md:text-xs text-gray-400">
                 {userData?.streak > 0 ? (
-                  <>🔥 <span className="text-white font-bold">{userData.streak}-day streak!</span> Keep going!</>
+                  <><span className="text-white font-bold">{userData.streak}-day streak!</span> Keep going!</>
                 ) : (
                   'Start a quiz to begin your streak'
                 )}

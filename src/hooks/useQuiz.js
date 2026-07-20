@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '../services/firebase';
-import { collection, getDocs, doc, updateDoc, increment, getDoc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, increment, getDoc, addDoc, serverTimestamp, query, where, limit } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 
 const XP_PER_CORRECT = 50;
@@ -32,14 +32,23 @@ export const useQuiz = (settings) => {
   const startQuiz = useCallback(async () => {
     setQuizState(prev => ({ ...prev, isLaunching: true }));
     try {
-      const querySnapshot = await getDocs(collection(db, "questions"));
-      let fetchedQuestions = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      let fetchedQuestions = [];
+
+      if (settings.category && settings.category !== 'all') {
+        // Query by category to reduce reads
+        const q = query(
+          collection(db, 'questions'),
+          where('category', '==', settings.category)
+        );
+        const querySnapshot = await getDocs(q);
+        fetchedQuestions = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      } else {
+        const querySnapshot = await getDocs(collection(db, 'questions'));
+        fetchedQuestions = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
 
       if (settings.difficulty !== 'all') {
         fetchedQuestions = fetchedQuestions.filter(q => q.difficulty === settings.difficulty);
-      }
-      if (settings.category && settings.category !== 'all') {
-        fetchedQuestions = fetchedQuestions.filter(q => q.category === settings.category);
       }
 
       const shuffled = [...fetchedQuestions].sort(() => Math.random() - 0.5);
@@ -53,8 +62,7 @@ export const useQuiz = (settings) => {
       const firstTimer = getTimerForDifficulty(finalQuestions[0]?.difficulty);
 
       setCurrentQuestions(finalQuestions);
-      setQuizState(prev => ({
-        ...prev,
+      setQuizState({
         currentQuestionIndex: 0,
         score: 0,
         xp: 0,
@@ -64,9 +72,9 @@ export const useQuiz = (settings) => {
         timeLeft: firstTimer,
         isActive: true,
         isLaunching: false,
-      }));
+      });
     } catch (error) {
-      console.error("Failed to fetch quiz questions:", error);
+      console.error('Failed to fetch quiz questions:', error);
       setQuizState(prev => ({ ...prev, isLaunching: false }));
     }
   }, [settings, getTimerForDifficulty]);
@@ -82,32 +90,50 @@ export const useQuiz = (settings) => {
       streak: finalStreak,
       isFinished: true,
       isActive: false,
-      results: finalResults
+      results: finalResults,
     }));
 
     if (currentUser) {
       try {
-        const userRef = doc(db, "users", currentUser.uid);
+        // Check for duplicate submission (same score+category within 5 seconds)
+        const recentQuery = query(
+          collection(db, 'users', currentUser.uid, 'quizHistory'),
+          where('category', '==', currentQuestions[0]?.category || 'General'),
+          where('score', '==', finalScore),
+          limit(1)
+        );
+        const recentSnap = await getDocs(recentQuery);
+        const lastEntry = recentSnap.docs[0]?.data();
+        if (lastEntry) {
+          const lastTime = lastEntry.createdAt?.toDate?.() || new Date(0);
+          const now = new Date();
+          if (now - lastTime < 5000) {
+            // Duplicate within 5 seconds — skip write
+            return;
+          }
+        }
+
+        const userRef = doc(db, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
 
-        let updates = { xp: increment(totalGainedXP) };
+        const updates = { xp: increment(totalGainedXP) };
         if (userSnap.exists()) {
           const currentBest = userSnap.data().streak || 0;
           if (finalStreak > currentBest) updates.streak = finalStreak;
         }
         await updateDoc(userRef, updates);
 
-        await addDoc(collection(db, "users", currentUser.uid, "quizHistory"), {
+        await addDoc(collection(db, 'users', currentUser.uid, 'quizHistory'), {
           score: finalScore,
           total: currentQuestions.length,
           xp: totalGainedXP,
           streak: finalStreak,
           percentage: Math.round((finalScore / currentQuestions.length) * 100),
           category: currentQuestions[0]?.category || 'General',
-          createdAt: new Date().toISOString(),
+          createdAt: serverTimestamp(),
         });
       } catch (error) {
-        console.error("Error updating user stats:", error);
+        console.error('Error updating user stats:', error);
       }
     }
   }, [currentUser, quizState.score, quizState.xp, currentQuestions]);
@@ -131,8 +157,8 @@ export const useQuiz = (settings) => {
         category: currentQuestion.category,
         difficulty: currentQuestion.difficulty,
         answerIndex,
-        isCorrect
-      }
+        isCorrect,
+      },
     ];
 
     if (quizState.currentQuestionIndex + 1 < currentQuestions.length) {
@@ -168,14 +194,12 @@ export const useQuiz = (settings) => {
     return () => clearInterval(timer);
   }, [quizState.isActive, quizState.timeLeft]);
 
-  // Time out handling moved to component level so it can show feedback before advancing
-
   return {
     ...quizState,
     currentQuestion: currentQuestions[quizState.currentQuestionIndex],
     totalQuestions: currentQuestions.length,
     questions: currentQuestions,
     startQuiz,
-    submitAnswer
+    submitAnswer,
   };
 };

@@ -1,27 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { db } from '../../services/firebase';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { Users, Search, MoreHorizontal, Shield, User } from 'lucide-react';
+import { collection, query, orderBy, limit, startAfter, getDocs } from 'firebase/firestore';
+import { Users, Search, MoreHorizontal, Shield, User, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const PAGE_SIZE = 30;
 
 export default function UserManagement() {
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [lastDoc, setLastDoc] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+
+  const fetchUsers = useCallback(async (isInitial = false) => {
+    try {
+      setLoading(true);
+      let q;
+      if (isInitial) {
+        q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(PAGE_SIZE));
+      } else if (lastDoc) {
+        q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), startAfter(lastDoc), limit(PAGE_SIZE));
+      } else {
+        setLoading(false);
+        return;
+      }
+
+      const snapshot = await getDocs(q);
+      const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      if (isInitial) {
+        setUserList(docs);
+      } else {
+        setUserList(prev => [...prev, ...docs]);
+      }
+
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null);
+      setHasMore(snapshot.docs.length === PAGE_SIZE);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [lastDoc]);
 
   useEffect(() => {
-    const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setUserList(docs);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    fetchUsers(true);
   }, []);
 
-  const filteredUsers = userList.filter(u => 
-    u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  const loadMore = async () => {
+    setPage(p => p + 1);
+    await fetchUsers(false);
+  };
+
+  const filteredUsers = userList.filter(u =>
+    u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.username?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -37,14 +73,15 @@ export default function UserManagement() {
           <div className="flex gap-4 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
-              <input 
-                type="text" 
-                placeholder="Search users..." 
+              <input
+                type="text"
+                placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors" 
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors"
               />
             </div>
+            <span className="text-xs text-gray-500 self-center font-bold">Page {page}</span>
           </div>
         </div>
 
@@ -61,7 +98,7 @@ export default function UserManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {loading ? (
+                {loading && userList.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="px-6 py-10 text-center">
                       <div className="w-8 h-8 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin mx-auto" />
@@ -78,10 +115,10 @@ export default function UserManagement() {
                     <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <img 
-                            src={`https://ui-avatars.com/api/?name=${u.fullName}&background=random`} 
-                            className="w-10 h-10 rounded-xl border border-white/5" 
-                            alt="" 
+                          <img
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(u.fullName || 'User')}&background=random`}
+                            className="w-10 h-10 rounded-xl border border-white/5"
+                            alt=""
                           />
                           <div>
                             <p className="text-sm font-bold text-white group-hover:text-red-400 transition-colors">{u.fullName}</p>
@@ -104,7 +141,7 @@ export default function UserManagement() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-xs text-gray-500">
-                        {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
+                        {u.createdAt ? new Date(u.createdAt?.toDate?.() || u.createdAt).toLocaleDateString() : 'N/A'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button className="text-gray-600 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg">
@@ -116,6 +153,29 @@ export default function UserManagement() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
+            <span className="text-xs text-gray-500">
+              Showing {filteredUsers.length} users
+            </span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setPage(1); fetchUsers(true); }}
+                disabled={page === 1}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors px-3 py-1.5 rounded-lg bg-white/5"
+              >
+                <ChevronLeft size={14} /> First
+              </button>
+              <button
+                onClick={loadMore}
+                disabled={!hasMore || loading}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors px-3 py-1.5 rounded-lg bg-white/5"
+              >
+                Load More <ChevronRight size={14} />
+              </button>
+            </div>
           </div>
         </div>
       </div>

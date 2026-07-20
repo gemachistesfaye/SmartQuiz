@@ -23,6 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Firebase cache
+.firebase/
+
 # Environment variables
 .env
 .env.*

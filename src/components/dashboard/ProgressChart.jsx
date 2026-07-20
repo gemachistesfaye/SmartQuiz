@@ -1,35 +1,15 @@
-import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useAuth } from '../../context/AuthContext';
-import { db } from '../../services/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { useQuizHistory } from '../../hooks/useFirestore';
 
 export default function ProgressChart() {
-  const { currentUser } = useAuth();
-  const [data, setData] = useState([]);
+  const { history } = useQuizHistory(7);
 
-  useEffect(() => {
-    if (!currentUser) return;
-    const q = query(
-      collection(db, "users", currentUser.uid, "quizHistory"),
-      orderBy("createdAt", "desc"),
-      limit(7)
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const history = snapshot.docs.map(d => d.data()).reverse();
-      if (history.length === 0) {
-        // Show placeholder when no data
-        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        setData(days.map(name => ({ name, score: 0 })));
-        return;
-      }
-      setData(history.map((h) => ({
+  const data = history.length === 0
+    ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(name => ({ name, score: 0 }))
+    : [...history].reverse().map((h) => ({
         name: new Date(h.createdAt).toLocaleDateString('en', { weekday: 'short' }),
         score: h.percentage || 0,
-      })));
-    });
-    return () => unsubscribe();
-  }, [currentUser]);
+      }));
 
   return (
     <div className="glass-card p-4 md:p-6 h-[250px] md:h-[400px]">
@@ -37,7 +17,7 @@ export default function ProgressChart() {
         <h3 className="text-lg font-bold text-white">Performance Overview</h3>
         <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Last 7 Quizzes</span>
       </div>
-      
+
       <div className="w-full h-full pb-4 md:pb-10 min-h-[150px] md:min-h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
@@ -48,22 +28,22 @@ export default function ProgressChart() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-            <XAxis 
-              dataKey="name" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#9ca3af', fontSize: 12 }} 
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#9ca3af', fontSize: 12 }}
               dy={10}
             />
-            <YAxis 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#9ca3af', fontSize: 12 }} 
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#9ca3af', fontSize: 12 }}
               domain={[0, 100]}
             />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#111111', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#111111',
                 border: '1px solid #ffffff10',
                 borderRadius: '12px',
                 color: '#fff'
@@ -71,13 +51,13 @@ export default function ProgressChart() {
               itemStyle={{ color: '#3b82f6' }}
               formatter={(value) => [`${value}%`, 'Score']}
             />
-            <Area 
-              type="monotone" 
-              dataKey="score" 
-              stroke="#3b82f6" 
+            <Area
+              type="monotone"
+              dataKey="score"
+              stroke="#3b82f6"
               strokeWidth={3}
-              fillOpacity={1} 
-              fill="url(#colorScore)" 
+              fillOpacity={1}
+              fill="url(#colorScore)"
               dot={{ r: 4, fill: '#3b82f6', stroke: '#0a0a0a', strokeWidth: 2 }}
             />
           </AreaChart>

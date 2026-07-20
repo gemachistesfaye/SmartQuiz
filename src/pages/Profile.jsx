@@ -8,25 +8,62 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { User, Mail, Shield, Camera, Zap, Trophy, Save } from 'lucide-react';
 
 export default function Profile() {
-  const { userData, currentUser, isAdmin, resetPassword } = useAuth();
+  const { userData, currentUser, isAdmin, resetPassword, checkUsernameUnique, refreshUserData } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: userData?.fullName || '',
     username: userData?.username || '',
   });
+  const [usernameError, setUsernameError] = useState('');
+
+  const validateUsername = async (username) => {
+    if (!username || username.length < 3) {
+      setUsernameError('Username must be at least 3 characters');
+      return false;
+    }
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      setUsernameError('3-20 chars, letters/numbers/underscores only');
+      return false;
+    }
+    if (username === userData?.username) {
+      setUsernameError('');
+      return true;
+    }
+    const isUnique = await checkUsernameUnique(username, currentUser.uid);
+    if (!isUnique) {
+      setUsernameError('Username is already taken');
+      return false;
+    }
+    setUsernameError('');
+    return true;
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
+    // Validate username if changed
+    if (formData.username !== userData?.username) {
+      const isValid = await validateUsername(formData.username);
+      if (!isValid) return;
+    }
+
+    if (!formData.fullName.trim()) {
+      toast.error('Full name is required');
+      return;
+    }
+
     try {
       setLoading(true);
-      const userRef = doc(db, "users", currentUser.uid);
+      const userRef = doc(db, 'users', currentUser.uid);
       await updateDoc(userRef, {
-        fullName: formData.fullName,
-        username: formData.username,
+        fullName: formData.fullName.trim(),
+        username: formData.username.trim().toLowerCase(),
       });
-      toast.success("Profile updated successfully!");
-    } catch {
-      toast.error("Failed to update profile");
+      await refreshUserData();
+      toast.success('Profile updated successfully!');
+    } catch (error) {
+      console.error('Profile update error:', error);
+      toast.error('Failed to update profile');
     } finally {
       setLoading(false);
     }
@@ -36,18 +73,18 @@ export default function Profile() {
     <DashboardLayout>
       <div className="px-4 md:px-6 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
-          
+
           {/* Left Column: Avatar & Stats */}
           <div className="lg:col-span-1 space-y-4 md:space-y-6">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className={`glass-card p-5 md:p-8 text-center ${isAdmin ? 'border-red-500/10' : ''}`}
             >
               <div className="relative inline-block mb-4 md:mb-6">
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${userData?.fullName || 'User'}&size=128&background=random`} 
-                  alt="Profile" 
+                <img
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.fullName || 'User')}&size=128&background=random`}
+                  alt="Profile"
                   className="w-20 h-20 md:w-32 md:h-32 rounded-2xl md:rounded-3xl border-4 border-white/5"
                 />
                 <button type="button" className={`absolute -bottom-2 -right-2 p-2.5 rounded-xl shadow-lg transition-all ${isAdmin ? 'bg-red-500' : 'bg-primary'}`}>
@@ -63,7 +100,7 @@ export default function Profile() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -84,7 +121,7 @@ export default function Profile() {
 
           {/* Right Column: Edit Profile */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="glass-card p-5 md:p-8"
@@ -98,8 +135,8 @@ export default function Profile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-400 uppercase ml-1">Full Name</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={formData.fullName}
                       onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                       className={`w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none transition-colors ${
@@ -109,14 +146,21 @@ export default function Profile() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-400 uppercase ml-1">Username</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={formData.username}
-                      onChange={(e) => setFormData({...formData, username: e.target.value})}
-                      className={`w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none transition-colors ${
-                        isAdmin ? 'focus:border-red-500/50' : 'focus:border-primary/50'
-                      }`}
+                      onChange={(e) => {
+                        setFormData({...formData, username: e.target.value});
+                        setUsernameError('');
+                      }}
+                      onBlur={() => validateUsername(formData.username)}
+                      className={`w-full bg-white/5 border rounded-xl py-3.5 px-4 text-white focus:outline-none transition-colors ${
+                        usernameError ? 'border-red-500/50' : 'border-white/10'
+                      } ${isAdmin ? 'focus:border-red-500/50' : 'focus:border-primary/50'}`}
                     />
+                    {usernameError && (
+                      <p className="text-[11px] text-red-400 ml-1">{usernameError}</p>
+                    )}
                   </div>
                 </div>
 
@@ -124,8 +168,8 @@ export default function Profile() {
                   <label className="text-sm font-semibold text-gray-400 uppercase ml-1">Email Address</label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" size={18} />
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       disabled
                       value={currentUser?.email}
                       className="w-full bg-white/5 border border-white/5 rounded-xl py-3.5 pl-12 pr-4 text-gray-500 cursor-not-allowed"
@@ -134,7 +178,7 @@ export default function Profile() {
                 </div>
 
                 <div className="pt-4 border-t border-white/10 flex justify-end">
-                  <button 
+                  <button
                     disabled={loading}
                     className={`text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 ${
                       isAdmin ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-primary hover:bg-primary/90 shadow-primary/20'
@@ -146,7 +190,7 @@ export default function Profile() {
               </form>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
@@ -157,16 +201,16 @@ export default function Profile() {
                 <h3 className="text-xl font-bold text-white">Security</h3>
               </div>
               <p className="text-gray-400 text-sm mb-4 md:mb-6">Manage your account security settings.</p>
-              
+
               <div className="space-y-4">
-                <button 
+                <button
                   type="button"
                   onClick={async () => {
                     try {
                       await resetPassword(currentUser.email);
-                      toast.success("Password reset email sent! Check your inbox.");
+                      toast.success('Password reset email sent! Check your inbox.');
                     } catch {
-                      toast.error("Failed to send reset email. Try again later.");
+                      toast.error('Failed to send reset email. Try again later.');
                     }
                   }}
                   className="bg-white/5 hover:bg-white/10 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-all"
