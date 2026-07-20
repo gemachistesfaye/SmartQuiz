@@ -1,7 +1,9 @@
-const admin = require("firebase-admin");
+const adminModule = require("firebase-admin");
+const admin = adminModule.default || adminModule;
 
 // Initialize Firebase Admin
-if (!admin.apps.length) {
+const apps = admin.apps || [];
+if (!apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
