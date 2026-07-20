@@ -40,12 +40,10 @@ exports.handler = async (event) => {
     if (type === "verifyEmail") {
       link = await admin.auth().generateEmailVerificationLink(email, {
         url: "https://smartquiz-app-59260.web.app",
-        handleCodeInApp: true,
       });
     } else if (type === "resetPassword") {
       link = await admin.auth().generatePasswordResetLink(email, {
         url: "https://smartquiz-app-59260.web.app",
-        handleCodeInApp: true,
       });
     } else {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid type" }) };
