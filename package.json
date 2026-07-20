@@ -12,7 +12,6 @@
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "firebase": "^12.13.0",
-    "firebase-admin": "^14.2.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
     "react": "^19.2.6",
